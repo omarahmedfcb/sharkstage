@@ -1,5 +1,6 @@
 import FeaturesSection from "../components/FeaturesSection";
 import Hero from "../components/Hero";
+import InvestmentCategories from "../components/InvestmentCategories";
 import WhyChooseSection from "../components/WhyChooseSection";
 
 export default function Home() {
@@ -7,6 +8,7 @@ export default function Home() {
     <>
       <Hero />
       <WhyChooseSection />
+      <InvestmentCategories />
       <FeaturesSection />
     </>
   );

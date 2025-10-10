@@ -4,7 +4,7 @@ import styles from "./Hero.module.css";
 function Hero() {
   return (
     <section
-      className={`${styles.welcome} relative z-[5] sm:ps-[5%] max-sm:pt-30 max-lg:pt-28  pb-32 bg-linear-to-br from-primary to-secondary`}
+      className={`${styles.welcome} transform-gpu relative z-[5] sm:ps-[5%] max-sm:pt-30 max-lg:pt-28  pb-32 bg-linear-to-br from-primary to-secondary`}
     >
       <div className="max-sm:w-9/10 max-sm:mx-auto max-sm:flex-col flex justify-between items-center sm:items-end ">
         <div className="content sm:w-10/19 lg:w-7/12 flex flex-col  gap-6 items-center">
