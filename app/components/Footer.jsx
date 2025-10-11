@@ -93,7 +93,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li>📍 123 Investment Street, Finance District, NY 10001</li>
             <li>📞 +1 (555) 123-4567</li>
-            <li>✉️ contact@investventure.com</li>
+            <li>✉️ contact@sharkstage.com</li>
           </ul>
         </div>
       </div>
