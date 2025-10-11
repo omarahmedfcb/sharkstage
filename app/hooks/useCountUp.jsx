@@ -5,11 +5,10 @@ export function useCountUp(target, duration = 2000, inView) {
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    if (!inView) {
-      console.log(inView);
+    if (!inView || hasAnimated.current) {
       return;
     }
-    // hasAnimated.current = true;
+    hasAnimated.current = true;
 
     let start = null;
 
