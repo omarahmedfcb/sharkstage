@@ -1,5 +1,5 @@
 import EastIcon from "@mui/icons-material/East";
-import Quote from "./Quote";
+import Quote from "../components/Quote";
 import styles from "./Hero.module.css";
 function Hero() {
   return (

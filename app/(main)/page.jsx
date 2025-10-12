@@ -1,10 +1,9 @@
-import Banner from "../components/Banner";
-import FeaturesSection from "../components/FeaturesSection";
-import Hero from "../components/Hero";
-import InvestmentCategories from "../components/InvestmentCategories";
-import Numbers from "../components/Numbers";
-import ReadySection from "../components/ReadySection";
-import WhyChooseSection from "../components/WhyChooseSection";
+import Banner from "./Banner";
+import Hero from "./Hero";
+import InvestmentCategories from "./InvestmentCategories";
+import Numbers from "./Numbers";
+import ReadySection from "./ReadySection";
+import WhyChooseSection from "./WhyChooseSection";
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
       <WhyChooseSection />
       <Numbers />
       <InvestmentCategories />
-      {/* <FeaturesSection /> */}
       <Banner />
       <ReadySection />
     </>
