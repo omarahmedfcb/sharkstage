@@ -8,9 +8,13 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
+import { useDispatch } from "react-redux";
+import { loggedIn } from "@/lib/features/logged/loggedSlice";
 
 export default function SigninPage() {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmaiL] = useState("");
   return (
     <PageTransition>
       <Link
@@ -28,7 +32,11 @@ export default function SigninPage() {
             Sign in to your account
           </h2>
         </div>
-        <SignInput text="Email address" />
+        <SignInput
+          text="Email address"
+          value={email}
+          onChange={(e) => setEmaiL(e.target.value)}
+        />
         <SignInput
           text="Password"
           type={showPassword ? "text" : "password"}
@@ -53,9 +61,13 @@ export default function SigninPage() {
             },
           }}
         />
-        <button className="text-primary self-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
+        <Link
+          onClick={() => dispatch(loggedIn(email))}
+          href={"/"}
+          className="text-primary self-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl"
+        >
           Continue <LoginIcon />
-        </button>
+        </Link>
         <div className="flex flex-col gap-4">
           <Divider
             sx={{

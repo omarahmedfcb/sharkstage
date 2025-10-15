@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import LoginIcon from "@mui/icons-material/Login";
 import {
   Divider,
   IconButton,

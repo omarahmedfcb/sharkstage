@@ -1,10 +1,13 @@
+"use client";
 import React from "react";
 import { TextField } from "@mui/material";
 
-function SignInput({ text, type, slotProps }) {
+function SignInput({ text, type, slotProps, value, onChange }) {
   return (
     <TextField
+      value={value}
       label={text}
+      onChange={onChange}
       variant="outlined"
       type={type}
       slotProps={slotProps}

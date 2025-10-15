@@ -5,8 +5,11 @@ import LoginIcon from "@mui/icons-material/Login";
 import { Menu } from "@mui/icons-material";
 import Link from "next/link";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 function Navbar() {
   const [res, setRes] = useState(false);
+  const logged = useSelector((state) => state.logged.value);
+
   function handleToggle() {
     setRes(!res);
   }
@@ -46,7 +49,7 @@ function Navbar() {
           </div>
 
           <div
-            className={`md:hidden w-full bg-background flex flex-col gap-4 items-center overflow-hidden transition-all duration-300 ${
+            className={`responsivebar md:hidden w-full bg-background flex flex-col gap-4 items-center overflow-hidden transition-all duration-300 ${
               res ? "opacity-100 max-h-[500px]" : "opacity-0 max-h-0"
             }`}
           >
@@ -72,12 +75,21 @@ function Navbar() {
             </div>
           </div>
         </div>
-        <Link
-          href="/sign/in"
-          className="bg-primary text-lg max-md:hidden text-white border-2 rounded-e-lg border-primary hover:text-primary transition-colors hover:bg-transparent px-8 py-4 cursor-pointer"
-        >
-          Login <LoginIcon />
-        </Link>
+        {logged.is ? (
+          <div
+            href="/sign/in"
+            className="bg-primary text-lg max-md:hidden text-white border-2 rounded-e-lg border-primary hover:text-primary transition-colors hover:bg-transparent px-8 py-4 cursor-pointer"
+          >
+            {logged.user}
+          </div>
+        ) : (
+          <Link
+            href="/sign/in"
+            className="bg-primary text-lg max-md:hidden text-white border-2 rounded-e-lg border-primary hover:text-primary transition-colors hover:bg-transparent px-8 py-4 cursor-pointer"
+          >
+            Login <LoginIcon />
+          </Link>
+        )}
       </div>
     </nav>
   );
