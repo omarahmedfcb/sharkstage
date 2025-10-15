@@ -1,14 +1,28 @@
 "use client";
 import LanguageIcon from "@mui/icons-material/Language";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LoginIcon from "@mui/icons-material/Login";
 import { Menu } from "@mui/icons-material";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import AccountPopover from "./AccountPopover";
 function Navbar() {
+  const [mounted, setMounted] = useState(false);
+  const { currentUser, isLoggedIn } = useSelector((state) => state.auth);
   const [res, setRes] = useState(false);
-  const logged = useSelector((state) => state.logged.value);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   function handleToggle() {
     setRes(!res);
@@ -16,20 +30,24 @@ function Navbar() {
   const navlinks = [
     { name: "Home", href: "/" },
     { name: "Projects", href: "/projects" },
-    { name: "Account", href: "#" },
   ];
   return (
-    <nav className="fixed w-full z-10">
-      <div className="w-9/10 bg-background shadow-[0_5px_35px_rgba(0,0,0,0.25)] mx-auto flex mt-4 max-md:py-2 rounded-lg overflow-hidden">
+    <motion.nav
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="fixed w-full z-10"
+    >
+      <div className="w-9/10 bg-background shadow-[0_5px_35px_rgba(0,0,0,0.25)] mx-auto flex mt-4 max-md:py-2 rounded-lg">
         <div className="flex max-md:flex-col grow">
           <div className="flex justify-between items-stretch grow px-4">
             <div className="logo flex items-center gap-1">
               <span className="w-16">
-                <img className="w-full" src="logo-blue-2.png" alt="" />
+                <img className="w-full" src="/logo-blue-2.png" alt="" />
               </span>
               <span className="text-primary text-xl font-bold">SharkStage</span>
             </div>
-            <div className="navlinks hidden lg:flex gap-1 text-lg self-stretch">
+            <div className="navlinks hidden md:flex gap-1 text-lg self-stretch">
               {navlinks.map((link, index) => (
                 <Link
                   key={index}
@@ -79,13 +97,17 @@ function Navbar() {
             </div>
           </div>
         </div>
-        {logged.is ? (
-          <div
-            href="/sign/in"
-            className="bg-primary text-lg max-md:hidden text-white border-2 rounded-e-lg border-primary hover:text-primary transition-colors hover:bg-transparent px-8 py-4 cursor-pointer"
-          >
-            {logged.user}
-          </div>
+        {isLoggedIn ? (
+          <>
+            <div
+              onClick={handleClick}
+              className="bg-primary text-lg max-md:hidden text-white border-2 rounded-e-lg border-primary hover:text-primary transition-colors hover:bg-transparent px-8 py-4 cursor-pointer"
+            >
+              {currentUser.firstName + " " + currentUser.lastName}{" "}
+              <KeyboardArrowDownIcon />
+            </div>
+            <AccountPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl} />
+          </>
         ) : (
           <Link
             href="/sign/in"
@@ -95,7 +117,7 @@ function Navbar() {
           </Link>
         )}
       </div>
-    </nav>
+    </motion.nav>
   );
 }
 
