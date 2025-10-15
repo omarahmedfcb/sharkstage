@@ -13,7 +13,11 @@ function Navbar() {
   function handleToggle() {
     setRes(!res);
   }
-  let navlinks = ["Home", "Projects", "Account"];
+  const navlinks = [
+    { name: "Home", href: "/" },
+    { name: "Projects", href: "/projects" },
+    { name: "Account", href: "#" },
+  ];
   return (
     <nav className="fixed w-full z-10">
       <div className="w-9/10 bg-background shadow-[0_5px_35px_rgba(0,0,0,0.25)] mx-auto flex mt-4 max-md:py-2 rounded-lg overflow-hidden">
@@ -26,13 +30,13 @@ function Navbar() {
               <span className="text-primary text-xl font-bold">SharkStage</span>
             </div>
             <div className="navlinks hidden lg:flex gap-1 text-lg self-stretch">
-              {navlinks.map((ele, index) => (
+              {navlinks.map((link, index) => (
                 <Link
                   key={index}
-                  href="#"
+                  href={link.href}
                   className="flex items-center px-4 hover:text-primary"
                 >
-                  {ele}
+                  {link.name}
                 </Link>
               ))}
             </div>
@@ -53,13 +57,13 @@ function Navbar() {
               res ? "opacity-100 max-h-[500px]" : "opacity-0 max-h-0"
             }`}
           >
-            {navlinks.map((ele, index) => (
+            {navlinks.map((link, index) => (
               <Link
                 key={index}
-                href="#"
+                href={link.href}
                 className="flex items-center px-4 hover:text-primary"
               >
-                {ele}
+                {link.name}
               </Link>
             ))}
 
