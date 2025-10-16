@@ -108,7 +108,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="p-3 border-t border-gray-300">
         {open ? (
-          <div className="text-xs text-slate-700">v1.0 • Rowida</div>
+          <div className="text-xs text-slate-700">v1.0 • SharkStage</div>
         ) : (
           <div className="text-center text-slate-700 text-xs">v1.0</div>
         )}
