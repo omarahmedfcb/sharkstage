@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
-import { LayoutGrid, FolderKanban, UserCog } from "lucide-react";
+import { LayoutGrid, FolderKanban, UserCog, House, PanelTop } from "lucide-react";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -88,6 +88,20 @@ export default function Sidebar() {
         >
           <UserCog className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
           {open && <span className="text-sm">Profile</span>}
+        </Link>
+        <Link 
+          href="/" 
+          className={getLinkClass(pathname === "/")}
+        >
+          <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          {open && <span className="text-sm">Home</span>}
+        </Link>
+        <Link 
+          href="/projects" 
+          className={getLinkClass(pathname === "/projects")}
+        >
+          <PanelTop className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          {open && <span className="text-sm">Browse projects</span>}
         </Link>
       </nav>
 
