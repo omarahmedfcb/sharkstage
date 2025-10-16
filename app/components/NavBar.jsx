@@ -13,7 +13,7 @@ function Navbar() {
   const navlinks = [
     { name: "Home", href: "/" },
     { name: "Projects", href: "/projects" },
-    { name: "Account", href: "#" },
+    { name: "Account", href: "/account" },
   ];
   return (
     <nav className="fixed w-full z-10">
