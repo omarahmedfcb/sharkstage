@@ -5,9 +5,8 @@ export default function ProjectsLayout({ children }) {
   return (
     <>
       <Navbar />
-      <main className="pt-20">{children}</main>
+      <main className="">{children}</main>
       <Footer />
     </>
   );
 }
-

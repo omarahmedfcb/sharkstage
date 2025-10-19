@@ -4,13 +4,36 @@ import LoginIcon from "@mui/icons-material/Login";
 import { Divider, IconButton, InputAdornment, TextField } from "@mui/material";
 import SignInput from "@/app/components/SignInput";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { loginUser } from "@/lib/features/auth/authSlice";
+import { useRouter } from "next/navigation";
 
 export default function SigninPage() {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/");
+    }
+  }, [isLoggedIn, router]);
+  function myHandleSubmit(data) {
+    dispatch(loginUser(data));
+    console.log(data);
+  }
   return (
     <PageTransition>
       <Link
@@ -22,15 +45,20 @@ export default function SigninPage() {
         </span>
         <span>SharkStage</span>
       </Link>
-      <div className="flex flex-col gap-6 w-8/10">
+      <form
+        className="flex flex-col gap-6 w-8/10"
+        onSubmit={handleSubmit(myHandleSubmit)}
+      >
         <div>
           <h2 className="text-3xl font-bold text-center">
             Sign in to your account
           </h2>
         </div>
-        <SignInput text="Email address" />
+        <SignInput text="Email address" name="email" control={control} />
         <SignInput
           text="Password"
+          name="password"
+          control={control}
           type={showPassword ? "text" : "password"}
           slotProps={{
             input: {
@@ -77,7 +105,7 @@ export default function SigninPage() {
             </div>
           </div>
         </div>
-      </div>
+      </form>
       <div className="flex max-lg:flex-col max-lg:gap-2 max-lg:items-center justify-between w-full">
         <h4>
           Don't have an account?{" "}

@@ -39,7 +39,9 @@ export default function ProjectsPage() {
 
     // Apply status filter
     if (selectedStatus !== "all") {
-      filtered = filtered.filter((project) => project.status === selectedStatus);
+      filtered = filtered.filter(
+        (project) => project.status === selectedStatus
+      );
     }
 
     // Apply ROI filter
@@ -108,7 +110,7 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-secondary text-white py-20 px-4">
+      <section className="bg-gradient-to-br from-primary to-secondary text-white py-20 pt-40 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
             Explore Investment Opportunities
@@ -149,7 +151,9 @@ export default function ProjectsPage() {
                 <h3 className="text-lg font-semibold">Average ROI</h3>
               </div>
               <p className="text-3xl font-bold">{avgROI.toFixed(0)}%</p>
-              <p className="text-sm text-background/80 mt-1">Expected returns</p>
+              <p className="text-sm text-background/80 mt-1">
+                Expected returns
+              </p>
             </div>
           </div>
         </div>
@@ -223,4 +227,3 @@ export default function ProjectsPage() {
     </div>
   );
 }
-

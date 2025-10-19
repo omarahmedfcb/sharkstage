@@ -1,10 +1,3 @@
-import PageTransition from "@/app/components/PageTransition";
-import Link from "next/link";
-
-export const metadata = {
-  title: "Sign In / Sign Up - InvestVenture",
-};
-
 export default function SignLayout({ children }) {
   return (
     <main className="bg-linear-to-b from-soft to-buttons/50 h-dvh flex flex-col justify-center items-center ">
@@ -13,7 +6,7 @@ export default function SignLayout({ children }) {
         <div className="overflow-hidden aspect-[16/17] rounded-2xl hidden lg:block self-center">
           <img
             className="w-full h-full object-cover object-bottom"
-            src="../sign-3.jpg"
+            src="/sign-3.jpg"
             alt=""
           />
         </div>

@@ -24,19 +24,19 @@ function Hero() {
           </div>
           <div className="flex justify-between max-lg:flex-col max-lg:justify-center max-lg:gap-4">
             <Quote
-              pic="elon.jpg"
+              pic="/elon.jpg"
               name="Elon Musk"
               para="When something is important enough, you do it even if the odds are not in your favor."
             />
             <Quote
-              pic="jeff.jpg"
+              pic="/jeff.jpg"
               name="Jeff Bezos"
               para="What we need to do is always lean into the future; when the world changes around you and when it changes against you."
             />
           </div>
         </div>
         <div className="overflow-hidden max-sm:hidden max-lg:w-8/19 w-5/12 max-sm:rounded-none max-lg:rounded-s-full rounded-bl-full self-center lg:self-start">
-          <img className="w-full" src="startup-edited.jpg" alt="" />
+          <img className="w-full" src="/startup-edited.jpg" alt="" />
         </div>
       </div>
     </section>
