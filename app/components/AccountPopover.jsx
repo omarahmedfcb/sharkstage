@@ -1,7 +1,6 @@
-import { logoutUser } from "@/lib/features/auth/authSlice";
+import { logoutUser } from "@/lib/features/auth/auththunks";
 import { Logout } from "@mui/icons-material";
 import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 

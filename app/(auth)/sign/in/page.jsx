@@ -10,8 +10,8 @@ import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { loginUser } from "@/lib/features/auth/authSlice";
 import { useRouter } from "next/navigation";
+import { loginUser } from "@/lib/features/auth/auththunks";
 
 export default function SigninPage() {
   const { control, handleSubmit } = useForm({
@@ -25,15 +25,15 @@ export default function SigninPage() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
+  async function myHandleSubmit(data) {
+    await dispatch(loginUser(data));
+  }
+
   useEffect(() => {
     if (isLoggedIn) {
       router.push("/");
     }
   }, [isLoggedIn, router]);
-  function myHandleSubmit(data) {
-    dispatch(loginUser(data));
-    console.log(data);
-  }
   return (
     <PageTransition>
       <Link

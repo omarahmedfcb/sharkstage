@@ -3,16 +3,20 @@ import { NextResponse } from "next/server";
 
 export function middleware(req) {
   const { pathname, origin } = req.nextUrl;
-  const authCookie = req.cookies.get("authUser");
-  if (pathname == "/sign") {
+  const token = req.cookies.get("token"); // ✅ actual httpOnly cookie set by backend
+
+  // redirect /sign to /sign/in
+  if (pathname === "/sign") {
     return NextResponse.redirect(`${origin}/sign/in`);
   }
 
-  if (authCookie && pathname.startsWith("/sign")) {
+  // if logged in → block access to sign pages
+  if (token && pathname.startsWith("/sign")) {
     return NextResponse.redirect(`${origin}/`);
   }
 
-  if (!authCookie && pathname.startsWith("/dashboard")) {
+  // if not logged in → block dashboard routes
+  if (!token && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(`${origin}/sign/in`);
   }
 

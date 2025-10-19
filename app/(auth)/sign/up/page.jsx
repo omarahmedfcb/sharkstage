@@ -15,8 +15,8 @@ import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, registerUser } from "@/lib/features/auth/authSlice";
 import { useRouter } from "next/navigation";
+import { registerUser } from "@/lib/features/auth/auththunks";
 
 export default function SignupPage() {
   const { control, handleSubmit } = useForm({
@@ -31,12 +31,17 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
-  function myHandleSubmit(data) {
-    dispatch(registerUser(data));
-    router.push("/");
-    console.log(data);
+  async function myHandleSubmit(data) {
+    await dispatch(registerUser(data));
   }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/");
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <PageTransition>

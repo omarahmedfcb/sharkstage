@@ -2,12 +2,12 @@
 import { useEffect, useRef } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { makeStore } from "../lib/store";
-import { loadUserFromCookies } from "@/lib/features/auth/authSlice";
+import { checkAuth } from "@/lib/features/auth/auththunks";
 function InitAuth() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(loadUserFromCookies());
+    dispatch(checkAuth());
   }, [dispatch]);
 
   return null;
