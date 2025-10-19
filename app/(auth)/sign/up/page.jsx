@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/features/auth/auththunks";
+import Spinner from "@/app/components/Spinner";
 
 export default function SignupPage() {
   const { control, handleSubmit } = useForm({
@@ -141,8 +142,15 @@ export default function SignupPage() {
             },
           }}
         />
-        <button className="text-primary self-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
-          Create account
+
+        <button className="text-primary self-stretch flex items-center justify-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
+          {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              <span>Create account</span>
+            </>
+          )}
         </button>
         <div className="flex flex-col gap-4">
           <Divider

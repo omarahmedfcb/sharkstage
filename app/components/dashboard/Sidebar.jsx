@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
-import { LayoutGrid, FolderKanban, UserCog, House, PanelTop } from "lucide-react";
+import {
+  LayoutGrid,
+  FolderKanban,
+  UserCog,
+  House,
+  PanelTop,
+} from "lucide-react";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -12,7 +18,8 @@ export default function Sidebar() {
   // Auto-close sidebar on small screens
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) { // Tailwind md breakpoint
+      if (window.innerWidth < 768) {
+        // Tailwind md breakpoint
         setOpen(false);
       } else {
         setOpen(true);
@@ -35,7 +42,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`bg-slate-200 text-gray-700 border-r border-gray-300 h-screen flex flex-col transition-all duration-300 ${
+      className={`sticky top-0 bg-slate-200 text-gray-700 border-r border-gray-300 h-screen flex flex-col transition-all duration-300 ${
         open ? "w-64" : "w-20"
       }`}
       aria-label="Sidebar"
@@ -66,41 +73,43 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="p-3 flex-1 flex flex-col gap-2 text-slate-700">
-        <Link 
-          href="/account" 
-          className={getLinkClass(pathname === "/account")}
-        >
-          <LayoutGrid className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+        <Link href="/account" className={getLinkClass(pathname === "/account")}>
+          <LayoutGrid
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
           {open && <span className="text-sm">Overview</span>}
         </Link>
 
-        <Link 
-          href="/account/projects" 
+        <Link
+          href="/account/projects"
           className={getLinkClass(pathname === "/account/projects")}
         >
-          <FolderKanban className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          <FolderKanban
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
           {open && <span className="text-sm">Projects</span>}
         </Link>
 
-        <Link 
-          href="/account/profile" 
+        <Link
+          href="/account/profile"
           className={getLinkClass(pathname === "/account/profile")}
         >
-          <UserCog className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          <UserCog
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
           {open && <span className="text-sm">Profile</span>}
         </Link>
-        <Link 
-          href="/" 
-          className={getLinkClass(pathname === "/")}
-        >
+        <Link href="/" className={getLinkClass(pathname === "/")}>
           <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
           {open && <span className="text-sm">Home</span>}
         </Link>
-        <Link 
-          href="/projects" 
+        <Link
+          href="/projects"
           className={getLinkClass(pathname === "/projects")}
         >
-          <PanelTop className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          <PanelTop
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
           {open && <span className="text-sm">Browse projects</span>}
         </Link>
       </nav>

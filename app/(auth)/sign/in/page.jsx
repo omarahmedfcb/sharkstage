@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/features/auth/auththunks";
+import Spinner from "@/app/components/Spinner";
 
 export default function SigninPage() {
   const { control, handleSubmit } = useForm({
@@ -20,7 +21,7 @@ export default function SigninPage() {
       password: "",
     },
   });
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, loading, error } = useSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -81,9 +82,20 @@ export default function SigninPage() {
             },
           }}
         />
-        <button className="text-primary self-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
-          Continue <LoginIcon />
+        <button className="text-primary gap-2 self-stretch flex items-center justify-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
+          {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              <span>Continue</span> <LoginIcon />
+            </>
+          )}
         </button>
+        {error && (
+          <p className="text-center text-red-700 font-bold">
+            Invalid Email or Password
+          </p>
+        )}
         <div className="flex flex-col gap-4">
           <Divider
             sx={{
