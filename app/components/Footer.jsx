@@ -12,7 +12,7 @@ export default function Footer() {
         <div>
           <div className="flex items-center gap-1 mb-4">
             <span className="w-14">
-              <img className="w-full" src="logo-blue-2.png" alt="" />
+              <img className="w-full" src="/logo-blue-2.png" alt="" />
             </span>
             <span className="font-semibold text-lg">SharkStage</span>
           </div>

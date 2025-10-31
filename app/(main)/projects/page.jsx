@@ -1,10 +1,10 @@
 "use client";
 import { useState, useMemo } from "react";
-import { projects } from "@/data/projects";
 import ProjectCard from "@/app/components/ProjectCard";
 import FilterBar from "@/app/components/FilterBar";
 import Pagination from "@/app/components/Pagination";
 import { TrendingUp, Target, DollarSign } from "lucide-react";
+import { useSelector } from "react-redux";
 
 export default function ProjectsPage() {
   // Filter states
@@ -14,9 +14,9 @@ export default function ProjectsPage() {
   const [roiRange, setRoiRange] = useState(0);
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
+  const { projects, projectsLoading } = useSelector((state) => state.projects);
 
   const projectsPerPage = 9;
-
   // Filter and sort projects
   const filteredAndSortedProjects = useMemo(() => {
     let filtered = [...projects];
@@ -26,26 +26,28 @@ export default function ProjectsPage() {
       filtered = filtered.filter(
         (project) =>
           project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          project.shortDesc.toLowerCase().includes(searchQuery.toLowerCase())
+          project.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
-        (project) => project.categoryId === selectedCategory
+        (project) => project.category === selectedCategory
       );
     }
 
     // Apply status filter
     if (selectedStatus !== "all") {
-      filtered = filtered.filter((project) => project.status === selectedStatus);
+      filtered = filtered.filter(
+        (project) => project.status === selectedStatus
+      );
     }
 
     // Apply ROI filter
     if (roiRange > 0) {
       filtered = filtered.filter((project) => {
-        const roi = parseInt(project.roi);
+        const roi = parseInt(project.expectedROI);
         return roi >= roiRange;
       });
     }
@@ -54,11 +56,11 @@ export default function ProjectsPage() {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.startDate) - new Date(a.startDate);
+          return new Date(b.createdAt) - new Date(a.createdAt);
         case "roi-high":
-          return parseInt(b.roi) - parseInt(a.roi);
-        case "funding-high":
-          return b.fundingGoal - a.fundingGoal;
+          return parseInt(b.expectedROI) - parseInt(a.expectedROI);
+        case "networth-high":
+          return b.totalPrice - a.totalPrice;
         case "most-funded":
           return b.currentFunding - a.currentFunding;
         default:
@@ -94,10 +96,10 @@ export default function ProjectsPage() {
   };
 
   // Calculate stats
-  const totalFunding = projects.reduce(
-    (sum, project) => sum + project.currentFunding,
-    0
-  );
+  // const totalFunding = projects.reduce(
+  //   (sum, project) => sum + project.currentFunding,
+  //   0
+  // );
   const activeProjects = projects.filter(
     (project) => project.status === "active"
   ).length;
@@ -108,7 +110,7 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-secondary text-white py-20 px-4">
+      <section className="bg-gradient-to-br from-primary to-secondary text-white py-20 pt-40 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
             Explore Investment Opportunities
@@ -135,9 +137,9 @@ export default function ProjectsPage() {
                 <DollarSign className="w-8 h-8 text-buttons" />
                 <h3 className="text-lg font-semibold">Total Raised</h3>
               </div>
-              <p className="text-3xl font-bold">
+              {/* <p className="text-3xl font-bold">
                 ${(totalFunding / 1000000).toFixed(1)}M
-              </p>
+              </p> */}
               <p className="text-sm text-background/80 mt-1">
                 Across all projects
               </p>
@@ -149,7 +151,9 @@ export default function ProjectsPage() {
                 <h3 className="text-lg font-semibold">Average ROI</h3>
               </div>
               <p className="text-3xl font-bold">{avgROI.toFixed(0)}%</p>
-              <p className="text-sm text-background/80 mt-1">Expected returns</p>
+              <p className="text-sm text-background/80 mt-1">
+                Expected returns
+              </p>
             </div>
           </div>
         </div>
@@ -197,7 +201,7 @@ export default function ProjectsPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project._id} project={project} />
               ))}
             </div>
 
@@ -223,4 +227,3 @@ export default function ProjectsPage() {
     </div>
   );
 }
-

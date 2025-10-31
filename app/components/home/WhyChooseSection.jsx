@@ -1,8 +1,11 @@
+"use client";
 import { FaShieldHalved } from "react-icons/fa6";
 import { FaChartLine } from "react-icons/fa6";
 import { FaUsers } from "react-icons/fa";
 import { FaBolt } from "react-icons/fa6";
 import { FaEarthEurope } from "react-icons/fa6";
+import { decrement, increment } from "@/lib/features/counter/counterSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const WhyChooseSection = () => {
   const features = [
@@ -42,7 +45,6 @@ const WhyChooseSection = () => {
       desc: "Access investment opportunities from around the world with multi-currency support.",
     },
   ];
-
   return (
     <section className="bg-background pb-20 pt-28 -mt-28">
       <div className="max-w-6xl mx-auto text-center px-4">
@@ -75,7 +77,6 @@ const WhyChooseSection = () => {
               </div>
             </div>
           ))}
-          <div className="hidden lg:block" />
         </div>
       </div>
     </section>

@@ -1,29 +1,49 @@
 "use client";
 import Link from "next/link";
-import LoginIcon from "@mui/icons-material/Login";
 import {
   Divider,
   IconButton,
   InputAdornment,
-  TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
 import SignInput from "@/app/components/SignInput";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { registerUser } from "@/lib/features/auth/auththunks";
+import Spinner from "@/app/components/Spinner";
 
 export default function SignupPage() {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      accountType: "investor",
+    },
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [accountType, setAccountType] = useState("investor");
-  const handleChange = (event, newType) => {
-    if (newType !== null) {
-      setAccountType(newType);
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { isLoggedIn, loading } = useSelector((state) => state.auth);
+
+  async function myHandleSubmit(data) {
+    await dispatch(registerUser(data));
+  }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/");
     }
-  };
+  }, [isLoggedIn, router]);
+
   return (
     <PageTransition>
       <Link
@@ -35,58 +55,71 @@ export default function SignupPage() {
         </span>
         <span>SharkStage</span>
       </Link>
-      <div className="flex flex-col gap-6 w-8/10">
+      <form
+        className="flex flex-col gap-6 w-8/10"
+        onSubmit={handleSubmit(myHandleSubmit)}
+      >
         <div>
           <h2 className="text-3xl font-bold text-center">Create an account</h2>
         </div>
         <div className="flex items-center max-lg:gap-2">
           <span className="w-2/5">Select Your Role</span>
 
-          <ToggleButtonGroup
-            color="primary"
-            value={accountType}
-            exclusive
-            onChange={handleChange}
-            fullWidth
-            sx={{ borderRadius: "1rem" }}
-          >
-            {["Investor", "Owner"].map((type) => (
-              <ToggleButton
-                key={type}
-                value={type.toLowerCase()}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255,255,255,0.2)",
-                  backgroundColor: "rgba(255,255,255,0.01)",
-                  textTransform: "none",
-                  fontWeight: "500",
-                  px: 3,
-                  py: 1,
-                  "&.Mui-selected": {
-                    backgroundColor: "rgba(255,255,255,0.25)",
-                    color: "white",
-                    borderColor: "rgba(255,255,255,0.4)",
-                  },
-                  "&.Mui-selected:hover": {
-                    backgroundColor: "rgba(255,255,255,0.35)",
-                  },
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                  },
+          <Controller
+            name="accountType"
+            control={control}
+            render={({ field }) => (
+              <ToggleButtonGroup
+                color="primary"
+                exclusive
+                {...field}
+                onChange={(_, newValue) => {
+                  if (newValue) field.onChange(newValue);
                 }}
+                fullWidth
+                sx={{ borderRadius: "1rem" }}
               >
-                {type}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+                {["Investor", "Owner"].map((type) => (
+                  <ToggleButton
+                    key={type}
+                    value={type.toLowerCase()}
+                    sx={{
+                      color: "white",
+                      borderColor: "rgba(255,255,255,0.2)",
+                      backgroundColor: "rgba(255,255,255,0.01)",
+                      textTransform: "none",
+                      fontWeight: "500",
+                      px: 3,
+                      py: 1,
+                      "&.Mui-selected": {
+                        backgroundColor: "rgba(255,255,255,0.25)",
+                        color: "white",
+                        borderColor: "rgba(255,255,255,0.4)",
+                      },
+                      "&.Mui-selected:hover": {
+                        backgroundColor: "rgba(255,255,255,0.35)",
+                      },
+                      "&:hover": {
+                        backgroundColor: "rgba(255,255,255,0.15)",
+                      },
+                    }}
+                  >
+                    {type}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            )}
+          />
         </div>
         <div className="flex gap-4">
-          <SignInput text="First name" />
-          <SignInput text="Last name" />
+          <SignInput text="First name" name="firstName" control={control} />
+          <SignInput text="Last name" name="lastName" control={control} />
         </div>
-        <SignInput text="Email address" />
+        <SignInput text="Email address" name="email" control={control} />
         <SignInput
+          name="password"
           text="Password"
+          control={control}
           type={showPassword ? "text" : "password"}
           slotProps={{
             input: {
@@ -109,8 +142,15 @@ export default function SignupPage() {
             },
           }}
         />
-        <button className="text-primary self-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
-          Create account
+
+        <button className="text-primary self-stretch flex items-center justify-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
+          {loading ? (
+            <Spinner />
+          ) : (
+            <>
+              <span>Create account</span>
+            </>
+          )}
         </button>
         <div className="flex flex-col gap-4">
           <Divider
@@ -133,7 +173,7 @@ export default function SignupPage() {
             </div>
           </div>
         </div>
-      </div>
+      </form>
       <div className="flex justify-between w-full">
         <h4>
           Have an account?{" "}
