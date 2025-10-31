@@ -2,25 +2,14 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { categories } from "@/data/categories";
 import { useState } from "react";
-export const PROJECT_CATEGORIES = [
-  { title: "Technology", bg: "bg-purple-500" },
-  { title: "E-Commerce", bg: "bg-indigo-500" },
-  { title: "Food", bg: "bg-red-700" },
-  { title: "Health", bg: "bg-green-700" },
-  { title: "Education", bg: "bg-amber-700" },
-  { title: "Real Estate", bg: "bg-blue-500" },
-  { title: "Industrial", bg: "bg-orange-500" },
-  { title: "Other", bg: "bg-neutral-700" },
-];
-export default function FilterBar({
+
+export default function OwnerFilter({
   searchQuery,
   onSearchChange,
   selectedCategory,
   onCategoryChange,
   selectedStatus,
   onStatusChange,
-  roiRange,
-  onRoiChange,
   sortBy,
   onSortChange,
 }) {
@@ -28,15 +17,16 @@ export default function FilterBar({
 
   const statuses = [
     { value: "all", label: "All Projects" },
-    { value: "active", label: "Active" },
-    { value: "funded", label: "Funded" },
-    { value: "closed", label: "Closed" },
+    { value: "sale", label: "Awaiting Funds" },
+    { value: "invested", label: "Invested" },
+    { value: "sold", label: "Fully sold" },
+    { value: "unlisted", label: "Not Listed" },
   ];
 
   const sortOptions = [
     { value: "newest", label: "Newest" },
     { value: "roi-high", label: "ROI: High to Low" },
-    { value: "networth-high", label: "Networth: High to Low" },
+    { value: "funding-high", label: "Funding Goal: High to Low" },
     { value: "most-funded", label: "Most Funded" },
   ];
 
@@ -88,9 +78,9 @@ export default function FilterBar({
         } md:block transition-all duration-300`}
       >
         <div className="pt-4 border-t border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {/* Category Filter */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-semibold text-heading mb-3">
                 Category
               </label>
@@ -105,22 +95,22 @@ export default function FilterBar({
                 >
                   All
                 </button>
-                {PROJECT_CATEGORIES.map((cat, i) => (
+                {categories.map((cat) => (
                   <button
-                    key={i}
-                    onClick={() => onCategoryChange(cat.title)}
+                    key={cat.id}
+                    onClick={() => onCategoryChange(cat.id)}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
-                      selectedCategory === cat.title
+                      selectedCategory === cat.id
                         ? `${cat.bg} text-white`
                         : "bg-gray-100 text-paragraph hover:bg-gray-200"
                     }`}
                   >
-                    {/* <cat.icon className="w-4 h-4" /> */}
+                    <cat.icon className="w-4 h-4" />
                     {cat.title}
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Status Filter */}
             <div>
@@ -141,27 +131,6 @@ export default function FilterBar({
                     {status.label}
                   </button>
                 ))}
-              </div>
-            </div>
-
-            {/* ROI Range Filter */}
-            <div>
-              <label className="block text-sm font-semibold text-heading mb-3">
-                Minimum ROI: {roiRange}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="50"
-                step="5"
-                value={roiRange}
-                onChange={(e) => onRoiChange(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-              />
-              <div className="flex justify-between text-xs text-paragraph mt-1">
-                <span>0%</span>
-                <span>25%</span>
-                <span>50%</span>
               </div>
             </div>
           </div>

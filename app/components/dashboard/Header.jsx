@@ -7,7 +7,11 @@ export default function Header() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  const notifications = ["📌 New project assigned", "💰 Payment received", "✅ Task completed"];
+  const notifications = [
+    "📌 New project assigned",
+    "💰 Payment received",
+    "✅ Task completed",
+  ];
 
   return (
     <header className="bg-slate-200 shadow-md p-2 sm:p-4 flex justify-between items-center sticky top-0 z-40">
@@ -30,7 +34,10 @@ export default function Header() {
               <p className="font-semibold mb-2">Notifications</p>
               <ul className="space-y-2 text-sm">
                 {notifications.map((n, i) => (
-                  <li key={i} className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+                  <li
+                    key={i}
+                    className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     {n}
                   </li>
                 ))}
@@ -45,12 +52,12 @@ export default function Header() {
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className="flex items-center space-x-2 p-1 rounded hover:bg-gray-100"
           >
-            <Image 
-              src="/dashboard/proflie.jfif" 
-              alt="profile" 
-              width={32} 
-              height={32} 
-              className="w-8 h-8 rounded-full" 
+            <Image
+              src="/avatar-placeholder.jpg"
+              alt="profile"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full"
             />
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { FaProjectDiagram, FaUsers, FaDollarSign } from "react-icons/fa";
-import { useCountUp } from "../hooks/useCountUp";
+import { useCountUp } from "../../hooks/useCountUp";
 import { useInView } from "framer-motion";
 function Numbers() {
   const ref = useRef(null);
