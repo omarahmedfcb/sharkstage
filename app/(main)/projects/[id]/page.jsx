@@ -20,11 +20,13 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!params.id) return;
@@ -242,9 +244,11 @@ export default function ProjectDetailsPage() {
                 </div>
 
                 {/* Investment Button */}
-                <button className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4">
-                  Invest Now
-                </button>
+                {currentUser?.accountType == "investor" && (
+                  <button className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4">
+                    Invest Now
+                  </button>
+                )}
 
                 {/* Quick Stats */}
                 <div className="space-y-3 pt-4 border-t border-white/20">

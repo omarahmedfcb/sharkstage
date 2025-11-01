@@ -96,7 +96,7 @@ export default function ProjectsPage() {
       } else if (selectedStatus === "sold") {
         filtered = filtered.filter((item) => item.progress === 100);
       } else if (selectedStatus === "unlisted") {
-        filtered = filtered.filter((item) => item.progress < 0);
+        filtered = filtered.filter((item) => item.status == "closed");
       }
     }
     // else if (currentUser?.accountType === "admin") {
@@ -262,7 +262,7 @@ export default function ProjectsPage() {
               {/* Actions */}
               <div className="flex flex-wrap gap-3 mt-3">
                 <Link
-                  href="#"
+                  href={`/projects/${project._id}`}
                   className="text-indigo-600 flex items-center gap-1 hover:underline"
                 >
                   <Eye size={16} /> View
