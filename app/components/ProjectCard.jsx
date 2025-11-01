@@ -6,7 +6,7 @@ export function getCategoryBg(cat) {
   const targetCat = PROJECT_CATEGORIES.find((ele) => ele.title == cat);
   return targetCat.bg;
 }
-
+const lang = "en";
 export default function ProjectCard({ project }) {
   const fundingPercentage =
     (project.currentFunding / project.fundingGoal) * 100;
@@ -32,11 +32,11 @@ export default function ProjectCard({ project }) {
           {project.category && (
             <div
               className={`absolute top-3 right-3 ${getCategoryBg(
-                project.category
+                project.category.en
               )} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}
             >
               {/* <category.icon className="w-3 h-3" /> */}
-              {project.category}
+              {project.category[lang]}
             </div>
           )}
         </div>

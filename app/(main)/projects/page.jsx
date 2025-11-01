@@ -6,6 +6,7 @@ import Pagination from "@/app/components/Pagination";
 import { TrendingUp, Target, DollarSign } from "lucide-react";
 import { useSelector } from "react-redux";
 
+const lang = "en";
 export default function ProjectsPage() {
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,7 +34,7 @@ export default function ProjectsPage() {
     // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
-        (project) => project.category === selectedCategory
+        (project) => project.category[lang] === selectedCategory
       );
     }
 
@@ -104,7 +105,7 @@ export default function ProjectsPage() {
     (project) => project.status === "active"
   ).length;
   const avgROI =
-    projects.reduce((sum, project) => sum + parseInt(project.roi), 0) /
+    projects.reduce((sum, project) => sum + parseInt(project.expectedROI), 0) /
     projects.length;
 
   return (

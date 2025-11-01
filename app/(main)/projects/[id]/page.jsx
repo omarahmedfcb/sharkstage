@@ -20,7 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
+const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
   const [project, setProject] = useState(null);
@@ -60,7 +60,7 @@ export default function ProjectDetailsPage() {
     );
   }
 
-  const category = getCategoryById(project.categoryId);
+  const category = project?.category[lang];
   const fundingPercentage =
     (project.currentFunding / project.fundingGoal) * 100;
   const daysLeft = Math.ceil(
