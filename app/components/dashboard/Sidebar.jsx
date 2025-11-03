@@ -9,6 +9,7 @@ import {
   UserCog,
   House,
   PanelTop,
+  Handshake,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -98,6 +99,15 @@ export default function Sidebar() {
             className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
           />
           {open && <span className="text-sm">Profile</span>}
+        </Link>
+        <Link
+          href="/account/offers"
+          className={getLinkClass(pathname === "/account/offers")}
+        >
+          <Handshake
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Offers</span>}
         </Link>
         <Link href="/" className={getLinkClass(pathname === "/")}>
           <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />

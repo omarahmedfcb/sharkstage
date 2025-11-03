@@ -19,14 +19,66 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import DialogWindow from "@/app/components/DialogWindow";
+import { Controller, useForm } from "react-hook-form";
+import InputField from "@/app/components/InputField";
+import toast from "react-hot-toast";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.auth);
+  const [offerLoading, setOfferLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // sending offer
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      amount: "",
+      percentage: "",
+      proposal: "",
+    },
+  });
+  const [open, setOpen] = useState(false);
+  const onSubmitLogic = async (data) => {
+    setOfferLoading(true);
+    setError(null);
+    try {
+      const cleanedData = {
+        amount: Number(data.amount),
+        percentage: Number(data.percentage),
+        proposalLetter: data.proposal,
+        offeredTo: project.owner,
+        offeredBy: currentUser._id,
+        project: project._id,
+      };
+      await api.post("/offers/send", cleanedData);
+      reset();
+      handleClose();
+      toast.success("Offer sent successfully");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to add project");
+    } finally {
+      setOfferLoading(false);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    reset();
+  };
 
   useEffect(() => {
     if (!params.id) return;
@@ -39,7 +91,12 @@ export default function ProjectDetailsPage() {
 
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    );
   if (!project) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -245,9 +302,96 @@ export default function ProjectDetailsPage() {
 
                 {/* Investment Button */}
                 {currentUser?.accountType == "investor" && (
-                  <button className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4">
-                    Invest Now
-                  </button>
+                  <>
+                    <button
+                      onClick={handleClickOpen}
+                      className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4"
+                    >
+                      Invest Now
+                    </button>
+                    <DialogWindow
+                      handleClickOpen={handleClickOpen}
+                      handleClose={handleClose}
+                      onSubmitLogic={onSubmitLogic}
+                      handleSubmit={handleSubmit}
+                      offerLoading={offerLoading}
+                      maxPercentage={project.availablePercentage}
+                      open={open}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <Controller
+                          name="amount"
+                          control={control}
+                          rules={{
+                            required: "Amount is required",
+                            min: { value: 0, message: "Must be positive" },
+                          }}
+                          render={({ field }) => (
+                            <InputField
+                              label="Amount Offered"
+                              error={errors.amount?.message}
+                              required
+                            >
+                              <input
+                                {...field}
+                                type="number"
+                                step="0.01"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                placeholder="0.00"
+                              />
+                            </InputField>
+                          )}
+                        />
+
+                        <Controller
+                          name="percentage"
+                          control={control}
+                          rules={{
+                            required: "Percentage is required",
+                            min: { value: 0, message: "Must be 0-100" },
+                            max: {
+                              value: project.availablePercentage,
+                              message: `Must be 0-${project.availablePercentage}`,
+                            },
+                          }}
+                          render={({ field }) => (
+                            <InputField
+                              required
+                              label="Percentage to be invested"
+                              error={errors.percentage?.message}
+                            >
+                              <input
+                                {...field}
+                                type="number"
+                                step="0.1"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                placeholder="0-100"
+                              />
+                            </InputField>
+                          )}
+                        />
+                      </div>
+                      <Controller
+                        name="proposal"
+                        control={control}
+                        rules={{ required: "Proposal is required" }}
+                        render={({ field }) => (
+                          <InputField
+                            label="Full Proposal"
+                            error={errors.proposal?.message}
+                            required
+                          >
+                            <textarea
+                              {...field}
+                              rows={5}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                              placeholder="Proposal"
+                            />
+                          </InputField>
+                        )}
+                      />
+                    </DialogWindow>
+                  </>
                 )}
 
                 {/* Quick Stats */}

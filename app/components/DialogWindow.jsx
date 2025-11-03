@@ -6,46 +6,46 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
-export default function FormDialog() {
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
-    console.log(email);
-    handleClose();
-  };
-
+export default function DialogWindow({
+  open,
+  handleClose,
+  handleSubmit,
+  onSubmitLogic,
+  children,
+  offerLoading,
+}) {
   return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+        <DialogTitle>Send an Investment Offer</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
+            Please specify your proposed investment amount, percentage, and a
+            short proposal to the project owner.
           </DialogContentText>
-          <form onSubmit={handleSubmit} id="subscription-form"></form>
+          <form onSubmit={handleSubmit(onSubmitLogic)} id="subscription-form">
+            {children}
+          </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" form="subscription-form">
-            Subscribe
-          </Button>
+          <button
+            className="w-full  bg-background text-primary font-bold py-2 rounded-lg hover:shadow-lg transition-shadow "
+            onClick={handleClose}
+            disabled={offerLoading}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="subscription-form"
+            disabled={offerLoading}
+            className="w-full justify-center py-2 bg-primary text-background font-bold rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {offerLoading && <Loader2 size={16} className="animate-spin" />}
+            {offerLoading ? "Sending..." : "Send"}
+          </button>
         </DialogActions>
       </Dialog>
     </>

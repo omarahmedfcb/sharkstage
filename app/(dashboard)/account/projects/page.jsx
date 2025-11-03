@@ -3,10 +3,11 @@ import { useState, useEffect, useMemo } from "react";
 import { Plus, Eye, FileDown, Trash } from "lucide-react";
 import Link from "next/link";
 import InvestorFilter from "./InvestorFilter";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import OwnerFilter from "./OwnerFilter";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
+import { getProjects } from "@/lib/features/projects/projectsThunks";
 const lang = "en";
 // Original mock projects
 
@@ -24,6 +25,7 @@ export default function ProjectsPage() {
   // const { projects, projectsLoading } = useSelector((state) => state.projects);
 
   const { currentUser } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   // filteration
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +56,7 @@ export default function ProjectsPage() {
       await api.delete(`/projects/delete/${projectId}`);
       toast.success("Project deleted Successfully");
       fetchUserProjects();
+      dispatch(getProjects());
     } catch (err) {
       console.error("Failed to delete:", err);
     }
@@ -267,7 +270,7 @@ export default function ProjectsPage() {
                 >
                   <Eye size={16} /> View
                 </Link>
-                {currentUser?.accountType != "investor" && (
+                {currentUser?.accountType != "investor" && percentage == 0 && (
                   <button
                     onClick={() => {
                       handleDelete(project._id);
