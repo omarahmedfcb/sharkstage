@@ -32,7 +32,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, loading, error } = useSelector((state) => state.auth);
 
   async function myHandleSubmit(data) {
     await dispatch(registerUser(data));
@@ -63,7 +63,7 @@ export default function SignupPage() {
           <h2 className="text-3xl font-bold text-center">Create an account</h2>
         </div>
         <div className="flex items-center max-lg:gap-2">
-          <span className="w-2/5">Select Your Role</span>
+          <span className="w-2/5">Register as</span>
 
           <Controller
             name="accountType"
@@ -152,6 +152,11 @@ export default function SignupPage() {
             </>
           )}
         </button>
+        {error && (
+          <p className="text-center text-red-700 font-bold">
+            {error.message || "Registration failed. Please try again."}
+          </p>
+        )}
         <div className="flex flex-col gap-4">
           <Divider
             sx={{
