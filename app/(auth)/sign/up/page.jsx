@@ -41,7 +41,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isLoggedIn, loading, error, loading } = useSelector((state) => state.auth);
+  const { isLoggedIn, loading, error,  } = useSelector((state) => state.auth);
   const accountType = watch("accountType");
 
   async function myHandleSubmit(data) {
@@ -59,7 +59,7 @@ export default function SignupPage() {
     <PageTransition>
       <Link
         href="/"
-        className="flex items-center gap-2 border-1 border-background hover:bg-background/5 transition-colors rounded-2xl px-2 py-1 self-start"
+        className="flex items-center gap-2 border border-background hover:bg-background/5 transition-colors rounded-2xl px-2 py-1 self-start"
       >
         <span className="w-8">
           <img className="w-full" src="../logo-white.png" alt="" />
@@ -261,7 +261,7 @@ export default function SignupPage() {
           </Divider>
           <div className="flex justify-between gap-4">
             <GoogleAuthButton intent="signup" accountType={accountType} />
-            <div className="cursor-pointer hover:bg-background/5 transition-colors grow border-1 rounded-2xl border-background flex justify-center items-center gap-4 py-2">
+            <div className="cursor-pointer hover:bg-background/5 transition-colors grow border rounded-2xl border-background flex justify-center items-center gap-4 py-2">
               <FaLinkedin size={24} />
               <span>LinkedIn</span>
             </div>
