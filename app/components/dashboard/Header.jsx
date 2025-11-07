@@ -57,13 +57,20 @@ export default function Header() {
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className="flex items-center space-x-2 p-1 rounded hover:bg-gray-100"
           >
-            <Image
-              src="/avatar-placeholder.jpg"
-              alt="profile"
-              width={32}
-              height={32}
-              className="w-8 h-8 rounded-full"
-            />
+            <div className="w-8 h-8 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-gray-300 shadow relative">
+              {currentUser?.profilePicUrl ? (
+                <img
+                  src={currentUser.profilePicUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-lg font-semibold">
+                  {currentUser?.firstName?.charAt(0)}
+                  {currentUser?.lastName?.charAt(0)}
+                </div>
+              )}
+            </div>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>
           {userMenuOpen && (

@@ -170,7 +170,7 @@ export default function ProjectDetailsPage() {
               {/* Image Slider */}
               <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-gray-100">
                 <img
-                  src={"/image.jpg"}
+                  src={project.image}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />

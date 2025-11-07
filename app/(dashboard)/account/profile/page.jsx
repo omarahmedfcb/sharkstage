@@ -71,7 +71,7 @@ export default function ProfilePage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-3xl font-semibold">
+              <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-semibold">
                 {currentUser?.firstName?.charAt(0)}
                 {currentUser?.lastName?.charAt(0)}
               </div>

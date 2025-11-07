@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { AlertCircle, Loader2, Upload, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -19,19 +19,26 @@ const PROJECT_CATEGORIES = [
   "Other",
 ];
 
-export default function AddProjectPage() {
+export default function EditProjectPage() {
   const { currentUser } = useSelector((state) => state.auth);
   const router = useRouter();
+  const params = useParams();
+  const projectId = params.id;
+
   const [loading, setLoading] = useState(false);
+  const [fetchingProject, setFetchingProject] = useState(true);
   const [error, setError] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
+  const [existingImage, setExistingImage] = useState(null);
+  const [investedPercentage, setInvestedPercentage] = useState(0);
+  const [maxAvailablePercentage, setMaxAvailablePercentage] = useState(100);
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     defaultValues: {
       title: "",
@@ -44,6 +51,59 @@ export default function AddProjectPage() {
       expectedROI: "",
     },
   });
+
+  // In the useEffect after setting form values, add:
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setFetchingProject(true);
+        const response = await api.get(`/projects/${projectId}`);
+        const project = response.data.project;
+        console.log();
+
+        // Check if user is the owner
+        if (project.owner !== currentUser._id) {
+          toast.error("You don't have permission to edit this project");
+          router.push(`/projects/${projectId}`);
+          return;
+        }
+
+        // Calculate invested percentage
+        const totalInvested =
+          project.investors?.reduce((sum, inv) => sum + inv.percentage, 0) || 0;
+        const maxAvailable = 100 - totalInvested;
+
+        // Store for validation message
+        setInvestedPercentage(totalInvested);
+        setMaxAvailablePercentage(maxAvailable);
+
+        // Set form values
+        setValue("title", project.title);
+        setValue("shortDesc", project.shortDesc);
+        setValue("description", project.description);
+        setValue("category", project.category.en);
+        setValue("status", project.status);
+        setValue("totalPrice", project.totalPrice);
+        setValue("availablePercentage", project.availablePercentage || "");
+        setValue("expectedROI", project.expectedROI);
+
+        // Set existing image
+        if (project.image) {
+          setExistingImage(project.image);
+        }
+      } catch (err) {
+        console.error("Error fetching project:", err);
+        toast.error("Failed to load project");
+        router.push("/projects");
+      } finally {
+        setFetchingProject(false);
+      }
+    };
+
+    if (projectId && currentUser) {
+      fetchProject();
+    }
+  }, [projectId, currentUser, router, setValue]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -68,12 +128,19 @@ export default function AddProjectPage() {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
+
+      // Clear existing image when new one is selected
+      setExistingImage(null);
     }
   };
 
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+  };
+
+  const removeExistingImage = () => {
+    setExistingImage(null);
   };
 
   const onSubmit = async (data) => {
@@ -91,7 +158,6 @@ export default function AddProjectPage() {
       formData.append("status", data.status);
       formData.append("totalPrice", Number(data.totalPrice));
       formData.append("expectedROI", Number(data.expectedROI));
-      formData.append("owner", currentUser._id);
 
       // Add availablePercentage only if provided
       if (data.availablePercentage) {
@@ -101,24 +167,22 @@ export default function AddProjectPage() {
         );
       }
 
-      // Append image if selected
+      // Append new image if selected
       if (imageFile) {
         formData.append("image", imageFile);
       }
 
-      const response = await api.post("/projects/add", formData, {
+      await api.put(`/projects/edit/${projectId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      toast.success("Project added successfully!");
-      reset();
-      removeImage();
-      router.push(`/projects/${response.data.newProjectId}`);
+      toast.success("Project updated successfully!");
+      router.push(`/projects/${projectId}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add project");
-      toast.error(err.response?.data?.message || "Failed to add project");
+      setError(err.response?.data?.message || "Failed to update project");
+      toast.error(err.response?.data?.message || "Failed to update project");
     } finally {
       setLoading(false);
     }
@@ -134,17 +198,26 @@ export default function AddProjectPage() {
     </div>
   );
 
+  if (fetchingProject) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-paragraph">Loading project...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-heading mb-2">
-            Add New Project
+            Edit Project
           </h1>
-          <p className="text-paragraph">
-            Fill in the required details to list your project
-          </p>
+          <p className="text-paragraph">Update your project details</p>
         </div>
 
         {/* Error Alert */}
@@ -170,37 +243,39 @@ export default function AddProjectPage() {
         {/* Form */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="space-y-5">
-            {/* Image Upload Section */}
+            {/* Image Upload/Update Section */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-heading">
                 Project Image
               </label>
 
-              {!imagePreview ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                    disabled={loading}
+              {/* Show existing image if no new image selected */}
+              {existingImage && !imagePreview && (
+                <div className="relative rounded-lg overflow-hidden border border-gray-300">
+                  <Image
+                    src={existingImage}
+                    alt="Current project image"
+                    width={800}
+                    height={400}
+                    className="w-full h-64 object-cover"
                   />
-                  <label htmlFor="image-upload" className="cursor-pointer">
-                    <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-sm text-gray-600 mb-1">
-                      Click to upload project image
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </label>
+                  <button
+                    type="button"
+                    onClick={removeExistingImage}
+                    disabled={loading}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition disabled:opacity-50"
+                  >
+                    <X size={20} />
+                  </button>
                 </div>
-              ) : (
+              )}
+
+              {/* Show new image preview */}
+              {imagePreview && (
                 <div className="relative rounded-lg overflow-hidden border border-gray-300">
                   <Image
                     src={imagePreview}
-                    alt="Project preview"
+                    alt="New project preview"
                     width={800}
                     height={400}
                     className="w-full h-64 object-cover"
@@ -213,6 +288,50 @@ export default function AddProjectPage() {
                   >
                     <X size={20} />
                   </button>
+                </div>
+              )}
+
+              {/* Upload new image section */}
+              {!existingImage && !imagePreview && (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="image-upload"
+                    disabled={loading}
+                  />
+                  <label htmlFor="image-upload" className="cursor-pointer">
+                    <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                    <p className="text-sm text-gray-600 mb-1">
+                      Click to upload new project image
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
+                  </label>
+                </div>
+              )}
+
+              {/* Change image button when image exists */}
+              {(existingImage || imagePreview) && (
+                <div className="mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="change-image-upload"
+                    disabled={loading}
+                  />
+                  <label
+                    htmlFor="change-image-upload"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition cursor-pointer text-sm"
+                  >
+                    <Upload size={16} />
+                    Change Image
+                  </label>
                 </div>
               )}
             </div>
@@ -361,7 +480,14 @@ export default function AddProjectPage() {
                 control={control}
                 rules={{
                   min: { value: 0, message: "Must be 0-100" },
-                  max: { value: 100, message: "Must be 0-100" },
+                  max: {
+                    value: maxAvailablePercentage,
+                    message: `Maximum ${maxAvailablePercentage.toFixed(
+                      2
+                    )}% available (${investedPercentage.toFixed(
+                      2
+                    )}% already invested)`,
+                  },
                 }}
                 render={({ field }) => (
                   <InputField
@@ -372,10 +498,17 @@ export default function AddProjectPage() {
                       {...field}
                       type="number"
                       step="0.01"
+                      max={maxAvailablePercentage}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-                      placeholder="0-100"
+                      placeholder={`0-${maxAvailablePercentage.toFixed(2)}`}
                       disabled={loading}
                     />
+                    {investedPercentage > 0 && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        {investedPercentage.toFixed(2)}% already invested. Max
+                        available: {maxAvailablePercentage.toFixed(2)}%
+                      </p>
+                    )}
                   </InputField>
                 )}
               />
@@ -424,7 +557,7 @@ export default function AddProjectPage() {
                 className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {loading && <Loader2 size={18} className="animate-spin" />}
-                {loading ? "Adding..." : "Add Project"}
+                {loading ? "Updating..." : "Update Project"}
               </button>
             </div>
           </div>

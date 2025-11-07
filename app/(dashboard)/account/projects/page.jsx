@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Eye, FileDown, Trash } from "lucide-react";
+import { Plus, Eye, FileDown, Trash, Pen } from "lucide-react";
 import Link from "next/link";
 import InvestorFilter from "./InvestorFilter";
 import { useDispatch, useSelector } from "react-redux";
@@ -279,6 +279,14 @@ export default function ProjectsPage() {
                   >
                     <Trash size={16} /> Delete
                   </button>
+                )}
+                {currentUser?.accountType != "investor" && (
+                  <Link
+                    href={`/account/projects/edit/${project._id}`}
+                    className="text-green-600 flex items-center gap-1 hover:underline"
+                  >
+                    <Pen size={16} /> Edit
+                  </Link>
                 )}
               </div>
             </div>
