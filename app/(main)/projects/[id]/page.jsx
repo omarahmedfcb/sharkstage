@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { getProjectById } from "@/data/projects";
-import { getCategoryById } from "@/data/categories";
+import { getCategoryBg } from "@/app/components/projects/ProjectCard";
+import api from "@/lib/axios";
+
 import {
   ArrowLeft,
   TrendingUp,
@@ -16,14 +17,85 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
-
+import { useSelector } from "react-redux";
+import DialogWindow from "@/app/components/DialogWindow";
+import { Controller, useForm } from "react-hook-form";
+import InputField from "@/app/components/InputField";
+import toast from "react-hot-toast";
+import MessageForm from "./MessageForm";
+const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
-  const project = getProjectById(params.id);
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { currentUser } = useSelector((state) => state.auth);
+  const [offerLoading, setOfferLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // sending offer
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      amount: "",
+      percentage: "",
+      proposal: "",
+    },
+  });
+  const [open, setOpen] = useState(false);
+  const onSubmitLogic = async (data) => {
+    setOfferLoading(true);
+    setError(null);
+    try {
+      const cleanedData = {
+        amount: Number(data.amount),
+        percentage: Number(data.percentage),
+        proposalLetter: data.proposal,
+        offeredTo: project.owner,
+        offeredBy: currentUser._id,
+        project: project._id,
+      };
+      await api.post("/offers/send", cleanedData);
+      reset();
+      handleClose();
+      toast.success("Offer sent successfully");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to add project");
+    } finally {
+      setOfferLoading(false);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    reset();
+  };
+
+  useEffect(() => {
+    if (!params.id) return;
+    api
+      .get(`/projects/${params.id}`)
+      .then((res) => setProject(res.data.project))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, [params.id]);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  if (loading)
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    );
   if (!project) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -46,8 +118,9 @@ export default function ProjectDetailsPage() {
     );
   }
 
-  const category = getCategoryById(project.categoryId);
-  const fundingPercentage = (project.currentFunding / project.fundingGoal) * 100;
+  const category = project?.category[lang];
+  const fundingPercentage =
+    (project.currentFunding / project.fundingGoal) * 100;
   const daysLeft = Math.ceil(
     (new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24)
   );
@@ -97,11 +170,11 @@ export default function ProjectDetailsPage() {
               {/* Image Slider */}
               <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-gray-100">
                 <img
-                  src={project.images[currentImageIndex]}
+                  src={"/image.jpg"}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />
-                {project.images.length > 1 && (
+                {/* {project.images.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
@@ -129,22 +202,24 @@ export default function ProjectDetailsPage() {
                       ))}
                     </div>
                   </>
-                )}
-                {project.featured && (
+                )} */}
+                {/* {project.featured && (
                   <div className="absolute top-4 left-4 bg-buttons text-primary px-4 py-2 rounded-full text-sm font-semibold">
                     Featured Project
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Title and Category */}
               <div className="mb-4">
                 {category && (
                   <div
-                    className={`inline-flex items-center gap-2 ${category.bg} text-white px-4 py-2 rounded-full text-sm font-semibold mb-3`}
+                    className={`inline-flex items-center gap-2 ${getCategoryBg(
+                      category
+                    )} text-white px-4 py-2 rounded-full text-sm font-semibold mb-3`}
                   >
-                    <category.icon className="w-4 h-4" />
-                    {category.title}
+                    {/* <category.icon className="w-4 h-4" /> */}
+                    {category}
                   </div>
                 )}
                 <h1 className="text-3xl md:text-4xl font-bold text-heading mb-2">
@@ -161,16 +236,16 @@ export default function ProjectDetailsPage() {
                     ROI
                   </div>
                   <p className="text-2xl font-bold text-heading">
-                    {project.roi}
+                    {project.expectedROI}
                   </p>
                 </div>
-                <div className="bg-soft rounded-lg p-4">
+                {/* <div className="bg-soft rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <Clock className="w-4 h-4" />
                     Days Left
                   </div>
                   <p className="text-2xl font-bold text-heading">{daysLeft}</p>
-                </div>
+                </div> */}
                 <div className="bg-soft rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <Users className="w-4 h-4" />
@@ -186,7 +261,7 @@ export default function ProjectDetailsPage() {
                     Start Date
                   </div>
                   <p className="text-lg font-bold text-heading">
-                    {new Date(project.startDate).toLocaleDateString("en-US", {
+                    {new Date(project.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
                     })}
@@ -197,42 +272,138 @@ export default function ProjectDetailsPage() {
 
             {/* Right: Investment Card */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
+              <div className="flex flex-col bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
                 <h3 className="text-xl font-bold mb-6">Investment Details</h3>
 
                 {/* Funding Progress */}
                 <div className="mb-6">
                   <div className="flex justify-between items-baseline mb-2">
                     <span className="text-3xl font-bold">
-                      ${(project.currentFunding / 1000000).toFixed(2)}M
+                      $
+                      {project.totalPrice > 999999
+                        ? `${project.totalPrice / 1000000}M`
+                        : `${project.totalPrice / 1000}K`}
                     </span>
-                    <span className="text-background/80 text-sm">
+                    {/* <span className="text-background/80 text-sm">
                       raised of ${(project.fundingGoal / 1000000).toFixed(1)}M
-                    </span>
+                    </span> */}
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-3 mb-2">
                     <div
                       className="bg-buttons h-3 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(fundingPercentage, 100)}%` }}
+                      style={{ width: `${Math.min(project.progress, 100)}%` }}
                     ></div>
                   </div>
                   <p className="text-sm text-background/90">
-                    {fundingPercentage.toFixed(1)}% funded
+                    {project.progress.toFixed(1)}% invested
                   </p>
                 </div>
 
                 {/* Investment Button */}
-                <button className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4">
-                  Invest Now
-                </button>
+                {currentUser?.accountType == "investor" && (
+                  <>
+                    <button
+                      onClick={handleClickOpen}
+                      className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4"
+                    >
+                      Invest Now
+                    </button>
+                    <DialogWindow
+                      handleClickOpen={handleClickOpen}
+                      handleClose={handleClose}
+                      onSubmitLogic={onSubmitLogic}
+                      handleSubmit={handleSubmit}
+                      offerLoading={offerLoading}
+                      open={open}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <Controller
+                          name="amount"
+                          control={control}
+                          rules={{
+                            required: "Amount is required",
+                            min: { value: 0, message: "Must be positive" },
+                          }}
+                          render={({ field }) => (
+                            <InputField
+                              label="Amount Offered"
+                              error={errors.amount?.message}
+                              required
+                            >
+                              <input
+                                {...field}
+                                type="number"
+                                step="0.01"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                placeholder="0.00"
+                              />
+                            </InputField>
+                          )}
+                        />
+
+                        <Controller
+                          name="percentage"
+                          control={control}
+                          rules={{
+                            required: "Percentage is required",
+                            min: { value: 0, message: "Must be 0-100" },
+                            max: {
+                              value: project.availablePercentage,
+                              message: `Must be 0-${project.availablePercentage}`,
+                            },
+                          }}
+                          render={({ field }) => (
+                            <InputField
+                              required
+                              label="Percentage to be invested"
+                              error={errors.percentage?.message}
+                            >
+                              <input
+                                {...field}
+                                type="number"
+                                step="0.1"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                placeholder="0-100"
+                              />
+                            </InputField>
+                          )}
+                        />
+                      </div>
+                      <Controller
+                        name="proposal"
+                        control={control}
+                        rules={{ required: "Proposal is required" }}
+                        render={({ field }) => (
+                          <InputField
+                            label="Full Proposal"
+                            error={errors.proposal?.message}
+                            required
+                          >
+                            <textarea
+                              {...field}
+                              rows={5}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                              placeholder="Proposal"
+                            />
+                          </InputField>
+                        )}
+                      />
+                    </DialogWindow>
+                  </>
+                )}
+                {currentUser && currentUser?._id != project.owner ? (
+                  <MessageForm owner={project.owner} />
+                ) : null}
 
                 {/* Quick Stats */}
                 <div className="space-y-3 pt-4 border-t border-white/20">
                   <div className="flex justify-between">
                     <span className="text-background/80">Expected ROI</span>
-                    <span className="font-semibold">{project.roi}</span>
+                    <span className="font-semibold">
+                      {project.expectedROI}%
+                    </span>
                   </div>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span className="text-background/80">Duration</span>
                     <span className="font-semibold">
                       {Math.ceil(
@@ -242,10 +413,14 @@ export default function ProjectDetailsPage() {
                       )}{" "}
                       months
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between">
-                    <span className="text-background/80">Minimum Investment</span>
-                    <span className="font-semibold">$1,000</span>
+                    <span className="text-background/80">
+                      Available Percentage for Investment
+                    </span>
+                    <span className="font-semibold">
+                      {project.availablePercentage}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -285,15 +460,15 @@ export default function ProjectDetailsPage() {
               <p className="text-paragraph text-lg leading-relaxed mb-6">
                 {project.description}
               </p>
-              
-              {project.benefits && (
+
+              {project.keyBenefits && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold text-heading mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                     Key Benefits
                   </h3>
                   <ul className="space-y-2">
-                    {project.benefits.map((benefit, index) => (
+                    {project.keyBenefits.map((benefit, index) => (
                       <li
                         key={index}
                         className="flex items-start gap-3 text-paragraph"
@@ -309,7 +484,7 @@ export default function ProjectDetailsPage() {
           )}
 
           {/* Timeline Tab */}
-          {activeTab === "timeline" && (
+          {activeTab === "timeline" && project.timeline && (
             <div>
               <h2 className="text-2xl font-bold text-heading mb-6">
                 Project Timeline
@@ -369,7 +544,10 @@ export default function ProjectDetailsPage() {
               </h2>
               <div className="space-y-6">
                 {project.milestones.map((milestone, index) => (
-                  <div key={index} className="border-b border-gray-100 pb-6 last:border-0">
+                  <div
+                    key={index}
+                    className="border-b border-gray-100 pb-6 last:border-0"
+                  >
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-bold text-heading">
                         {milestone.title}
@@ -378,7 +556,9 @@ export default function ProjectDetailsPage() {
                         {milestone.completion}%
                       </span>
                     </div>
-                    <p className="text-paragraph mb-3">{milestone.description}</p>
+                    <p className="text-paragraph mb-3">
+                      {milestone.description}
+                    </p>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div
                         className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300"
@@ -398,7 +578,7 @@ export default function ProjectDetailsPage() {
                 Meet the Team
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {project.team.map((member, index) => (
+                {project.managementTeam.map((member, index) => (
                   <div
                     key={index}
                     className="bg-soft rounded-xl p-6 text-center"
@@ -424,7 +604,7 @@ export default function ProjectDetailsPage() {
           )}
 
           {/* Documents Tab */}
-          {activeTab === "documents" && (
+          {activeTab === "documents" && project.documents && (
             <div>
               <h2 className="text-2xl font-bold text-heading mb-6">
                 Project Documents
@@ -461,7 +641,7 @@ export default function ProjectDetailsPage() {
               <h2 className="text-2xl font-bold text-heading mb-6">
                 Risks & Returns Analysis
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Risks */}
                 <div>
@@ -470,7 +650,7 @@ export default function ProjectDetailsPage() {
                     Potential Risks
                   </h3>
                   <ul className="space-y-3">
-                    {project.risks.map((risk, index) => (
+                    {project.potentialRisks.map((risk, index) => (
                       <li
                         key={index}
                         className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg"
@@ -492,7 +672,7 @@ export default function ProjectDetailsPage() {
                     <div className="p-4 bg-green-50 rounded-lg">
                       <p className="text-sm text-paragraph mb-1">ROI Target</p>
                       <p className="text-3xl font-bold text-green-600">
-                        {project.roi}
+                        {project.expectedROI}
                       </p>
                     </div>
                     <div className="p-4 bg-soft rounded-lg">
@@ -509,7 +689,9 @@ export default function ProjectDetailsPage() {
                       </p>
                     </div>
                     <div className="p-4 bg-soft rounded-lg">
-                      <p className="text-sm text-paragraph mb-1">Funding Goal</p>
+                      <p className="text-sm text-paragraph mb-1">
+                        Funding Goal
+                      </p>
                       <p className="text-xl font-bold text-heading">
                         ${(project.fundingGoal / 1000000).toFixed(1)}M
                       </p>
@@ -524,4 +706,3 @@ export default function ProjectDetailsPage() {
     </div>
   );
 }
-

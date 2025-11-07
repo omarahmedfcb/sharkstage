@@ -41,7 +41,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isLoggedIn, loading, error } = useSelector((state) => state.auth);
+  const { isLoggedIn, loading, error, loading } = useSelector((state) => state.auth);
   const accountType = watch("accountType");
 
   async function myHandleSubmit(data) {
