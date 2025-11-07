@@ -6,18 +6,19 @@ import {
   CheckCircle,
   ChevronDown,
   Inbox,
+  MessageCircle,
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import api from "@/lib/axios";
 import Link from "next/link";
+import Notifications from "./Notifications";
 
 export default function Header() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { currentUser } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
   const [userNotifications, setUserNotifications] = useState([]);
   const fetchUserNotifications = async () => {
@@ -48,50 +49,7 @@ export default function Header() {
 
       <div className="flex items-center space-x-2 sm:space-x-4 relative">
         {/* Notifications */}
-        <div className="relative">
-          <button
-            className="relative p-2 rounded hover:bg-gray-100"
-            onClick={() => setNotificationsOpen(!notificationsOpen)}
-          >
-            <Bell className="w-6 h-6 text-gray-600" />
-            {userNotifications.filter((ele) => ele.isRead == false).length >
-              0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full">
-                {userNotifications.filter((ele) => ele.isRead == false).length}
-              </span>
-            )}
-          </button>
-          {notificationsOpen && (
-            <div className="absolute right-0 top-10 bg-white shadow-lg rounded-lg w-64 z-50">
-              <p className="font-semibold p-3 ps-5">Notifications</p>
-              <ul className="space-y-2 text-sm">
-                {userNotifications.map((n, i) => (
-                  <Link
-                    href={n.link}
-                    key={i}
-                    onClick={() => {
-                      markAsRead(n._id);
-                    }}
-                    className={`${
-                      !n.isRead ? "bg-blue-300/50 hover:bg-blue-300/60" : null
-                    } p-2 hover:bg-gray-100 rounded cursor-pointer flex gap-2`}
-                  >
-                    {n.type == "offer_sent" ? (
-                      <Inbox color="grey" />
-                    ) : n.type == "offer_cancelled" ? (
-                      <XCircle color="red" />
-                    ) : n.type == "offer_accepted" ? (
-                      <CheckCircle color="green" />
-                    ) : n.type == "offer_rejected" ? (
-                      <Ban color="red" />
-                    ) : null}
-                    <span>{n.message}</span>
-                  </Link>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        <Notifications />
 
         {/* User Menu */}
         <div className="relative">

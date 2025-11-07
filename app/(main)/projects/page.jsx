@@ -1,8 +1,8 @@
 "use client";
 import { useState, useMemo } from "react";
-import ProjectCard from "@/app/components/ProjectCard";
-import FilterBar from "@/app/components/FilterBar";
-import Pagination from "@/app/components/Pagination";
+import ProjectCard from "@/app/components/projects/ProjectCard";
+import FilterBar from "@/app/components/projects/FilterBar";
+import Pagination from "@/app/components/projects/Pagination";
 import { TrendingUp, Target, DollarSign } from "lucide-react";
 import { useSelector } from "react-redux";
 

@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Chatbot from "./components/Chatbot";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "react-hot-toast";
 
@@ -28,7 +27,6 @@ export default function RootLayout({ children }) {
         <StoreProvider>
           <Toaster position="top-center" />
           {children}
-          <Chatbot />
         </StoreProvider>
       </body>
     </html>

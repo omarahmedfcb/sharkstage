@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { getProjectById } from "@/data/projects";
-import { getCategoryById } from "@/data/categories";
-import { getCategoryBg } from "@/app/components/ProjectCard";
+import { getCategoryBg } from "@/app/components/projects/ProjectCard";
 import api from "@/lib/axios";
 
 import {
@@ -26,6 +24,7 @@ import DialogWindow from "@/app/components/DialogWindow";
 import { Controller, useForm } from "react-hook-form";
 import InputField from "@/app/components/InputField";
 import toast from "react-hot-toast";
+import MessageForm from "./MessageForm";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
@@ -273,7 +272,7 @@ export default function ProjectDetailsPage() {
 
             {/* Right: Investment Card */}
             <div className="lg:col-span-1">
-              <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
+              <div className="flex flex-col bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
                 <h3 className="text-xl font-bold mb-6">Investment Details</h3>
 
                 {/* Funding Progress */}
@@ -315,7 +314,6 @@ export default function ProjectDetailsPage() {
                       onSubmitLogic={onSubmitLogic}
                       handleSubmit={handleSubmit}
                       offerLoading={offerLoading}
-                      maxPercentage={project.availablePercentage}
                       open={open}
                     >
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -393,6 +391,9 @@ export default function ProjectDetailsPage() {
                     </DialogWindow>
                   </>
                 )}
+                {currentUser && currentUser?._id != project.owner ? (
+                  <MessageForm owner={project.owner} />
+                ) : null}
 
                 {/* Quick Stats */}
                 <div className="space-y-3 pt-4 border-t border-white/20">
