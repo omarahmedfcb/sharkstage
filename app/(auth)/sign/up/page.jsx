@@ -74,7 +74,7 @@ export default function SignupPage() {
           <h2 className="text-3xl font-bold text-center">Create an account</h2>
         </div>
         <div className="flex items-center max-lg:gap-2">
-          <span className="w-2/5">Select Your Role</span>
+          <span className="w-2/5">Register as</span>
 
           <Controller
             name="accountType"
