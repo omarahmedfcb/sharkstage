@@ -3,12 +3,13 @@ import LanguageIcon from "@mui/icons-material/Language";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LoginIcon from "@mui/icons-material/Login";
-import { Menu } from "@mui/icons-material";
+import { ChatBubbleTwoTone, Menu } from "@mui/icons-material";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import AccountPopover from "./AccountPopover";
+import AccountPopover from "./dashboard/AccountPopover";
+import Notifications from "./dashboard/Notifications";
 function Navbar() {
   const [mounted, setMounted] = useState(false);
   const { currentUser, isLoggedIn } = useSelector((state) => state.auth);
@@ -59,6 +60,14 @@ function Navbar() {
               ))}
             </div>
             <div className="icons hidden md:flex items-center gap-4">
+              {isLoggedIn ? (
+                <>
+                  <Notifications />
+                  <Link href={"/chat"}>
+                    <ChatBubbleTwoTone />
+                  </Link>
+                </>
+              ) : null}
               <LanguageIcon className="cursor-pointer" />
               <WbSunnyOutlinedIcon className="cursor-pointer" />
             </div>
@@ -92,6 +101,14 @@ function Navbar() {
               Login <LoginIcon />
             </Link>
             <div className="icons flex md:hidden items-center gap-4">
+              {isLoggedIn ? (
+                <>
+                  <Notifications />
+                  <Link href={"/chat"}>
+                    <ChatBubbleTwoTone />
+                  </Link>
+                </>
+              ) : null}
               <LanguageIcon className="cursor-pointer" />
               <WbSunnyOutlinedIcon className="cursor-pointer" />
             </div>

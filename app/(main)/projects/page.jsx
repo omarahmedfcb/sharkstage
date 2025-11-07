@@ -1,11 +1,12 @@
 "use client";
 import { useState, useMemo } from "react";
-import { projects } from "@/data/projects";
-import ProjectCard from "@/app/components/ProjectCard";
-import FilterBar from "@/app/components/FilterBar";
-import Pagination from "@/app/components/Pagination";
+import ProjectCard from "@/app/components/projects/ProjectCard";
+import FilterBar from "@/app/components/projects/FilterBar";
+import Pagination from "@/app/components/projects/Pagination";
 import { TrendingUp, Target, DollarSign } from "lucide-react";
+import { useSelector } from "react-redux";
 
+const lang = "en";
 export default function ProjectsPage() {
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,9 +15,9 @@ export default function ProjectsPage() {
   const [roiRange, setRoiRange] = useState(0);
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
+  const { projects, projectsLoading } = useSelector((state) => state.projects);
 
   const projectsPerPage = 9;
-
   // Filter and sort projects
   const filteredAndSortedProjects = useMemo(() => {
     let filtered = [...projects];
@@ -26,14 +27,14 @@ export default function ProjectsPage() {
       filtered = filtered.filter(
         (project) =>
           project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          project.shortDesc.toLowerCase().includes(searchQuery.toLowerCase())
+          project.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
-        (project) => project.categoryId === selectedCategory
+        (project) => project.category[lang] === selectedCategory
       );
     }
 
@@ -47,7 +48,7 @@ export default function ProjectsPage() {
     // Apply ROI filter
     if (roiRange > 0) {
       filtered = filtered.filter((project) => {
-        const roi = parseInt(project.roi);
+        const roi = parseInt(project.expectedROI);
         return roi >= roiRange;
       });
     }
@@ -56,11 +57,11 @@ export default function ProjectsPage() {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.startDate) - new Date(a.startDate);
+          return new Date(b.createdAt) - new Date(a.createdAt);
         case "roi-high":
-          return parseInt(b.roi) - parseInt(a.roi);
-        case "funding-high":
-          return b.fundingGoal - a.fundingGoal;
+          return parseInt(b.expectedROI) - parseInt(a.expectedROI);
+        case "networth-high":
+          return b.totalPrice - a.totalPrice;
         case "most-funded":
           return b.currentFunding - a.currentFunding;
         default:
@@ -96,15 +97,15 @@ export default function ProjectsPage() {
   };
 
   // Calculate stats
-  const totalFunding = projects.reduce(
-    (sum, project) => sum + project.currentFunding,
-    0
-  );
+  // const totalFunding = projects.reduce(
+  //   (sum, project) => sum + project.currentFunding,
+  //   0
+  // );
   const activeProjects = projects.filter(
     (project) => project.status === "active"
   ).length;
   const avgROI =
-    projects.reduce((sum, project) => sum + parseInt(project.roi), 0) /
+    projects.reduce((sum, project) => sum + parseInt(project.expectedROI), 0) /
     projects.length;
 
   return (
@@ -137,9 +138,9 @@ export default function ProjectsPage() {
                 <DollarSign className="w-8 h-8 text-buttons" />
                 <h3 className="text-lg font-semibold">Total Raised</h3>
               </div>
-              <p className="text-3xl font-bold">
+              {/* <p className="text-3xl font-bold">
                 ${(totalFunding / 1000000).toFixed(1)}M
-              </p>
+              </p> */}
               <p className="text-sm text-background/80 mt-1">
                 Across all projects
               </p>
@@ -201,7 +202,7 @@ export default function ProjectsPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project._id} project={project} />
               ))}
             </div>
 

@@ -16,7 +16,7 @@ export function middleware(req) {
   }
 
   // if not logged in → block dashboard routes
-  if (!token && pathname.startsWith("/dashboard")) {
+  if (!token && pathname.startsWith("/account")) {
     return NextResponse.redirect(`${origin}/sign/in`);
   }
 
@@ -24,5 +24,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/sign", "/sign/:path*", "/dashboard/:path*"],
+  matcher: ["/sign", "/sign/:path*", "/account/:path*"],
 };

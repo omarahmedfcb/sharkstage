@@ -1,35 +1,42 @@
 import Link from "next/link";
 import { getCategoryById } from "@/data/categories";
 import { TrendingUp, Users, Clock } from "lucide-react";
-
+import { PROJECT_CATEGORIES } from "./FilterBar";
+export function getCategoryBg(cat) {
+  const targetCat = PROJECT_CATEGORIES.find((ele) => ele.title == cat);
+  return targetCat.bg;
+}
+const lang = "en";
 export default function ProjectCard({ project }) {
-  const category = getCategoryById(project.categoryId);
-  const fundingPercentage = (project.currentFunding / project.fundingGoal) * 100;
+  const fundingPercentage =
+    (project.currentFunding / project.fundingGoal) * 100;
   const daysLeft = Math.ceil(
     (new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24)
   );
 
   return (
-    <Link href={`/projects/${project.id}`}>
+    <Link href={`/projects/${project._id}`}>
       <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 h-full flex flex-col">
         {/* Project Image */}
         <div className="relative h-48 overflow-hidden">
           <img
-            src={project.images[0]}
+            src={project.image}
             alt={project.title}
             className="w-full h-full object-cover"
           />
-          {project.featured && (
+          {/* {project.featured && (
             <div className="absolute top-3 left-3 bg-buttons text-primary px-3 py-1 rounded-full text-xs font-semibold">
               Featured
             </div>
-          )}
-          {category && (
+          )} */}
+          {project.category && (
             <div
-              className={`absolute top-3 right-3 ${category.bg} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}
+              className={`absolute top-3 right-3 ${getCategoryBg(
+                project.category.en
+              )} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}
             >
-              <category.icon className="w-3 h-3" />
-              {category.title}
+              {/* <category.icon className="w-3 h-3" /> */}
+              {project.category[lang]}
             </div>
           )}
         </div>
@@ -48,20 +55,23 @@ export default function ProjectCard({ project }) {
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-semibold text-heading">
-                ${(project.currentFunding / 1000000).toFixed(2)}M raised
+                {project.progress}%
               </span>
-              <span className="text-sm text-paragraph">
-                ${(project.fundingGoal / 1000000).toFixed(1)}M goal
+              <span className="text-sm font-semibold text-heading">
+                $
+                {project.totalPrice > 999999
+                  ? `${project.totalPrice / 1000000}M`
+                  : `${project.totalPrice / 1000}K`}
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(fundingPercentage, 100)}%` }}
+                style={{ width: `${Math.min(project.progress, 100)}%` }}
               ></div>
             </div>
             <div className="mt-1 text-xs text-paragraph">
-              {fundingPercentage.toFixed(0)}% funded
+              {project.progress.toFixed(0)}% invested
             </div>
           </div>
 
@@ -69,14 +79,16 @@ export default function ProjectCard({ project }) {
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center gap-1 text-paragraph text-sm">
               <TrendingUp className="w-4 h-4 text-buttons" />
-              <span className="font-semibold text-heading">{project.roi}</span>
+              <span className="font-semibold text-heading">
+                {project.expectedROI}%
+              </span>
               <span className="text-xs">ROI</span>
             </div>
-            <div className="flex items-center gap-1 text-paragraph text-sm">
+            {/* <div className="flex items-center gap-1 text-paragraph text-sm">
               <Clock className="w-4 h-4 text-primary" />
               <span className="font-semibold text-heading">{daysLeft}</span>
               <span className="text-xs">days left</span>
-            </div>
+            </div> */}
             <div
               className={`px-2 py-1 rounded text-xs font-semibold ${
                 project.status === "active"
@@ -94,4 +106,3 @@ export default function ProjectCard({ project }) {
     </Link>
   );
 }
-
