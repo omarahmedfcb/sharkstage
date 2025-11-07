@@ -41,7 +41,7 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const { isLoggedIn, loading, error,  } = useSelector((state) => state.auth);
+  const { isLoggedIn, loading, error } = useSelector((state) => state.auth);
   const accountType = watch("accountType");
 
   async function myHandleSubmit(data) {
@@ -172,8 +172,8 @@ export default function SignupPage() {
           rules={{
             required: "Password is required",
             minLength: {
-              value: 8,
-              message: "Password must be at least 8 characters",
+              value: 6,
+              message: "Password must be at least 6 characters",
             },
           }}
           slotProps={{
