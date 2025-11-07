@@ -3,7 +3,15 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-function SignInput({ name, rules, control, text, type, slotProps }) {
+function SignInput({
+  name,
+  rules,
+  control,
+  text,
+  type = "text",
+  slotProps,
+  autoComplete,
+}) {
   return (
     <Controller
       name={name}
@@ -17,7 +25,9 @@ function SignInput({ name, rules, control, text, type, slotProps }) {
           variant="outlined"
           type={type}
           slotProps={slotProps}
+          helperText={error?.message}
           fullWidth
+          autoComplete={autoComplete}
           sx={{
             // Target the root OutlinedInput element
             "& .MuiOutlinedInput-root": {
