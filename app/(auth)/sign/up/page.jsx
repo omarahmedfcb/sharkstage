@@ -10,7 +10,6 @@ import {
 import SignInput from "@/app/components/SignInput";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
 import PageTransition from "@/app/components/PageTransition";
 import { Controller, useForm } from "react-hook-form";
@@ -18,24 +17,36 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/features/auth/auththunks";
 import Spinner from "@/app/components/Spinner";
+import GoogleAuthButton from "@/app/components/GoogleAuthButton";
 
 export default function SignupPage() {
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    watch,
+    formState: { isValid },
+  } = useForm({
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       password: "",
+      confirmPassword: "",
       accountType: "investor",
     },
+    mode: "onChange",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoggedIn, loading, error } = useSelector((state) => state.auth);
+  const accountType = watch("accountType");
 
   async function myHandleSubmit(data) {
-    await dispatch(registerUser(data));
+    const { confirmPassword, ...payload } = data;
+    await dispatch(registerUser(payload));
   }
 
   useEffect(() => {
@@ -111,16 +122,60 @@ export default function SignupPage() {
             )}
           />
         </div>
-        <div className="flex gap-4">
-          <SignInput text="First name" name="firstName" control={control} />
-          <SignInput text="Last name" name="lastName" control={control} />
+        <div className="flex gap-4 max-lg:flex-col">
+          <SignInput
+            text="First name"
+            name="firstName"
+            control={control}
+            autoComplete="given-name"
+            rules={{
+              required: "First name is required",
+              minLength: {
+                value: 2,
+                message: "First name must be at least 2 characters",
+              },
+            }}
+          />
+          <SignInput
+            text="Last name"
+            name="lastName"
+            control={control}
+            autoComplete="family-name"
+            rules={{
+              required: "Last name is required",
+              minLength: {
+                value: 2,
+                message: "Last name must be at least 2 characters",
+              },
+            }}
+          />
         </div>
-        <SignInput text="Email address" name="email" control={control} />
+        <SignInput
+          text="Email address"
+          name="email"
+          control={control}
+          autoComplete="email"
+          rules={{
+            required: "Email address is required",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Enter a valid email address",
+            },
+          }}
+        />
         <SignInput
           name="password"
           text="Password"
           control={control}
           type={showPassword ? "text" : "password"}
+          autoComplete="new-password"
+          rules={{
+            required: "Password is required",
+            minLength: {
+              value: 8,
+              message: "Password must be at least 8 characters",
+            },
+          }}
           slotProps={{
             input: {
               endAdornment: (
@@ -142,8 +197,43 @@ export default function SignupPage() {
             },
           }}
         />
+        <SignInput
+          name="confirmPassword"
+          text="Confirm password"
+          control={control}
+          type={showConfirmPassword ? "text" : "password"}
+          autoComplete="new-password"
+          rules={{
+            required: "Please confirm your password",
+            validate: (value) =>
+              value === getValues("password") || "Passwords do not match",
+          }}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? (
+                      <VisibilityOff
+                        sx={{ color: "var(--color-background)" }}
+                      />
+                    ) : (
+                      <Visibility sx={{ color: "var(--color-background)" }} />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
 
-        <button className="text-primary self-stretch flex items-center justify-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl">
+        <button
+          className="text-primary self-stretch flex items-center justify-center cursor-pointer transition-shadow font-medium hover:shadow-lg bg-buttons text-xl py-2 px-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!isValid || loading}
+        >
           {loading ? (
             <Spinner />
           ) : (
@@ -154,7 +244,9 @@ export default function SignupPage() {
         </button>
         {error && (
           <p className="text-center text-red-700 font-bold">
-            {error.message || "Registration failed. Please try again."}
+            {typeof error === "string"
+              ? error
+              : error?.message || "Registration failed. Please try again."}
           </p>
         )}
         <div className="flex flex-col gap-4">
@@ -168,10 +260,7 @@ export default function SignupPage() {
             Or register with
           </Divider>
           <div className="flex justify-between gap-4">
-            <div className="cursor-pointer hover:bg-background/5 transition-colors grow border-1 rounded-2xl border-background flex justify-center items-center gap-4 py-2">
-              <FcGoogle size={24} />
-              <span>Google</span>
-            </div>
+            <GoogleAuthButton intent="signup" accountType={accountType} />
             <div className="cursor-pointer hover:bg-background/5 transition-colors grow border-1 rounded-2xl border-background flex justify-center items-center gap-4 py-2">
               <FaLinkedin size={24} />
               <span>LinkedIn</span>
