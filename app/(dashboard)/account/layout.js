@@ -76,7 +76,9 @@ export default function DashboardLayout({ children }) {
       <Sidebar />
       <div className="flex-1 flex flex-col bg-background/70">
         <Header />
-        <main className="flex-1 overflow-auto bg-white/60 px-6 py-8 md:px-10">{children}</main>
+        <main className="p-4 bg-background flex-1 overflow-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

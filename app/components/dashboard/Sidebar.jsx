@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
 import { FiMenu } from "react-icons/fi";
 import {
   LayoutGrid,
@@ -10,72 +9,12 @@ import {
   UserCog,
   House,
   PanelTop,
-  MessageSquare,
-  Briefcase,
   Handshake,
 } from "lucide-react";
-
-const baseNavItems = [
-  {
-    label: "Overview",
-    href: "/account",
-    icon: LayoutGrid,
-    roles: ["investor", "owner", "admin"],
-  },
-  {
-    label: "My Projects",
-    href: "/account/projects",
-    icon: FolderKanban,
-    roles: ["owner"],
-  },
-  {
-    label: "Opportunities",
-    href: "/projects",
-    icon: Briefcase,
-    roles: ["investor", "admin"],
-  },
-  {
-    label: "Messages",
-    href: "/account/messages",
-    icon: MessageSquare,
-    roles: ["investor", "owner", "admin"],
-  },
-  {
-    label: "Offers",
-    href: "/account/offers",
-    icon: Handshake,
-    roles: ["investor", "owner", "admin"],
-  },
-  {
-    label: "Profile",
-    href: "/account/profile",
-    icon: UserCog,
-    roles: ["investor", "owner", "admin"],
-  },
-  {
-    label: "Admin Command Center",
-    href: "/account/admin",
-    icon: PanelTop,
-    roles: ["admin"],
-  },
-  {
-    label: "Back to site",
-    href: "/",
-    icon: House,
-    roles: ["investor", "owner", "admin"],
-  },
-];
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
-  const { currentUser } = useSelector((state) => state.auth);
-
-  const accountType = currentUser?.accountType ?? "investor";
-
-  const navItems = useMemo(() => {
-    return baseNavItems.filter((item) => item.roles.includes(accountType));
-  }, [accountType]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -90,13 +29,10 @@ export default function Sidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getLinkClass = (isActive, disabled) => {
+  const getLinkClass = (isActive) => {
     const base = `flex items-center gap-3 rounded-2xl transition all duration-200 ${
       open ? "px-4 py-2.5 justify-start" : "px-0 py-3 justify-center"
     }`;
-    if (disabled) {
-      return `${base} text-paragraph/60 cursor-not-allowed`;
-    }
     const color = isActive
       ? "bg-primary/15 text-primary font-semibold shadow-sm"
       : "text-heading/70 hover:bg-primary/10 hover:text-primary";
@@ -125,7 +61,7 @@ export default function Sidebar() {
           </div>
           <div>
             <p className="text-sm font-semibold text-heading">SharkStage</p>
-            <p className="text-xs text-primary/70 capitalize">{accountType} space</p>
+            <p className="text-xs text-primary/70 capitalize">account space</p>
           </div>
         </div>
         <button
@@ -137,36 +73,56 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1.5 px-3 py-6">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            item.href === "/account"
-              ? pathname === "/account"
-              : pathname.startsWith(item.href);
-          const disabled = item.comingSoon;
-          return (
-            <Link
-              key={item.href}
-              href={disabled ? "#" : item.href}
-              className={getLinkClass(isActive, disabled)}
-              aria-disabled={disabled}
-              onClick={(event) => {
-                if (disabled) {
-                  event.preventDefault();
-                }
-              }}
-            >
-              <Icon className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
-              {open && (
-                <span className="text-sm">
-                  {item.label}
-                  {item.comingSoon && <sup className="ml-1 text-[10px] text-primary/70">soon</sup>}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+      {/* Nav */}
+      <nav className="p-3 flex-1 flex flex-col gap-2 text-slate-700">
+        <Link href="/account" className={getLinkClass(pathname === "/account")}>
+          <LayoutGrid
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Overview</span>}
+        </Link>
+
+        <Link
+          href="/account/projects"
+          className={getLinkClass(pathname === "/account/projects")}
+        >
+          <FolderKanban
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Projects</span>}
+        </Link>
+
+        <Link
+          href="/account/profile"
+          className={getLinkClass(pathname === "/account/profile")}
+        >
+          <UserCog
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Profile</span>}
+        </Link>
+        <Link
+          href="/account/offers"
+          className={getLinkClass(pathname === "/account/offers")}
+        >
+          <Handshake
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Offers</span>}
+        </Link>
+        <Link href="/" className={getLinkClass(pathname === "/")}>
+          <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+          {open && <span className="text-sm">Home</span>}
+        </Link>
+        <Link
+          href="/projects"
+          className={getLinkClass(pathname === "/projects")}
+        >
+          <PanelTop
+            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+          />
+          {open && <span className="text-sm">Browse projects</span>}
+        </Link>
       </nav>
 
       <div className="px-4 py-5 border-t border-primary/10">
