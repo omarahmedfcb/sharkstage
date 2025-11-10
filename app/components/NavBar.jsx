@@ -31,6 +31,7 @@ function Navbar() {
   const navlinks = [
     { name: "Home", href: "/" },
     { name: "Projects", href: "/projects" },
+    { name: "Blog", href: "/blog" },
   ];
   return (
     <motion.nav
