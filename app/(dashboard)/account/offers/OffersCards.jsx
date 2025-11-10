@@ -1,3 +1,4 @@
+import MessageForm from "@/app/(main)/projects/[id]/MessageForm";
 import api from "@/lib/axios";
 import { getProjects } from "@/lib/features/projects/projectsThunks";
 import { Loader2 } from "lucide-react";
@@ -214,6 +215,11 @@ export default function OffersCards({
                 </>
               ))}
           </div>
+
+          {offer.status !== "cancelled" &&
+            (currentUser?.accountType == "owner" ? (
+              <MessageForm owner={offer.offeredBy} />
+            ) : null)}
         </div>
       ))}
     </div>
