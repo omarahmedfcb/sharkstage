@@ -12,6 +12,7 @@ import {
   Loader2,
   Trash2,
 } from "lucide-react";
+import DeleteAlert from "@/app/components/DeleteAlert";
 
 export default function PostDetailPage() {
   const router = useRouter();
@@ -22,6 +23,8 @@ export default function PostDetailPage() {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [postLoading, setPostLoading] = useState(false);
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -51,18 +54,24 @@ export default function PostDetailPage() {
 
   const handleDeletePost = async () => {
     try {
+      setPostLoading(true);
       await api.post(`/blog/post/delete/${postId}`);
       router.push("/blog");
     } catch (error) {
       console.error("Error fetching post:", err);
+    } finally {
+      setPostLoading(false);
     }
   };
   const handleDeleteComment = async (commentId) => {
     try {
+      setCommentLoading(true);
       await api.post(`/blog/comment/delete/${commentId}`);
       fetchPostAndComments();
     } catch (error) {
       console.error("Error fetching post:", err);
+    } finally {
+      setCommentLoading(false);
     }
   };
 
@@ -148,13 +157,15 @@ export default function PostDetailPage() {
 
         {/* Post Card */}
         <div className="bg-white relative rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-6">
-          {currentUser?.accountType == "admin" ? (
-            <button
-              className="absolute top-4 right-4 text-red-700"
-              onClick={handleDeletePost}
-            >
-              <Trash2 />
-            </button>
+          {currentUser?.accountType == "admin" ||
+          currentUser?._id == post.author?._id ? (
+            <div className="absolute right-4 top-4">
+              <DeleteAlert
+                handleDelete={handleDeletePost}
+                title={"Delete this post ?"}
+                deleteLoading={postLoading}
+              />
+            </div>
           ) : null}
 
           {/* Author Info */}
@@ -264,7 +275,11 @@ export default function PostDetailPage() {
               </div>
             ) : (
               comments.map((comment) => (
-                <div key={comment._id} className="flex gap-3">
+                <div
+                  key={comment._id}
+                  id={`${comment._id}`}
+                  className="flex gap-3"
+                >
                   {comment.author?.profilePicUrl ? (
                     <img
                       src={comment.author.profilePicUrl}
@@ -279,13 +294,17 @@ export default function PostDetailPage() {
                   )}
                   <div className="flex-1">
                     <div className="bg-gray-50 relative rounded-lg p-4">
-                      {currentUser?.accountType == "admin" ? (
-                        <button
-                          className="absolute bottom-4 right-4 text-red-700"
-                          onClick={() => handleDeleteComment(comment._id)}
-                        >
-                          <Trash2 fontSize={16} />
-                        </button>
+                      {currentUser?.accountType == "admin" ||
+                      currentUser?._id == comment.author?._id ? (
+                        <div className="absolute right-4 bottom-2">
+                          <DeleteAlert
+                            handleDelete={() =>
+                              handleDeleteComment(comment._id)
+                            }
+                            title={"Delete this comment ?"}
+                            deleteLoading={commentLoading}
+                          />
+                        </div>
                       ) : null}
 
                       <div className="flex items-baseline justify-between mb-1">

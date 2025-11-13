@@ -250,7 +250,7 @@ export default function SingleOfferPage() {
                 <FileText className="text-primary" size={20} />
                 <h3 className="font-semibold text-heading">Proposal Letter</h3>
               </div>
-              <p className="text-paragraph text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="text-paragraph  text-sm leading-relaxed whitespace-pre-line">
                 {offer.proposalLetter}
               </p>
             </div>

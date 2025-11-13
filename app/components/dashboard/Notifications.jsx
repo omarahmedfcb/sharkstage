@@ -52,7 +52,7 @@ function Notifications() {
       {notificationsOpen && (
         <div className="absolute right-0 top-10 bg-white shadow-lg rounded-lg w-64 z-50">
           <p className="font-semibold p-3 ps-5">Notifications</p>
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm h-48 overflow-auto">
             {userNotifications.map((n, i) => (
               <Link
                 href={n.link}

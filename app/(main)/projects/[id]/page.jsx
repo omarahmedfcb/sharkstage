@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getCategoryBg } from "@/app/components/projects/ProjectCard";
 import api from "@/lib/axios";
@@ -18,22 +18,27 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  PenBox,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DialogWindow from "@/app/components/DialogWindow";
 import { Controller, useForm } from "react-hook-form";
 import InputField from "@/app/components/InputField";
 import toast from "react-hot-toast";
 import MessageForm from "./MessageForm";
+import DeleteAlert from "@/app/components/DeleteAlert";
+import { getProjects } from "@/lib/features/projects/projectsThunks";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useSelector((state) => state.auth);
+  const { currentUser, isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [offerLoading, setOfferLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [projectDeleteLoading, setProjectDeleteLoading] = useState(false);
+  const router = useRouter();
   // sending offer
   const {
     control,
@@ -78,7 +83,19 @@ export default function ProjectDetailsPage() {
     setOpen(false);
     reset();
   };
-
+  const handleDelete = async () => {
+    try {
+      setProjectDeleteLoading(true);
+      await api.delete(`/projects/delete/${project._id}`);
+      toast.success("Project deleted Successfully");
+      dispatch(getProjects());
+      router.push("/projects");
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    } finally {
+      setProjectDeleteLoading(false);
+    }
+  };
   useEffect(() => {
     if (!params.id) return;
     api
@@ -129,7 +146,7 @@ export default function ProjectDetailsPage() {
     { id: "overview", label: "Overview", icon: FileText },
     { id: "timeline", label: "Timeline", icon: Calendar },
     { id: "milestones", label: "Milestones", icon: Target },
-    { id: "team", label: "Team", icon: Users },
+    { id: "investors", label: "Investors", icon: Users },
     { id: "documents", label: "Documents", icon: FileText },
     { id: "risks", label: "Risks & Returns", icon: AlertTriangle },
   ];
@@ -227,7 +244,30 @@ export default function ProjectDetailsPage() {
                 </h1>
                 <p className="text-lg text-paragraph">{project.shortDesc}</p>
               </div>
+              {/* Owner Info */}
+              <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 rounded-2xl shadow-sm border border-gray-100">
+                {project.owner?.profilePicUrl ? (
+                  <img
+                    src={project.owner.profilePicUrl}
+                    alt={`${project.owner.firstName} ${project.owner.lastName}`}
+                    className="w-14 h-14 rounded-full object-cover shadow-sm"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                    {project.owner?.firstName?.charAt(0)}
+                    {project.owner?.lastName?.charAt(0)}
+                  </div>
+                )}
 
+                <div>
+                  <p className="text-sm text-gray-500 font-medium mb-1">
+                    Project Owner
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {project.owner?.firstName} {project.owner?.lastName}
+                  </p>
+                </div>
+              </div>
               {/* Key Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-soft rounded-lg p-4">
@@ -273,6 +313,24 @@ export default function ProjectDetailsPage() {
             {/* Right: Investment Card */}
             <div className="lg:col-span-1">
               <div className="flex flex-col bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
+                {isLoggedIn &&
+                  (currentUser?.accountType == "admin" ||
+                    currentUser?._id == project.owner?._id) && (
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Link
+                        href={`/account/projects/edit/${project._id}`}
+                        className="text-white rounded-lg hover:bg-black/10 p-2 transition-colors"
+                      >
+                        <PenBox />
+                      </Link>
+                      <DeleteAlert
+                        handleDelete={handleDelete}
+                        deleteLoading={projectDeleteLoading}
+                        title={"Delete this Project?"}
+                        className={"text-white"}
+                      />
+                    </div>
+                  )}
                 <h3 className="text-xl font-bold mb-6">Investment Details</h3>
 
                 {/* Funding Progress */}
@@ -457,7 +515,7 @@ export default function ProjectDetailsPage() {
               <h2 className="text-2xl font-bold text-heading mb-4">
                 Project Overview
               </h2>
-              <p className="text-paragraph text-lg leading-relaxed mb-6">
+              <p className="text-paragraph text-lg leading-relaxed mb-6 whitespace-pre-line">
                 {project.description}
               </p>
 
@@ -572,31 +630,30 @@ export default function ProjectDetailsPage() {
           )}
 
           {/* Team Tab */}
-          {activeTab === "team" && (
+          {activeTab === "investors" && (
             <div>
               <h2 className="text-2xl font-bold text-heading mb-6">
-                Meet the Team
+                Meet the Investors
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {project.managementTeam.map((member, index) => (
+                {project.investors.map((member, index) => (
                   <div
                     key={index}
                     className="bg-soft rounded-xl p-6 text-center"
                   >
                     <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200">
                       <img
-                        src={member.image}
-                        alt={member.name}
+                        src={member.user.profilePicUrl}
+                        alt={member.user.firstName}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <h3 className="text-lg font-bold text-heading mb-1">
-                      {member.name}
+                      {member.user.firstName} {member.user.lastName}
                     </h3>
-                    <p className="text-primary font-semibold text-sm mb-2">
-                      {member.role}
+                    <p className="text-paragraph text-sm">
+                      {member.percentage}%
                     </p>
-                    <p className="text-paragraph text-sm">{member.bio}</p>
                   </div>
                 ))}
               </div>
