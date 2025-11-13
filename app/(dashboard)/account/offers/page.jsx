@@ -7,20 +7,11 @@ import toast from "react-hot-toast";
 import OffersCards from "./OffersCards";
 const lang = "en";
 
-export default function ProjectsPage() {
+export default function OffersPage() {
   // const { projects, projectsLoading } = useSelector((state) => state.projects);
 
   const { currentUser } = useSelector((state) => state.auth);
 
-  // filteration
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
-
-  const handleFilterChange = (callback) => {
-    callback();
-  };
   const [userOffers, setUserOffers] = useState([]);
   const fetchUserOffers = async () => {
     if (!currentUser) return;
@@ -41,57 +32,6 @@ export default function ProjectsPage() {
   useEffect(() => {
     fetchUserOffers();
   }, [currentUser]);
-
-  const filteredAndSortedProjects = useMemo(() => {
-    let filtered = [...userOffers];
-
-    // Apply search filter (works for all account types)
-    if (searchQuery) {
-      filtered = filtered.filter((item) => {
-        const project =
-          currentUser?.accountType === "investor" ? item.project : item;
-        return project.title.toLowerCase().includes(searchQuery.toLowerCase());
-      });
-    }
-
-    // Apply category filter
-    // if (selectedCategory !== "all") {
-    //   filtered = filtered.filter((item) => {
-    //     const project = currentUser?.accountType === "investor" ? item.project : item;
-    //     return project.categoryId === selectedCategory;
-    //   });
-    // }
-
-    // else if (currentUser?.accountType === "admin") {
-    //   // Admin filtering logic here
-    // }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      const projectA = currentUser?.accountType === "investor" ? a.project : a;
-      const projectB = currentUser?.accountType === "investor" ? b.project : b;
-
-      switch (sortBy) {
-        case "newest":
-          return new Date(projectB.createdAt) - new Date(projectA.createdAt);
-        case "funding-high":
-          return projectB.fundingGoal - projectA.fundingGoal;
-        case "most-funded":
-          return projectB.currentFunding - projectA.currentFunding;
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [
-    userOffers,
-    searchQuery,
-    selectedCategory,
-    selectedStatus,
-    sortBy,
-    currentUser,
-  ]);
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 ">

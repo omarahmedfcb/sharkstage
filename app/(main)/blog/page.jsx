@@ -15,7 +15,7 @@ export default function BlogPage() {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [postLoading, setPostLoading] = useState(true);
+  const [postLoading, setPostLoading] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -38,6 +38,12 @@ export default function BlogPage() {
 
   useEffect(() => {
     fetchPosts();
+  }, []);
+  useEffect(() => {
+    if (window.location.hash) {
+      const el = document.getElementById(window.location.hash.slice(1));
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, []);
 
   const fetchPosts = async () => {

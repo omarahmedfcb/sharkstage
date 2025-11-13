@@ -5,12 +5,15 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LoginIcon from "@mui/icons-material/Login";
 import { ChatBubbleTwoTone, Menu } from "@mui/icons-material";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import AccountPopover from "./dashboard/AccountPopover";
 import Notifications from "./dashboard/Notifications";
+
 function Navbar() {
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const { currentUser, isLoggedIn } = useSelector((state) => state.auth);
   const [res, setRes] = useState(false);
@@ -28,11 +31,20 @@ function Navbar() {
   function handleToggle() {
     setRes(!res);
   }
+
   const navlinks = [
     { name: "Home", href: "/" },
     { name: "Projects", href: "/projects" },
     { name: "Blog", href: "/blog" },
   ];
+
+  const isActive = (href) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -54,9 +66,23 @@ function Navbar() {
                 <Link
                   key={index}
                   href={link.href}
-                  className="flex items-center px-4 hover:text-primary"
+                  className={`flex items-center px-4 hover:text-primary relative transition-colors ${
+                    isActive(link.href) ? "text-primary" : ""
+                  }`}
                 >
                   {link.name}
+                  {isActive(link.href) && (
+                    <motion.span
+                      layoutId="active-link"
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    />
+                  )}
                 </Link>
               ))}
             </div>
@@ -89,7 +115,9 @@ function Navbar() {
               <Link
                 key={index}
                 href={link.href}
-                className="flex items-center px-4 hover:text-primary"
+                className={`flex items-center px-4 hover:text-primary transition-colors ${
+                  isActive(link.href) ? "text-primary font-semibold" : ""
+                }`}
               >
                 {link.name}
               </Link>

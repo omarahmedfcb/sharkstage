@@ -10,11 +10,14 @@ import {
   House,
   PanelTop,
   Handshake,
+  Activity,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
+  const { currentUser, isLoggedIn } = useSelector((state) => state.auth);
 
   // Auto-close sidebar on small screens
   useEffect(() => {
@@ -80,16 +83,17 @@ export default function Sidebar() {
           />
           {open && <span className="text-sm">Overview</span>}
         </Link>
-
-        <Link
-          href="/account/projects"
-          className={getLinkClass(pathname === "/account/projects")}
-        >
-          <FolderKanban
-            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
-          />
-          {open && <span className="text-sm">Projects</span>}
-        </Link>
+        {currentUser?.accountType != "admin" ? (
+          <Link
+            href="/account/projects"
+            className={getLinkClass(pathname === "/account/projects")}
+          >
+            <FolderKanban
+              className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+            />
+            {open && <span className="text-sm">Projects</span>}
+          </Link>
+        ) : null}
 
         <Link
           href="/account/profile"
@@ -101,14 +105,25 @@ export default function Sidebar() {
           {open && <span className="text-sm">Profile</span>}
         </Link>
         <Link
-          href="/account/offers"
-          className={getLinkClass(pathname === "/account/offers")}
+          href="/account/activity"
+          className={getLinkClass(pathname === "/account/activity")}
         >
-          <Handshake
+          <Activity
             className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
           />
-          {open && <span className="text-sm">Offers</span>}
+          {open && <span className="text-sm">Activity</span>}
         </Link>
+        {currentUser?.accountType != "admin" ? (
+          <Link
+            href="/account/offers"
+            className={getLinkClass(pathname === "/account/offers")}
+          >
+            <Handshake
+              className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+            />
+            {open && <span className="text-sm">Offers</span>}
+          </Link>
+        ) : null}
         <Link href="/" className={getLinkClass(pathname === "/")}>
           <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
           {open && <span className="text-sm">Home</span>}

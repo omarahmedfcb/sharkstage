@@ -62,7 +62,10 @@ export default function EditProjectPage() {
         console.log();
 
         // Check if user is the owner
-        if (project.owner !== currentUser._id) {
+        if (
+          project.owner !== currentUser._id &&
+          currentUser.accountType !== "admin"
+        ) {
           toast.error("You don't have permission to edit this project");
           router.push(`/projects/${projectId}`);
           return;

@@ -117,13 +117,13 @@ export default function OffersCards({
 
             {/* Project Title */}
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {offer.project.title}
+              {offer.project?.title}
             </h3>
 
             {/* Category */}
             <div className="mb-3">
               <span className="inline-block px-2 py-1 bg-soft text-primary text-xs rounded">
-                {offer.project.category[lang]}
+                {offer.project?.category[lang]}
               </span>
             </div>
 
