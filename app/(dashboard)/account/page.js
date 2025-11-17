@@ -1,12 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
-import { TrendingUp, DollarSign, FolderKanban, Users, Sparkles, ArrowUpRight, ArrowDownRight, Plus, Search, BarChart3, Settings } from "lucide-react";
+import { TrendingUp, DollarSign, FolderKanban, Users, Sparkles, ArrowUpRight, ArrowDownRight, Plus, Search, BarChart3, Settings, Shield, Database, FileText, MessageSquare } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Area, AreaChart } from "recharts";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { getInvestorDashboard, getOwnerDashboard } from "@/lib/api/dashboard.api";
+import { getAdminDashboard } from "@/lib/api/admin.api";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import AdminHero from "@/app/components/admin/AdminHero";
+import AdminStatCard from "@/app/components/admin/AdminStatCard";
+import AdminCharts from "@/app/components/admin/AdminCharts";
 
 const COLORS = ["#3a5a92", "#6fa8dc", "#f2c94c", "#8b5cf6", "#ec4899", "#10b981"];
 
@@ -120,7 +124,39 @@ function DashboardHero({ currentUser, accountType }) {
 }
 
 // ====== Enhanced Loading Skeleton ======
-function LoadingSkeleton() {
+function LoadingSkeleton({ isAdmin = false }) {
+  if (isAdmin) {
+    return (
+      <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a1a2e] to-[#16213e]">
+        <div className="max-w-7xl mx-auto">
+          {/* Hero Skeleton */}
+          <div className="h-48 rounded-3xl mb-8 animate-shimmer bg-[#1a1a2e]/50" />
+          
+          {/* Quick Actions Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-[#1a1a2e]/50 rounded-2xl p-6 animate-shimmer h-32" />
+            ))}
+          </div>
+          
+          {/* Stats Skeleton */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-[#1a1a2e]/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl animate-shimmer h-40" />
+            ))}
+          </div>
+          
+          {/* Charts Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-[#1a1a2e]/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl animate-shimmer h-64" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
       <div className="max-w-7xl mx-auto">
@@ -172,6 +208,8 @@ export default function OverviewPage() {
           response = await getInvestorDashboard();
         } else if (currentUser.accountType === "owner") {
           response = await getOwnerDashboard();
+        } else if (currentUser.accountType === "admin") {
+          response = await getAdminDashboard();
         } else {
           setError("Dashboard not available for this account type");
           setLoading(false);
@@ -196,18 +234,19 @@ export default function OverviewPage() {
   }, [currentUser]);
 
   if (loading) {
-    return <LoadingSkeleton />;
+    return <LoadingSkeleton isAdmin={currentUser?.accountType === "admin"} />;
   }
 
   if (error) {
+    const isAdmin = currentUser?.accountType === "admin";
     return (
-      <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+      <div className={`p-4 sm:p-6 min-h-[calc(100vh-4rem)] ${isAdmin ? "bg-gradient-to-br from-[#0f172a] via-[#1a1a2e] to-[#16213e]" : "bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30"}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center shadow-xl">
-            <p className="text-red-600 font-semibold text-lg mb-4">{error}</p>
+          <div className={`${isAdmin ? "bg-red-600/20 border-2 border-red-600/30" : "bg-red-50 border-2 border-red-200"} rounded-2xl p-8 text-center shadow-xl`}>
+            <p className={`${isAdmin ? "text-red-400" : "text-red-600"} font-semibold text-lg mb-4`}>{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-xl font-semibold"
+              className={`px-6 py-3 ${isAdmin ? "bg-red-600/30 hover:bg-red-600/40 text-red-300 border border-red-600/30" : "bg-red-600 hover:bg-red-700 text-white"} rounded-xl transition-all shadow-lg hover:shadow-xl font-semibold`}
             >
               Retry
             </button>
@@ -218,11 +257,208 @@ export default function OverviewPage() {
   }
 
   if (!dashboardData) {
+    const isAdmin = currentUser?.accountType === "admin";
     return (
-      <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+      <div className={`p-4 sm:p-6 min-h-[calc(100vh-4rem)] ${isAdmin ? "bg-gradient-to-br from-[#0f172a] via-[#1a1a2e] to-[#16213e]" : "bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30"}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-lg border border-gray-200 rounded-2xl p-8 text-center shadow-xl">
-            <p className="text-gray-600 text-lg">No data available</p>
+          <div className={`${isAdmin ? "bg-[#1a1a2e]/80 backdrop-blur-lg border border-[#0f3460]/30" : "bg-white/80 backdrop-blur-lg border border-gray-200"} rounded-2xl p-8 text-center shadow-xl`}>
+            <p className={`${isAdmin ? "text-gray-300" : "text-gray-600"} text-lg`}>No data available</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin Dashboard
+  if (currentUser?.accountType === "admin") {
+    const { stats, userGrowth, projectGrowth, categoryDistribution, accountTypeDistribution, recentUsers, recentProjects } = dashboardData;
+
+    const adminStatsCards = [
+      {
+        label: "Total Users",
+        value: stats.totalUsers,
+        icon: <Users className="text-blue-400" size={32} />,
+        color: "blue",
+        trend: "up",
+        trendValue: `${stats.investors + stats.owners} active`,
+      },
+      {
+        label: "Total Projects",
+        value: stats.totalProjects,
+        icon: <FolderKanban className="text-purple-400" size={32} />,
+        color: "purple",
+        trend: "up",
+        trendValue: `${stats.activeProjects} active`,
+      },
+      {
+        label: "Total Funding",
+        value: `$${stats.totalFundingReceived.toLocaleString()}`,
+        icon: <DollarSign className="text-green-400" size={32} />,
+        color: "green",
+        trend: "up",
+        trendValue: `${((stats.totalFundingReceived / stats.totalFundingGoal) * 100).toFixed(1)}%`,
+      },
+      {
+        label: "Total Investments",
+        value: `$${stats.totalInvestments.toLocaleString()}`,
+        icon: <TrendingUp className="text-yellow-400" size={32} />,
+        color: "yellow",
+        trend: "up",
+        trendValue: `${stats.totalInvestors} investors`,
+      },
+      {
+        label: "Blog Posts",
+        value: stats.totalPosts,
+        icon: <FileText className="text-red-400" size={32} />,
+        color: "red",
+      },
+      {
+        label: "FAQs",
+        value: stats.totalFAQs,
+        icon: <MessageSquare className="text-blue-400" size={32} />,
+        color: "blue",
+      },
+    ];
+
+    return (
+      <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a1a2e] to-[#16213e]">
+        <div className="max-w-7xl mx-auto">
+          {/* Admin Hero Section */}
+          <AdminHero currentUser={currentUser} />
+
+          {/* Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          >
+            <Link
+              href="/account/admin/users"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f3460] to-[#16213e] p-6 shadow-xl hover:shadow-2xl transition-all border border-[#0f3460]/50"
+            >
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-blue-600/30">
+                  <Users className="text-white" size={24} />
+                </div>
+                <h3 className="text-white font-bold text-lg mb-1">Users</h3>
+                <p className="text-gray-400 text-sm">Manage users</p>
+              </div>
+            </Link>
+            <Link
+              href="/account/admin/projects"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f3460] to-[#16213e] p-6 shadow-xl hover:shadow-2xl transition-all border border-[#0f3460]/50"
+            >
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-purple-600/30">
+                  <FolderKanban className="text-white" size={24} />
+                </div>
+                <h3 className="text-white font-bold text-lg mb-1">Projects</h3>
+                <p className="text-gray-400 text-sm">Manage projects</p>
+              </div>
+            </Link>
+            <Link
+              href="/account/admin/blogs"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f3460] to-[#16213e] p-6 shadow-xl hover:shadow-2xl transition-all border border-[#0f3460]/50"
+            >
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-red-600/30">
+                  <FileText className="text-white" size={24} />
+                </div>
+                <h3 className="text-white font-bold text-lg mb-1">Blogs</h3>
+                <p className="text-gray-400 text-sm">Manage blogs</p>
+              </div>
+            </Link>
+            <Link
+              href="/account/admin/faqs"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0f3460] to-[#16213e] p-6 shadow-xl hover:shadow-2xl transition-all border border-[#0f3460]/50"
+            >
+              <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-800 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-green-600/30">
+                  <MessageSquare className="text-white" size={24} />
+                </div>
+                <h3 className="text-white font-bold text-lg mb-1">FAQs</h3>
+                <p className="text-gray-400 text-sm">Manage FAQs</p>
+              </div>
+            </Link>
+          </motion.div>
+
+          {/* Admin Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+            {adminStatsCards.map((stat, i) => (
+              <AdminStatCard key={i} {...stat} delay={i * 0.1} />
+            ))}
+          </div>
+
+          {/* Admin Charts */}
+          <AdminCharts
+            userGrowth={userGrowth}
+            projectGrowth={projectGrowth}
+            categoryDistribution={categoryDistribution}
+            accountTypeDistribution={accountTypeDistribution}
+          />
+
+          {/* Recent Activity */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            {/* Recent Users */}
+            <div className="bg-gradient-to-br from-[#1a1a2e]/80 to-[#16213e]/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-[#0f3460]/30">
+              <h3 className="text-xl font-bold mb-4 text-gray-200 flex items-center gap-2">
+                <Users className="text-blue-400" size={24} />
+                Recent Users
+              </h3>
+              <div className="space-y-3">
+                {recentUsers && recentUsers.length > 0 ? (
+                  recentUsers.slice(0, 5).map((user) => (
+                    <div key={user._id} className="flex items-center justify-between p-3 bg-[#0f172a]/50 rounded-lg border border-[#0f3460]/20">
+                      <div>
+                        <p className="text-gray-200 font-semibold">{user.firstName} {user.lastName}</p>
+                        <p className="text-gray-400 text-sm">{user.email}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        user.accountType === "admin" ? "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30" :
+                        user.accountType === "owner" ? "bg-purple-600/20 text-purple-400 border border-purple-600/30" :
+                        "bg-blue-600/20 text-blue-400 border border-blue-600/30"
+                      }`}>
+                        {user.accountType}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-center py-4">No recent users</p>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Projects */}
+            <div className="bg-gradient-to-br from-[#1a1a2e]/80 to-[#16213e]/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-[#0f3460]/30">
+              <h3 className="text-xl font-bold mb-4 text-gray-200 flex items-center gap-2">
+                <FolderKanban className="text-purple-400" size={24} />
+                Recent Projects
+              </h3>
+              <div className="space-y-3">
+                {recentProjects && recentProjects.length > 0 ? (
+                  recentProjects.slice(0, 5).map((project) => (
+                    <div key={project._id} className="flex items-center justify-between p-3 bg-[#0f172a]/50 rounded-lg border border-[#0f3460]/20">
+                      <div className="flex-1">
+                        <p className="text-gray-200 font-semibold">{project.title}</p>
+                        <p className="text-gray-400 text-sm">${project.totalPrice.toLocaleString()}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        project.status === "active" ? "bg-green-600/20 text-green-400 border border-green-600/30" :
+                        "bg-gray-600/20 text-gray-400 border border-gray-600/30"
+                      }`}>
+                        {project.status}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-center py-4">No recent projects</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
