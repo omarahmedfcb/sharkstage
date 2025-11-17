@@ -1,19 +1,29 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 import {
   uploadProfilePicture,
   removeProfilePicture,
 } from "@/lib/features/auth/auththunks";
-import { toast } from "react-hot-toast"; // or your preferred toast library
+import { updateUser } from "@/lib/features/auth/authSlice";
+import api from "@/lib/axios";
+import { toast } from "react-hot-toast";
+import { Edit2, Save, X } from "lucide-react";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { currentUser, loading } = useSelector((state) => state.auth);
   const fileInputRef = useRef(null);
-  if (currentUser) {
-    console.log(currentUser.profilePicUrl);
-  }
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: currentUser?.firstName || "",
+    lastName: currentUser?.lastName || "",
+  });
+
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
@@ -55,6 +65,59 @@ export default function ProfilePage() {
     } catch (error) {
       toast.error("Failed to remove profile picture");
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setFormData({
+      firstName: currentUser?.firstName || "",
+      lastName: currentUser?.lastName || "",
+    });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData({
+      firstName: currentUser?.firstName || "",
+      lastName: currentUser?.lastName || "",
+    });
+  };
+
+  const handleSave = async () => {
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      toast.error("First name and last name are required");
+      return;
+    }
+
+    if (formData.firstName.length < 2 || formData.lastName.length < 2) {
+      toast.error("First and last name must be at least 2 characters");
+      return;
+    }
+
+    try {
+      setEditLoading(true);
+      const response = await api.patch("/auth/profile", {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+      });
+
+      if (response.data.success) {
+        dispatch(updateUser(response.data.user));
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+      } else {
+        toast.error(response.data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleResetPassword = () => {
+    router.push("/account/changepassword");
   };
 
   return (
@@ -115,37 +178,109 @@ export default function ProfilePage() {
         {/* Right form */}
         <div className="md:col-span-2 bg-white shadow rounded-lg p-4 sm:p-6 border border-gray-200">
           <form className="space-y-4">
+            {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name
               </label>
-              <h1 className="text-xl font-semibold">{`${currentUser?.firstName} ${currentUser?.lastName}`}</h1>
+              {isEditing ? (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, firstName: e.target.value })
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="First Name"
+                    disabled={editLoading}
+                  />
+                  <input
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, lastName: e.target.value })
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Last Name"
+                    disabled={editLoading}
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <h1 className="text-xl font-semibold">
+                    {`${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={handleEdit}
+                    className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition"
+                    title="Edit name"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                </div>
+              )}
+              {isEditing && (
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={editLoading}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Save size={16} />
+                    {editLoading ? "Saving..." : "Save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={editLoading}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <X size={16} />
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
 
+            {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <h1 className="text-xl font-semibold">{currentUser?.email}</h1>
+              <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
             </div>
 
+            {/* Account Type Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Account Type
               </label>
-              <h1 className="text-xl font-semibold">
+              <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold capitalize">
                 {currentUser?.accountType}
-              </h1>
+              </span>
             </div>
 
-            <h1 className="cursor-pointer text-primary transition-all hover:text-shadow-xs">
-              Reset Password
-            </h1>
-
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            {/* Reset Password */}
+            <div>
               <button
                 type="button"
-                className="px-4 py-2 bg-primary text-white rounded-md hover:shadow-lg transition-shadow w-full sm:w-auto"
+                onClick={handleResetPassword}
+                className="text-indigo-600 hover:text-indigo-700 font-medium transition-all hover:underline flex items-center gap-2"
+              >
+                <span>Reset Password</span>
+              </button>
+            </div>
+
+            {/* Deactivate Account */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pt-4 border-t border-gray-200">
+              <button
+                type="button"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-shadow w-full sm:w-auto"
+                onClick={() => toast.error("This feature is not available yet")}
               >
                 Deactivate Account
               </button>

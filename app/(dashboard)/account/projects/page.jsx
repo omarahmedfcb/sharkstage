@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Eye, FileDown, Trash, Pen } from "lucide-react";
+import { Plus, Eye, FileDown, Trash, Pen, FolderKanban } from "lucide-react";
 import Link from "next/link";
 import InvestorFilter from "./InvestorFilter";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,13 +37,25 @@ export default function ProjectsPage() {
     callback();
   };
   const [userProjects, setUserProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const fetchUserProjects = async () => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
     try {
+      setLoading(true);
+      setError(null);
       const res = await api.get(`/projects/user/${currentUser._id}`);
-      setUserProjects(res.data.userProjects);
+      setUserProjects(res.data.userProjects || []);
     } catch (err) {
       console.error(err);
+      setError("Failed to load projects");
+      toast.error("Failed to load projects");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,13 +64,17 @@ export default function ProjectsPage() {
   }, [currentUser]);
 
   const handleDelete = async (projectId) => {
+    if (!confirm("Are you sure you want to delete this project?")) {
+      return;
+    }
     try {
       await api.delete(`/projects/delete/${projectId}`);
-      toast.success("Project deleted Successfully");
+      toast.success("Project deleted successfully");
       fetchUserProjects();
       dispatch(getProjects());
     } catch (err) {
       console.error("Failed to delete:", err);
+      toast.error("Failed to delete project");
     }
   };
 
@@ -134,15 +150,22 @@ export default function ProjectsPage() {
   ]);
   const exportCSV = () => {
     const csv = [
-      ["Title", "Category", "Progress", "createdAt"].join(","),
-      ...userProjects.map((p) =>
-        [p.title, p.category[lang], p.progress + "%", p.createdAt].join(",")
-      ),
+      ["Title", "Category", currentUser?.accountType === "investor" ? "Percentage" : "Progress", "Created At"].join(","),
+      ...userProjects.map((p) => {
+        const project = currentUser?.accountType === "investor" ? p.project : p;
+        const progress = currentUser?.accountType === "investor" ? p.percentage : project.progress;
+        return [
+          project?.title || "N/A",
+          project?.category?.[lang] || "N/A",
+          `${progress}%`,
+          project?.createdAt ? new Date(project.createdAt).toISOString().split("T")[0] : "N/A"
+        ].join(",");
+      }),
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "my_projects.csv";
+    link.download = currentUser?.accountType === "investor" ? "my_investments.csv" : "my_projects.csv";
     link.click();
   };
 
@@ -151,16 +174,12 @@ export default function ProjectsPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-2 md:gap-0">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          My Projects
+          {currentUser?.accountType === "investor" ? "My Investments" : "My Projects"}
         </h1>
         <div className="flex flex-wrap gap-2">
           {currentUser?.accountType == "owner" ? (
             <Link
               href={"/account/projects/add"}
-              onClick={() => {
-                setShowModal(true);
-                setEditing(null);
-              }}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
             >
               <Plus size={18} /> New Project
@@ -210,9 +229,68 @@ export default function ProjectsPage() {
         />
       )}
 
-      {/* Table */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredAndSortedProjects.map((item, index) => {
+      {/* Loading State */}
+      {loading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl shadow p-5 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded mb-3"></div>
+              <div className="h-2 bg-gray-200 rounded mb-3"></div>
+              <div className="h-8 bg-gray-200 rounded"></div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-600 font-semibold mb-4">{error}</p>
+          <button
+            onClick={fetchUserProjects}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && filteredAndSortedProjects.length === 0 && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
+          <FolderKanban className="mx-auto text-gray-400 mb-4" size={48} />
+          <p className="text-gray-600 font-semibold mb-2">
+            {userProjects.length === 0
+              ? currentUser?.accountType === "investor"
+                ? "No investments found"
+                : "No projects found"
+              : "No projects match your filters"}
+          </p>
+          {userProjects.length === 0 && currentUser?.accountType === "owner" && (
+            <Link
+              href="/account/projects/add"
+              className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              <Plus size={18} className="inline mr-2" />
+              Create Your First Project
+            </Link>
+          )}
+          {userProjects.length === 0 && currentUser?.accountType === "investor" && (
+            <Link
+              href="/projects"
+              className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Browse Projects
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Projects Grid */}
+      {!loading && !error && filteredAndSortedProjects.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredAndSortedProjects.map((item, index) => {
           const project =
             currentUser?.accountType === "investor" ? item.project : item;
           const percentage =
@@ -292,7 +370,8 @@ export default function ProjectsPage() {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
