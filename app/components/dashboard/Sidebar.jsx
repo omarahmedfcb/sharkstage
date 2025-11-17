@@ -13,6 +13,7 @@ import {
   Activity,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
@@ -23,128 +24,185 @@ export default function Sidebar() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        // Tailwind md breakpoint
         setOpen(false);
       } else {
         setOpen(true);
       }
     };
-    handleResize(); // initial check
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const getLinkClass = (isActive) => {
-    const base = `flex items-center gap-3 rounded-lg transition-all duration-200 ${
-      open ? "px-4 py-2 justify-start" : "px-0 py-3 justify-center"
+    const base = `flex items-center gap-3 rounded-xl transition-all duration-200 ${
+      open ? "px-4 py-3 justify-start" : "px-0 py-3 justify-center"
     }`;
     const color = isActive
-      ? "bg-slate-300 text-slate-900 font-semibold"
-      : "text-slate-700 hover:bg-slate-400 hover:text-slate-900";
+      ? "bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white shadow-lg"
+      : "text-gray-700 hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 hover:text-[#3a5a92]";
     return `${base} ${color}`;
   };
 
   return (
     <aside
-      className={`sticky top-0 bg-slate-200 text-gray-700 border-r border-gray-300 h-screen flex flex-col transition-all duration-300 ${
+      className={`sticky top-0 bg-white/80 backdrop-blur-xl text-gray-700 border-r border-gray-200/50 h-screen flex flex-col transition-all duration-300 shadow-xl ${
         open ? "w-64" : "w-20"
       }`}
       aria-label="Sidebar"
     >
-      {/* Header */}
+      {/* Enhanced Header */}
       <div
-        className={`flex items-center p-4 border-b border-gray-300 ${
+        className={`flex items-center p-4 border-b border-gray-200/50 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 ${
           open ? "justify-between" : "justify-center"
         }`}
       >
-        <span
-          className={`font-bold text-sm transition-all duration-400 overflow-hidden ${
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: open ? 1 : 0 }}
+          className={`font-bold text-lg bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] bg-clip-text text-transparent transition-all duration-400 overflow-hidden ${
             open ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-3 w-0"
           }`}
         >
-          SharkStage
-        </span>
+          Shark Stage
+        </motion.span>
 
         {/* Toggle button */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setOpen((s) => !s)}
-          className="p-1 rounded hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600 transition"
+          className="p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 focus:outline-none focus:ring-2 focus:ring-[#3a5a92]/20 transition"
           aria-label="Toggle sidebar"
         >
-          <FiMenu size={20} />
-        </button>
+          <FiMenu size={20} className="text-[#3a5a92]" />
+        </motion.button>
       </div>
 
-      {/* Nav */}
+      {/* Enhanced Nav */}
       <nav className="p-3 flex-1 flex flex-col gap-2 text-slate-700">
-        <Link href="/account" className={getLinkClass(pathname === "/account")}>
-          <LayoutGrid
-            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
-          />
-          {open && <span className="text-sm">Overview</span>}
-        </Link>
-        {currentUser?.accountType != "admin" ? (
-          <Link
-            href="/account/projects"
-            className={getLinkClass(pathname === "/account/projects")}
-          >
-            <FolderKanban
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Link href="/account" className={getLinkClass(pathname === "/account")}>
+            <LayoutGrid
               className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
             />
-            {open && <span className="text-sm">Projects</span>}
+            {open && <span className="text-sm font-medium">Overview</span>}
           </Link>
-        ) : null}
+        </motion.div>
 
-        <Link
-          href="/account/profile"
-          className={getLinkClass(pathname === "/account/profile")}
-        >
-          <UserCog
-            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
-          />
-          {open && <span className="text-sm">Profile</span>}
-        </Link>
-        <Link
-          href="/account/activity"
-          className={getLinkClass(pathname === "/account/activity")}
-        >
-          <Activity
-            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
-          />
-          {open && <span className="text-sm">Activity</span>}
-        </Link>
-        {currentUser?.accountType != "admin" ? (
-          <Link
-            href="/account/offers"
-            className={getLinkClass(pathname === "/account/offers")}
+        {currentUser?.accountType != "admin" && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15 }}
           >
-            <Handshake
+            <Link
+              href="/account/projects"
+              className={getLinkClass(pathname === "/account/projects")}
+            >
+              <FolderKanban
+                className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+              />
+              {open && <span className="text-sm font-medium">Projects</span>}
+            </Link>
+          </motion.div>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link
+            href="/account/profile"
+            className={getLinkClass(pathname === "/account/profile")}
+          >
+            <UserCog
               className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
             />
-            {open && <span className="text-sm">Offers</span>}
+            {open && <span className="text-sm font-medium">Profile</span>}
           </Link>
-        ) : null}
-        <Link href="/" className={getLinkClass(pathname === "/")}>
-          <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
-          {open && <span className="text-sm">Home</span>}
-        </Link>
-        <Link
-          href="/projects"
-          className={getLinkClass(pathname === "/projects")}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.25 }}
         >
-          <PanelTop
-            className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
-          />
-          {open && <span className="text-sm">Browse projects</span>}
-        </Link>
+          <Link
+            href="/account/activity"
+            className={getLinkClass(pathname.startsWith("/account/activity"))}
+          >
+            <Activity
+              className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+            />
+            {open && <span className="text-sm font-medium">Activity</span>}
+          </Link>
+        </motion.div>
+
+        {currentUser?.accountType != "admin" && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Link
+              href="/account/offers"
+              className={getLinkClass(pathname.startsWith("/account/offers"))}
+            >
+              <Handshake
+                className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+              />
+              {open && <span className="text-sm font-medium">Offers</span>}
+            </Link>
+          </motion.div>
+        )}
+
+        <div className="border-t border-gray-200/50 my-2" />
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <Link href="/" className={getLinkClass(pathname === "/")}>
+            <House className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`} />
+            {open && <span className="text-sm font-medium">Home</span>}
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Link
+            href="/projects"
+            className={getLinkClass(pathname.startsWith("/projects") && pathname !== "/projects")}
+          >
+            <PanelTop
+              className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+            />
+            {open && <span className="text-sm font-medium">Browse projects</span>}
+          </Link>
+        </motion.div>
       </nav>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-gray-300">
+      {/* Enhanced Footer */}
+      <div className="p-3 border-t border-gray-200/50 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5">
         {open ? (
-          <div className="text-xs text-slate-700">v1.0 • SharkStage</div>
+          <div className="text-xs text-gray-600 font-medium">
+            <div className="flex items-center justify-between">
+              <span>v1.0</span>
+              <span className="text-[#3a5a92] font-bold">SharkStage</span>
+            </div>
+          </div>
         ) : (
-          <div className="text-center text-slate-700 text-xs">v1.0</div>
+          <div className="text-center text-gray-600 text-xs font-medium">v1.0</div>
         )}
       </div>
     </aside>
