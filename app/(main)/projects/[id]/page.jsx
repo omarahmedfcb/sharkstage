@@ -28,6 +28,7 @@ import toast from "react-hot-toast";
 import MessageForm from "./MessageForm";
 import DeleteAlert from "@/app/components/DeleteAlert";
 import { getProjects } from "@/lib/features/projects/projectsThunks";
+import PaymentModal from "@/app/components/payment/PaymentModal";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
@@ -38,8 +39,11 @@ export default function ProjectDetailsPage() {
   const [offerLoading, setOfferLoading] = useState(false);
   const [error, setError] = useState(null);
   const [projectDeleteLoading, setProjectDeleteLoading] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [investmentAmount, setInvestmentAmount] = useState(0);
+  const [investmentPercentage, setInvestmentPercentage] = useState(0);
   const router = useRouter();
-  // sending offer
+  // sending offer (legacy - for non-payment offers)
   const {
     control,
     handleSubmit,
@@ -80,6 +84,21 @@ export default function ProjectDetailsPage() {
   };
 
   const handleClose = () => {
+    setOpen(false);
+    reset();
+  };
+
+  const handleInvestClick = () => {
+    // Open investment calculator first, then payment modal
+    setOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    // Refresh project data
+    api
+      .get(`/projects/${params.id}`)
+      .then((res) => setProject(res.data.project))
+      .catch((err) => console.error(err));
     setOpen(false);
     reset();
   };
@@ -361,7 +380,7 @@ export default function ProjectDetailsPage() {
                 {currentUser?.accountType == "investor" && (
                   <>
                     <button
-                      onClick={handleClickOpen}
+                      onClick={handleInvestClick}
                       className="w-full bg-buttons text-primary font-bold py-4 rounded-lg hover:bg-buttons/90 transition-colors mb-4"
                     >
                       Invest Now
@@ -369,7 +388,16 @@ export default function ProjectDetailsPage() {
                     <DialogWindow
                       handleClickOpen={handleClickOpen}
                       handleClose={handleClose}
-                      onSubmitLogic={onSubmitLogic}
+                      onSubmitLogic={(data) => {
+                        const amount = Number(data.amount);
+                        const percentage = Number(data.percentage);
+                        if (amount > 0 && percentage > 0) {
+                          setInvestmentAmount(amount);
+                          setInvestmentPercentage(percentage);
+                          setOpen(false);
+                          setPaymentModalOpen(true);
+                        }
+                      }}
                       handleSubmit={handleSubmit}
                       offerLoading={offerLoading}
                       open={open}
@@ -427,26 +455,23 @@ export default function ProjectDetailsPage() {
                           )}
                         />
                       </div>
-                      <Controller
-                        name="proposal"
-                        control={control}
-                        rules={{ required: "Proposal is required" }}
-                        render={({ field }) => (
-                          <InputField
-                            label="Full Proposal"
-                            error={errors.proposal?.message}
-                            required
-                          >
-                            <textarea
-                              {...field}
-                              rows={5}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
-                              placeholder="Proposal"
-                            />
-                          </InputField>
-                        )}
-                      />
+                      <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-blue-800">
+                          After entering the amount and percentage, you'll be redirected to the secure payment page.
+                        </p>
+                      </div>
                     </DialogWindow>
+                    <PaymentModal
+                      isOpen={paymentModalOpen}
+                      onClose={() => {
+                        setPaymentModalOpen(false);
+                        reset();
+                      }}
+                      project={project}
+                      amount={investmentAmount}
+                      percentage={investmentPercentage}
+                      onSuccess={handlePaymentSuccess}
+                    />
                   </>
                 )}
                 {currentUser && currentUser?._id != project.owner ? (
