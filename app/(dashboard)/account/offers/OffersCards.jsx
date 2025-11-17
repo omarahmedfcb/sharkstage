@@ -1,24 +1,49 @@
 import MessageForm from "@/app/(main)/projects/[id]/MessageForm";
 import api from "@/lib/axios";
 import { getProjects } from "@/lib/features/projects/projectsThunks";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, CheckCircle2, XCircle, Clock, DollarSign, Percent, User, FileText } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
 
-const lang = "en"; // or "ar" based on your setup
+const lang = "en";
 
-const statusColor = (status) => {
+const statusConfig = (status) => {
   switch (status) {
     case "accepted":
-      return "bg-green-100 text-green-800 border-green-200";
+      return {
+        color: "from-green-500 to-green-600",
+        bg: "bg-green-50",
+        text: "text-green-700",
+        border: "border-green-200",
+        icon: CheckCircle2,
+      };
     case "rejected":
-      return "bg-red-100 text-red-800 border-red-200";
+      return {
+        color: "from-red-500 to-red-600",
+        bg: "bg-red-50",
+        text: "text-red-700",
+        border: "border-red-200",
+        icon: XCircle,
+      };
     case "pending":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      return {
+        color: "from-yellow-500 to-yellow-600",
+        bg: "bg-yellow-50",
+        text: "text-yellow-700",
+        border: "border-yellow-200",
+        icon: Clock,
+      };
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return {
+        color: "from-gray-500 to-gray-600",
+        bg: "bg-gray-50",
+        text: "text-gray-700",
+        border: "border-gray-200",
+        icon: Clock,
+      };
   }
 };
 
@@ -63,6 +88,7 @@ export default function OffersCards({
       dispatch(getProjects());
     }
   };
+
   const rejectOffer = async (id) => {
     setOfferRejectLoading(true);
     try {
@@ -92,136 +118,176 @@ export default function OffersCards({
       setOfferCancelLoading(false);
     }
   };
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {userOffers.map((offer) => (
-        <div
-          key={offer._id}
-          className="bg-white rounded-xl shadow p-5 flex flex-col justify-between hover:shadow-lg transition"
-        >
-          {/* Header Section */}
-          <div>
-            {/* Status Badge */}
-            <div className="flex justify-between items-start mb-3">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusColor(
-                  offer.status
-                )}`}
-              >
-                {statusText(offer.status)}
-              </span>
-              <span className="text-xs text-gray-400">
-                {new Date(offer.createdAt).toISOString().split("T")[0]}
-              </span>
-            </div>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {userOffers.map((offer, index) => {
+        const statusInfo = statusConfig(offer.status);
+        const StatusIcon = statusInfo.icon;
 
-            {/* Project Title */}
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {offer.project?.title}
-            </h3>
-
-            {/* Category */}
-            <div className="mb-3">
-              <span className="inline-block px-2 py-1 bg-soft text-primary text-xs rounded">
-                {offer.project?.category[lang]}
-              </span>
-            </div>
-
-            {/* Offered To */}
-            <div className="mb-3 pb-3 border-b border-gray-100">
-              <p className="text-xs text-gray-500 mb-1">
-                {currentUser?.accountType == "investor"
-                  ? "Offered To"
-                  : "Offered By"}
-              </p>
-              <p className="text-sm font-medium text-heading">
-                {currentUser?.accountType == "investor"
-                  ? `${offer.offeredTo.firstName} ${offer.offeredTo.lastName}`
-                  : `${offer.offeredBy.firstName} ${offer.offeredBy.lastName}`}
-              </p>
-            </div>
-
-            {/* Offer Details */}
-            <div className="space-y-2 mb-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Percentage:</span>
-                <span className="text-sm font-semibold text-primary">
-                  {offer.percentage}%
+        return (
+          <motion.div
+            key={offer._id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 flex flex-col justify-between hover:shadow-2xl transition-all"
+          >
+            {/* Header Section */}
+            <div>
+              {/* Status Badge */}
+              <div className="flex justify-between items-start mb-4">
+                <span
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold border-2 ${statusInfo.border} ${statusInfo.text} flex items-center gap-2`}
+                >
+                  <StatusIcon size={14} />
+                  {statusText(offer.status)}
+                </span>
+                <span className="text-xs text-gray-500 font-medium">
+                  {new Date(offer.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Amount:</span>
-                <span className="text-sm font-semibold text-heading">
-                  ${offer.amount.toLocaleString()}
+
+              {/* Project Title */}
+              <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                {offer.project?.title}
+              </h3>
+
+              {/* Category */}
+              <div className="mb-4">
+                <span className="inline-block px-3 py-1.5 bg-gradient-to-r from-[#3a5a92]/10 to-[#6fa8dc]/10 text-[#3a5a92] text-xs font-semibold rounded-full">
+                  {offer.project?.category?.[lang] || "N/A"}
                 </span>
               </div>
-            </div>
 
-            {/* Proposal Letter Preview */}
-            {offer.proposalLetter && (
-              <div className="mb-3">
-                <p className="text-xs text-gray-700 font-bold mb-1">Proposal</p>
-                <p className="text-xs text-gray-700 line-clamp-2">
-                  {offer.proposalLetter.slice(0, 32)}
-                  {offer.proposalLetter.length > 32 ? "..." : null}
+              {/* Offered To/By */}
+              <div className="mb-4 pb-4 border-b border-gray-200">
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <User size={12} />
+                  {currentUser?.accountType == "investor"
+                    ? "Offered To"
+                    : "Offered By"}
+                </p>
+                <p className="text-sm font-bold text-gray-800">
+                  {currentUser?.accountType == "investor"
+                    ? `${offer.offeredTo?.firstName || ""} ${offer.offeredTo?.lastName || ""}`
+                    : `${offer.offeredBy?.firstName || ""} ${offer.offeredBy?.lastName || ""}`}
                 </p>
               </div>
-            )}
-          </div>
 
-          {/* Actions */}
-          <div className="flex flex-wrap gap-2 mt-3">
-            <Link
-              href={`/account/offers/${offer._id}`}
-              className="flex-1 px-3 py-2 bg-primary text-white text-center rounded-lg hover:bg-secondary transition text-sm font-medium"
-            >
-              View Details
-            </Link>
+              {/* Offer Details */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl">
+                  <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <Percent size={16} className="text-[#3a5a92]" />
+                    Percentage:
+                  </span>
+                  <span className="text-lg font-bold text-[#3a5a92]">
+                    {offer.percentage}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl">
+                  <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <DollarSign size={16} className="text-[#3a5a92]" />
+                    Amount:
+                  </span>
+                  <span className="text-lg font-bold text-gray-800">
+                    ${offer.amount.toLocaleString()}
+                  </span>
+                </div>
+              </div>
 
-            {offer.status === "pending" &&
-              (currentUser?.accountType == "investor" ? (
-                <button
-                  disabled={offerCancelLoading}
-                  onClick={() => cancelOffer(offer._id)}
-                  className="flex-1 px-3 py-2 border disabled:opacity-50 disabled:cursor-not-allowed border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
-                >
-                  {offerCancelLoading && (
-                    <Loader2 size={16} className="animate-spin" />
-                  )}
-                  {offerCancelLoading ? null : "Cancel"}
-                </button>
-              ) : (
-                <>
-                  <button
-                    disabled={offerAcceptLoading || offerRejectLoading}
-                    onClick={() => rejectOffer(offer._id)}
-                    className="flex-1 px-3 py-2 border disabled:opacity-50 disabled:cursor-not-allowed bg-red-700 text-white rounded-lg hover:bg-red-50 hover:text-red-700 transition text-sm font-medium"
+              {/* Proposal Letter Preview */}
+              {offer.proposalLetter && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                  <p className="text-xs text-gray-700 font-bold mb-2 flex items-center gap-1">
+                    <FileText size={12} />
+                    Proposal
+                  </p>
+                  <p className="text-xs text-gray-600 line-clamp-2">
+                    {offer.proposalLetter.slice(0, 100)}
+                    {offer.proposalLetter.length > 100 ? "..." : null}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3 pt-4 border-t border-gray-200">
+              <Link
+                href={`/account/offers/${offer._id}`}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-xl hover:shadow-lg transition-all font-semibold text-sm"
+              >
+                <Eye size={18} />
+                View Details
+              </Link>
+
+              {offer.status === "pending" &&
+                (currentUser?.accountType == "investor" ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={offerCancelLoading}
+                    onClick={() => cancelOffer(offer._id)}
+                    className="w-full px-4 py-3 border-2 border-red-300 text-red-600 rounded-xl hover:bg-red-50 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {offerRejectLoading && (
-                      <Loader2 size={16} className="animate-spin" />
+                    {offerCancelLoading ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <>
+                        <XCircle size={18} />
+                        Cancel
+                      </>
                     )}
-                    {offerRejectLoading ? null : "Reject"}
-                  </button>
-                  <button
-                    disabled={offerAcceptLoading || offerRejectLoading}
-                    onClick={() => acceptOffer(offer._id)}
-                    className="disabled:opacity-50 disabled:cursor-not-allowed flex-1 px-3 py-2 border bg-green-700 text-white rounded-lg hover:bg-green-50 hover:text-green-700 transition text-sm font-medium"
-                  >
-                    {offerAcceptLoading && (
-                      <Loader2 size={16} className="animate-spin" />
-                    )}
-                    {offerAcceptLoading ? null : "Accept"}
-                  </button>
-                </>
-              ))}
-          </div>
+                  </motion.button>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={offerAcceptLoading || offerRejectLoading}
+                      onClick={() => rejectOffer(offer._id)}
+                      className="px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {offerRejectLoading ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <>
+                          <XCircle size={18} />
+                          Reject
+                        </>
+                      )}
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={offerAcceptLoading || offerRejectLoading}
+                      onClick={() => acceptOffer(offer._id)}
+                      className="px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {offerAcceptLoading ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 size={18} />
+                          Accept
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                ))}
 
-          {offer.status !== "cancelled" &&
-            (currentUser?.accountType == "owner" ? (
-              <MessageForm owner={offer.offeredBy} />
-            ) : null)}
-        </div>
-      ))}
+              {offer.status !== "cancelled" &&
+                (currentUser?.accountType == "owner" ? (
+                  <div className="mt-3">
+                    <MessageForm owner={offer.offeredBy} />
+                  </div>
+                ) : null)}
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
