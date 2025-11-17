@@ -128,7 +128,18 @@ export default function AdminCharts({ userGrowth, projectGrowth, categoryDistrib
                     backgroundColor: "#1a1a2e",
                     border: "1px solid #0f3460",
                     borderRadius: "8px",
+                    padding: "12px",
+                  }}
+                  labelStyle={{
                     color: "#f3f4f6",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    marginBottom: "6px",
+                  }}
+                  itemStyle={{
+                    color: "#e5e7eb",
+                    fontSize: "13px",
+                    padding: "2px 0",
                   }}
                 />
               </PieChart>
