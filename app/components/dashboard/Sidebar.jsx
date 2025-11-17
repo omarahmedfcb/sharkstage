@@ -11,6 +11,10 @@ import {
   PanelTop,
   Handshake,
   Activity,
+  Shield,
+  Users,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
@@ -160,6 +164,72 @@ export default function Sidebar() {
               {open && <span className="text-sm font-medium">Offers</span>}
             </Link>
           </motion.div>
+        )}
+
+        {currentUser?.accountType === "admin" && (
+          <>
+            <div className="border-t border-gray-200/50 my-2" />
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Link
+                href="/account/admin/users"
+                className={getLinkClass(pathname.startsWith("/account/admin/users"))}
+              >
+                <Users
+                  className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+                />
+                {open && <span className="text-sm font-medium">Users</span>}
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <Link
+                href="/account/admin/projects"
+                className={getLinkClass(pathname.startsWith("/account/admin/projects"))}
+              >
+                <FolderKanban
+                  className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+                />
+                {open && <span className="text-sm font-medium">Projects</span>}
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Link
+                href="/account/admin/blogs"
+                className={getLinkClass(pathname.startsWith("/account/admin/blogs"))}
+              >
+                <FileText
+                  className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+                />
+                {open && <span className="text-sm font-medium">Blogs</span>}
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.45 }}
+            >
+              <Link
+                href="/account/admin/faqs"
+                className={getLinkClass(pathname.startsWith("/account/admin/faqs"))}
+              >
+                <MessageSquare
+                  className={`h-5 w-5 flex-shrink-0 ${open ? "" : "mx-auto"}`}
+                />
+                {open && <span className="text-sm font-medium">FAQs</span>}
+              </Link>
+            </motion.div>
+          </>
         )}
 
         <div className="border-t border-gray-200/50 my-2" />
