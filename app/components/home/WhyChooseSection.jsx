@@ -46,7 +46,7 @@ const WhyChooseSection = () => {
     },
   ];
   return (
-    <section className="bg-background pb-20 pt-28 -mt-28">
+    <section className="bg-background dark:bg-background-dark pb-20 pt-28 -mt-28">
       <div className="max-w-6xl mx-auto text-center px-4">
         <h2 className="text-4xl sm:text-5xl font-bold mb-3  ">
           Why Choose <span className="text-primary">SharkStage</span>

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --foreground: #171717;
 }
@@ -12,6 +14,13 @@
   --color-heading: #13294b;
   --color-paragraph: #7f8c8d;
   --color-soft: #dbe9f7;
+  --color-primary-dark: #6b8ccb;
+  --color-secondary-dark: #9bc7f2;
+  --color-buttons-dark: #f6d55c;
+  --color-background-dark: #0f1115;
+  --color-heading-dark: #c8d6f2;
+  --color-paragraph-dark: #a7b0b7;
+  --color-soft-dark: #324056;
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -46,11 +55,6 @@ a {
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 0%,
-    #e0e0e0 50%,
-    #f0f0f0 100%
-  );
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
   background-size: 200% 100%;
 }
