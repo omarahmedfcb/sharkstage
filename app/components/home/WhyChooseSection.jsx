@@ -48,7 +48,7 @@ const WhyChooseSection = () => {
   return (
     <section className="bg-background dark:bg-background-dark pb-20 pt-28 -mt-28">
       <div className="max-w-6xl mx-auto text-center px-4">
-        <h2 className="text-4xl sm:text-5xl font-bold mb-3  ">
+        <h2 className="text-4xl dark:text-background sm:text-5xl font-bold mb-3  ">
           Why Choose <span className="text-primary">SharkStage</span>
         </h2>
         <p className="text-paragraph  mb-12">
@@ -59,8 +59,8 @@ const WhyChooseSection = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="w-full sm:w-[45%] lg:w-[30%] group relative overflow-hidden rounded-2xl  bg-gradient-to-b from-white/10 to-white/5  p-6  
-                         transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl"
+              className="w-full sm:w-[45%] lg:w-[30%] group relative overflow-hidden rounded-2xl    p-6  
+                         transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
 

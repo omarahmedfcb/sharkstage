@@ -10,8 +10,8 @@ function Numbers() {
   const investors = useCountUp(1200, 2000, inView);
   const investments = useCountUp(10, 2000, inView);
   return (
-    <section ref={ref} className="bg-background">
-      <div className="bg-gradient-to-br from-primary to-secondary text-background rounded-2xl w-8/10 mx-auto text-center px-4 grid sm:grid-cols-3 gap-8">
+    <section ref={ref} className="bg-background dark:bg-background-dark">
+      <div className="bg-gradient-to-br from-primary to-secondary dark:to-heading text-background rounded-2xl w-8/10 mx-auto text-center px-4 grid sm:grid-cols-3 gap-8">
         <div className="py-8 md:py-16 flex flex-col items-center">
           <div className="p-4 bg-background/20 rounded-full mb-4">
             <FaProjectDiagram className="text-3xl text-background" />

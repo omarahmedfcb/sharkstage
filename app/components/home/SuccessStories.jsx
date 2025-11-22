@@ -31,7 +31,7 @@ export default function SuccessStories() {
 
   if (loading) {
     return (
-      <div className="py-16 bg-gradient-to-br from-gray-50 to-white">
+      <div className="py-16 bg-background dark:bg-background-dark">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex justify-center">
             <Loader2 className="animate-spin text-primary" size={40} />
@@ -44,7 +44,7 @@ export default function SuccessStories() {
   if (posts.length === 0) return null;
 
   return (
-    <div className="py-16 bg-background">
+    <div className="py-16 bg-background dark:bg-background-dark">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-12">

@@ -1,16 +1,12 @@
 import { categories } from "@/data/categories";
 
 export default function InvestmentCategories() {
-
   return (
-    <section className="py-16 bg-background text-gray-800">
+    <section className="py-16 bg-background dark:bg-background-dark text-gray-800">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold">
-            Explore{" "}
-            <span className="bg-gradient-to-r from-blue-600 via-gray-700 to-yellow-500 bg-clip-text text-transparent">
-              Investment Categories
-            </span>
+          <h2 className="text-4xl dark:text-background sm:text-5xl font-bold mb-3  ">
+            Explore <span className="text-primary">Investment Categories</span>
           </h2>
           <p className="text-paragraph mt-2">
             Discover opportunities across diverse industries and sectors
@@ -21,8 +17,8 @@ export default function InvestmentCategories() {
           {categories.map((cat, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl shadow-sm p-6 flex flex-col justify-between 
-                         border border-gray-100 hover:shadow-lg hover:-translate-y-1 
+              className="bg-background dark:bg-background/10 rounded-2xl shadow-sm p-6 flex flex-col justify-between 
+                          hover:shadow-lg hover:-translate-y-1 
                          transition-all duration-300 ease-out"
             >
               <div className="flex items-start justify-between mb-4">
@@ -33,7 +29,9 @@ export default function InvestmentCategories() {
                   {cat.projects}
                 </span>
               </div>
-              <h3 className="font-semibold text-lg">{cat.title}</h3>
+              <h3 className="font-semibold text-lg dark:text-background">
+                {cat.title}
+              </h3>
               <p className="text-paragraph text-sm mb-6">{cat.desc}</p>
               <hr className="border-gray-200 mb-2" />
               <p className="text-sm text-paragraph font-medium">
