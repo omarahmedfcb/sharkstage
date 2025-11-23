@@ -95,7 +95,7 @@ function Navbar() {
                   </Link>
                 </>
               ) : null}
-              <LanguageIcon className="cursor-pointer" />
+              {/* <LanguageIcon className="cursor-pointer" /> */}
               <WbSunnyOutlinedIcon className="cursor-pointer" />
             </div>
             <div
