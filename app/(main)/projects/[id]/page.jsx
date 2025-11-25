@@ -128,13 +128,13 @@ export default function ProjectDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   if (loading)
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
   if (!project) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-heading mb-4">
             Project Not Found
@@ -183,9 +183,9 @@ export default function ProjectDetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-18 dark:bg-background-dark">
       {/* Back Button */}
-      <div className="bg-white border-b border-gray-100">
+      <div>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link
             href="/projects"
@@ -198,7 +198,7 @@ export default function ProjectDetailsPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-100">
+      <section className="bg-background dark:bg-background-dark border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left: Image and Info */}
@@ -258,13 +258,13 @@ export default function ProjectDetailsPage() {
                     {category}
                   </div>
                 )}
-                <h1 className="text-3xl md:text-4xl font-bold text-heading mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold text-heading dark:text-background mb-2">
                   {project.title}
                 </h1>
                 <p className="text-lg text-paragraph">{project.shortDesc}</p>
               </div>
               {/* Owner Info */}
-              <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 rounded-2xl shadow-sm border border-gray-100">
+              <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 dark:bg-gray-400 rounded-2xl shadow-sm border border-gray-100">
                 {project.owner?.profilePicUrl ? (
                   <img
                     src={project.owner.profilePicUrl}
@@ -272,14 +272,14 @@ export default function ProjectDetailsPage() {
                     className="w-14 h-14 rounded-full object-cover shadow-sm"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary  dark:to-heading flex items-center justify-center text-white font-semibold text-lg shadow-sm">
                     {project.owner?.firstName?.charAt(0)}
                     {project.owner?.lastName?.charAt(0)}
                   </div>
                 )}
 
                 <div>
-                  <p className="text-sm text-gray-500 font-medium mb-1">
+                  <p className="text-sm text-gray-500 dark:text-heading font-medium mb-1">
                     Project Owner
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
@@ -289,37 +289,37 @@ export default function ProjectDetailsPage() {
               </div>
               {/* Key Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-soft rounded-lg p-4">
+                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <TrendingUp className="w-4 h-4" />
                     ROI
                   </div>
-                  <p className="text-2xl font-bold text-heading">
+                  <p className="text-2xl font-bold text-heading dark:text-background">
                     {project.expectedROI}
                   </p>
                 </div>
-                {/* <div className="bg-soft rounded-lg p-4">
+                {/* <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <Clock className="w-4 h-4" />
                     Days Left
                   </div>
-                  <p className="text-2xl font-bold text-heading">{daysLeft}</p>
+                  <p className="text-2xl font-bold text-heading dark:text-background">{daysLeft}</p>
                 </div> */}
-                <div className="bg-soft rounded-lg p-4">
+                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <Users className="w-4 h-4" />
                     Status
                   </div>
-                  <p className="text-lg font-bold text-heading capitalize">
+                  <p className="text-lg font-bold text-heading dark:text-background capitalize">
                     {project.status}
                   </p>
                 </div>
-                <div className="bg-soft rounded-lg p-4">
+                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
                     <Calendar className="w-4 h-4" />
                     Start Date
                   </div>
-                  <p className="text-lg font-bold text-heading">
+                  <p className="text-lg font-bold text-heading dark:text-background">
                     {new Date(project.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
@@ -331,7 +331,7 @@ export default function ProjectDetailsPage() {
 
             {/* Right: Investment Card */}
             <div className="lg:col-span-1">
-              <div className="flex flex-col bg-gradient-to-br from-primary to-secondary text-white rounded-xl p-6 sticky top-4">
+              <div className="flex flex-col bg-gradient-to-br from-primary to-secondary dark:to-heading text-white rounded-xl p-6 sticky top-4">
                 {isLoggedIn &&
                   (currentUser?.accountType == "admin" ||
                     currentUser?._id == project.owner?._id) && (
@@ -457,7 +457,8 @@ export default function ProjectDetailsPage() {
                       </div>
                       <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                         <p className="text-sm text-blue-800">
-                          After entering the amount and percentage, you'll be redirected to the secure payment page.
+                          After entering the amount and percentage, you'll be
+                          redirected to the secure payment page.
                         </p>
                       </div>
                     </DialogWindow>
@@ -523,7 +524,7 @@ export default function ProjectDetailsPage() {
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
                 activeTab === tab.id
                   ? "bg-primary text-white"
-                  : "bg-white text-paragraph hover:bg-gray-50 border border-gray-200"
+                  : "bg-white dark:bg-gray-300 text-paragraph dark:text-background-dark hover:bg-gray-50 border border-gray-200"
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -533,11 +534,11 @@ export default function ProjectDetailsPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+        <div className="bg-white dark:bg-background/10 dark:border-0 rounded-xl p-8 shadow-sm border border-gray-100">
           {/* Overview Tab */}
           {activeTab === "overview" && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-4">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-4">
                 Project Overview
               </h2>
               <p className="text-paragraph text-lg leading-relaxed mb-6 whitespace-pre-line">
@@ -546,7 +547,7 @@ export default function ProjectDetailsPage() {
 
               {project.keyBenefits && (
                 <div className="mb-6">
-                  <h3 className="text-xl font-bold text-heading mb-3 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-heading dark:text-background mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6 text-green-500" />
                     Key Benefits
                   </h3>
@@ -569,7 +570,7 @@ export default function ProjectDetailsPage() {
           {/* Timeline Tab */}
           {activeTab === "timeline" && project.timeline && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-6">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Project Timeline
               </h2>
               <div className="space-y-6">
@@ -593,7 +594,7 @@ export default function ProjectDetailsPage() {
                     </div>
                     <div className="flex-grow pb-8">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold text-heading">
+                        <h3 className="text-lg font-bold text-heading dark:text-background">
                           {phase.phase}
                         </h3>
                         <span
@@ -622,7 +623,7 @@ export default function ProjectDetailsPage() {
           {/* Milestones Tab */}
           {activeTab === "milestones" && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-6">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Project Milestones
               </h2>
               <div className="space-y-6">
@@ -632,7 +633,7 @@ export default function ProjectDetailsPage() {
                     className="border-b border-gray-100 pb-6 last:border-0"
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-bold text-heading">
+                      <h3 className="text-lg font-bold text-heading dark:text-background">
                         {milestone.title}
                       </h3>
                       <span className="text-2xl font-bold text-primary">
@@ -657,14 +658,14 @@ export default function ProjectDetailsPage() {
           {/* Team Tab */}
           {activeTab === "investors" && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-6">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Meet the Investors
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {project.investors.map((member, index) => (
                   <div
                     key={index}
-                    className="bg-soft rounded-xl p-6 text-center"
+                    className="bg-soft dark:bg-soft/10 rounded-xl p-6 text-center"
                   >
                     <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200">
                       <img
@@ -673,7 +674,7 @@ export default function ProjectDetailsPage() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <h3 className="text-lg font-bold text-heading mb-1">
+                    <h3 className="text-lg font-bold text-heading dark:text-background mb-1">
                       {member.user.firstName} {member.user.lastName}
                     </h3>
                     <p className="text-paragraph text-sm">
@@ -688,19 +689,19 @@ export default function ProjectDetailsPage() {
           {/* Documents Tab */}
           {activeTab === "documents" && project.documents && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-6">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Project Documents
               </h2>
               <div className="space-y-3">
                 {project.documents.map((doc, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 bg-soft rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-4 bg-soft dark:bg-soft/10 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <FileText className="w-8 h-8 text-primary" />
                       <div>
-                        <h3 className="font-semibold text-heading">
+                        <h3 className="font-semibold text-heading dark:text-background">
                           {doc.title}
                         </h3>
                         <p className="text-sm text-paragraph">
@@ -720,14 +721,14 @@ export default function ProjectDetailsPage() {
           {/* Risks & Returns Tab */}
           {activeTab === "risks" && (
             <div>
-              <h2 className="text-2xl font-bold text-heading mb-6">
+              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Risks & Returns Analysis
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Risks */}
                 <div>
-                  <h3 className="text-xl font-bold text-heading mb-4 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-heading dark:text-background mb-4 flex items-center gap-2">
                     <AlertTriangle className="w-6 h-6 text-orange-500" />
                     Potential Risks
                   </h3>
@@ -746,7 +747,7 @@ export default function ProjectDetailsPage() {
 
                 {/* Returns */}
                 <div>
-                  <h3 className="text-xl font-bold text-heading mb-4 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-heading dark:text-background mb-4 flex items-center gap-2">
                     <TrendingUp className="w-6 h-6 text-green-500" />
                     Expected Returns
                   </h3>
@@ -757,11 +758,11 @@ export default function ProjectDetailsPage() {
                         {project.expectedROI}
                       </p>
                     </div>
-                    <div className="p-4 bg-soft rounded-lg">
+                    <div className="p-4 bg-soft dark:bg-soft/10 rounded-lg">
                       <p className="text-sm text-paragraph mb-1">
                         Investment Period
                       </p>
-                      <p className="text-xl font-bold text-heading">
+                      <p className="text-xl font-bold text-heading dark:text-background">
                         {Math.ceil(
                           (new Date(project.endDate) -
                             new Date(project.startDate)) /
@@ -770,11 +771,11 @@ export default function ProjectDetailsPage() {
                         years
                       </p>
                     </div>
-                    <div className="p-4 bg-soft rounded-lg">
+                    <div className="p-4 bg-soft dark:bg-soft/10 rounded-lg">
                       <p className="text-sm text-paragraph mb-1">
                         Funding Goal
                       </p>
-                      <p className="text-xl font-bold text-heading">
+                      <p className="text-xl font-bold text-heading dark:text-background">
                         ${(project.fundingGoal / 1000000).toFixed(1)}M
                       </p>
                     </div>

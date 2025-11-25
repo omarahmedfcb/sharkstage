@@ -17,7 +17,7 @@ export default function InvestmentCategories() {
           {categories.map((cat, index) => (
             <div
               key={index}
-              className="bg-background dark:bg-background/10 rounded-2xl shadow-sm p-6 flex flex-col justify-between 
+              className="bg-white dark:bg-background/10 rounded-2xl shadow-sm p-6 flex flex-col justify-between 
                           hover:shadow-lg hover:-translate-y-1 
                          transition-all duration-300 ease-out"
             >

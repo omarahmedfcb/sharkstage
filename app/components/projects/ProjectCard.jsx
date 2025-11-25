@@ -16,7 +16,7 @@ export default function ProjectCard({ project }) {
 
   return (
     <Link href={`/projects/${project._id}`}>
-      <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 h-full flex flex-col">
+      <div className="bg-white dark:bg-background/10 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-gray-100 dark:border-0 h-full flex flex-col">
         {/* Project Image */}
         <div className="relative h-48 overflow-hidden">
           <img
@@ -44,7 +44,7 @@ export default function ProjectCard({ project }) {
         {/* Project Content */}
         <div className="p-5 flex flex-col flex-grow">
           {/* Title and Description */}
-          <h3 className="text-xl font-bold text-heading mb-2 line-clamp-2">
+          <h3 className="text-xl font-bold text-heading dark:text-background mb-2 line-clamp-2">
             {project.title}
           </h3>
           <p className="text-paragraph text-sm mb-4 line-clamp-2 flex-grow">
@@ -54,10 +54,10 @@ export default function ProjectCard({ project }) {
           {/* Funding Progress */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-semibold text-heading">
+              <span className="text-sm font-semibold text-heading dark:text-background">
                 {project.progress}%
               </span>
-              <span className="text-sm font-semibold text-heading">
+              <span className="text-sm font-semibold text-heading dark:text-background">
                 $
                 {project.totalPrice > 999999
                   ? `${project.totalPrice / 1000000}M`
@@ -79,20 +79,20 @@ export default function ProjectCard({ project }) {
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center gap-1 text-paragraph text-sm">
               <TrendingUp className="w-4 h-4 text-buttons" />
-              <span className="font-semibold text-heading">
+              <span className="font-semibold text-heading dark:text-background">
                 {project.expectedROI}%
               </span>
               <span className="text-xs">ROI</span>
             </div>
             {/* <div className="flex items-center gap-1 text-paragraph text-sm">
               <Clock className="w-4 h-4 text-primary" />
-              <span className="font-semibold text-heading">{daysLeft}</span>
+              <span className="font-semibold text-heading dark:text-background">{daysLeft}</span>
               <span className="text-xs">days left</span>
             </div> */}
             <div
               className={`px-2 py-1 rounded text-xs font-semibold ${
                 project.status === "active"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-green-100 dark:bg-green-300 text-green-700"
                   : project.status === "funded"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-gray-100 text-gray-700"

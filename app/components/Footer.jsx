@@ -14,7 +14,9 @@ export default function Footer() {
             <span className="w-14">
               <img className="w-full" src="/logo-blue-2.png" alt="" />
             </span>
-            <span className="font-semibold text-lg">SharkStage</span>
+            <span className="font-semibold text-primary dark:text-primary-dark text-lg">
+              SharkStage
+            </span>
           </div>
           <p className="text-sm mb-4">
             The world's leading marketplace for buying and selling investment
@@ -37,7 +39,9 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="font-semibold mb-4">Quick Links</h3>
+          <h3 className="font-semibold dark:text-background mb-4">
+            Quick Links
+          </h3>
           <ul className="space-y-2 text-sm">
             <li>
               <a href="#" className="hover:text-primary">
@@ -63,7 +67,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="font-semibold mb-4">Resources</h3>
+          <h3 className="font-semibold mb-4 dark:text-background">Resources</h3>
           <ul className="space-y-2 text-sm">
             <li>
               <a href="#" className="hover:text-primary">
@@ -89,7 +93,9 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="font-semibold mb-4">Contact Us</h3>
+          <h3 className="font-semibold mb-4 dark:text-background">
+            Contact Us
+          </h3>
           <ul className="space-y-2 text-sm">
             <li>📍 123 Investment Street, Finance District, NY 10001</li>
             <li>📞 +1 (555) 123-4567</li>

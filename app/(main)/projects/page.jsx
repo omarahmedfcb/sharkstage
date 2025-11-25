@@ -109,9 +109,9 @@ export default function ProjectsPage() {
     projects.length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-background-dark">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary to-secondary text-white py-20 pt-40 px-4">
+      <section className="bg-gradient-to-br from-primary to-secondary dark:to-heading text-white py-20 pt-40 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
             Explore Investment Opportunities
@@ -186,11 +186,11 @@ export default function ProjectsPage() {
         <div className="mb-6">
           <p className="text-paragraph">
             Showing{" "}
-            <span className="font-semibold text-heading">
+            <span className="font-semibold text-heading dark:text-background">
               {currentProjects.length}
             </span>{" "}
             of{" "}
-            <span className="font-semibold text-heading">
+            <span className="font-semibold text-heading dark:text-background">
               {filteredAndSortedProjects.length}
             </span>{" "}
             projects

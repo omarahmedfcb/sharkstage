@@ -41,7 +41,7 @@ export default function FilterBar({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
+    <div className="bg-white dark:bg-background/10 rounded-xl shadow-sm p-6 mb-8 border border-gray-100 dark:border-0">
       {/* Search and Sort Row */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         {/* Search Bar */}
@@ -52,7 +52,7 @@ export default function FilterBar({
             placeholder="Search projects by name..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="dark:placeholder:text-background w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
         </div>
 
@@ -61,7 +61,7 @@ export default function FilterBar({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+            className="w-full px-4 py-3 border border-gray-200 bg-white dark:bg-gray-300 text-paragraph dark:text-background-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent "
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -91,7 +91,7 @@ export default function FilterBar({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-semibold text-heading mb-3">
+              <label className="block text-sm font-semibold text-heading dark:text-background mb-3">
                 Category
               </label>
               <div className="flex flex-wrap gap-2">
@@ -100,7 +100,7 @@ export default function FilterBar({
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     selectedCategory === "all"
                       ? "bg-primary text-white"
-                      : "bg-gray-100 text-paragraph hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-300 text-paragraph dark:text-background-dark hover:bg-gray-200"
                   }`}
                 >
                   All
@@ -112,7 +112,7 @@ export default function FilterBar({
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                       selectedCategory === cat.title
                         ? `${cat.bg} text-white`
-                        : "bg-gray-100 text-paragraph hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-300 text-paragraph dark:text-background-dark hover:bg-gray-200"
                     }`}
                   >
                     {/* <cat.icon className="w-4 h-4" /> */}
@@ -124,7 +124,7 @@ export default function FilterBar({
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-semibold text-heading mb-3">
+              <label className="block text-sm font-semibold text-heading dark:text-background mb-3">
                 Status
               </label>
               <div className="flex flex-wrap gap-2">
@@ -135,7 +135,7 @@ export default function FilterBar({
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       selectedStatus === status.value
                         ? "bg-primary text-white"
-                        : "bg-gray-100 text-paragraph hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-300 text-paragraph dark:text-background-dark hover:bg-gray-200"
                     }`}
                   >
                     {status.label}
@@ -146,7 +146,7 @@ export default function FilterBar({
 
             {/* ROI Range Filter */}
             <div>
-              <label className="block text-sm font-semibold text-heading mb-3">
+              <label className="block text-sm font-semibold text-heading dark:text-background mb-3">
                 Minimum ROI: {roiRange}%
               </label>
               <input

@@ -48,10 +48,10 @@ export default function SuccessStories() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl dark:text-background sm:text-5xl font-bold  mb-4">
             Success Stories
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-paragraph mt-2 max-w-2xl mx-auto">
             Read about the latest experiences and achievements from our
             community
           </p>
@@ -63,7 +63,7 @@ export default function SuccessStories() {
             <div
               key={post._id}
               onClick={() => router.push(`/blog/${post._id}`)}
-              className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+              className="bg-white dark:bg-background/10 rounded-2xl p-6 border border-gray-200 dark:border-0 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
             >
               {/* Author */}
               <div className="flex items-center gap-3 mb-4">
@@ -88,7 +88,7 @@ export default function SuccessStories() {
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+              <h3 className="text-xl font-bold dark:text-background mb-3 group-hover:text-primary transition-colors">
                 {truncateText(post.title, 60)}
               </h3>
               <p className="text-gray-600 mb-4 leading-relaxed">
