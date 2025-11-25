@@ -121,7 +121,7 @@ export default function PostDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
@@ -144,19 +144,19 @@ export default function PostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen pt-16 bg-gray-50">
+    <div className="min-h-screen pt-16 bg-gray-50 dark:bg-background-dark">
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
         {/* Back Button */}
         <button
           onClick={() => router.push("/blog")}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-paragraph hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back to Blog</span>
         </button>
 
         {/* Post Card */}
-        <div className="bg-white relative rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-6">
+        <div className="bg-white dark:bg-background/10 dark:border-0 relative rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-6">
           {currentUser?.accountType == "admin" ||
           currentUser?._id == post.author?._id ? (
             <div className="absolute right-4 top-4">
@@ -177,13 +177,13 @@ export default function PostDetailPage() {
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-lg">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold text-lg">
                 {post.author?.firstName?.charAt(0)}
                 {post.author?.lastName?.charAt(0)}
               </div>
             )}
             <div>
-              <p className="font-semibold text-gray-900 text-lg">
+              <p className="font-semibold text-gray-900 dark:text-background text-lg">
                 {post.author?.firstName} {post.author?.lastName}
               </p>
               <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -194,10 +194,10 @@ export default function PostDetailPage() {
           </div>
 
           {/* Post Content */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-background mb-4">
             {post.title}
           </h1>
-          <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">
+          <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap">
             {post.content}
           </p>
 
@@ -221,7 +221,7 @@ export default function PostDetailPage() {
                     className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold flex-shrink-0">
                     {currentUser?.firstName?.charAt(0)}
                     {currentUser?.lastName?.charAt(0)}
                   </div>

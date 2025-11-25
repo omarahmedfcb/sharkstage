@@ -16,8 +16,10 @@ export default function AddComment({
   return (
     <>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
+        <DialogTitle className="dark:bg-background-dark dark:text-background">
+          {title}
+        </DialogTitle>
+        <DialogContent className="dark:bg-background-dark">
           <form
             onSubmit={handleSubmit(onSubmitLogic)}
             id="subscription-form"
@@ -26,9 +28,9 @@ export default function AddComment({
             {children}
           </form>
         </DialogContent>
-        <DialogActions>
+        <DialogActions className="dark:bg-background-dark">
           <button
-            className="w-full  bg-background text-primary font-bold py-2 rounded-lg hover:shadow-lg transition-shadow "
+            className="w-full  bg-background dark:bg-background/75 hover:dark:bg-background/45 text-primary dark:text-heading font-bold py-2 rounded-lg hover:shadow-lg transition-shadow "
             onClick={handleClose}
             disabled={postLoading}
           >
@@ -38,7 +40,7 @@ export default function AddComment({
             type="submit"
             form="subscription-form"
             disabled={postLoading}
-            className="w-full justify-center py-2 bg-primary text-background font-bold rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="w-full justify-center py-2 bg-primary text-background font-bold rounded-lg hover:bg-secondary hover:dark:bg-heading transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {postLoading && <Loader2 size={16} className="animate-spin" />}
             {postLoading ? "Adding..." : "Add"}

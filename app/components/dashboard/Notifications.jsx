@@ -39,10 +39,10 @@ function Notifications() {
   return (
     <div className="relative">
       <button
-        className="relative p-2 rounded hover:bg-gray-100"
+        className="relative p-2 rounded "
         onClick={() => setNotificationsOpen(!notificationsOpen)}
       >
-        <Bell className="w-6 h-6 text-gray-600" />
+        <Bell className="w-6 h-6 text-gray-600 dark:text-background" />
         {userNotifications.filter((ele) => ele.isRead == false).length > 0 && (
           <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full">
             {userNotifications.filter((ele) => ele.isRead == false).length}

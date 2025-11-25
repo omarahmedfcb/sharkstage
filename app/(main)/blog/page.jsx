@@ -108,13 +108,15 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background dark:bg-background-dark">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-32">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Blog</h1>
-            <p className="text-gray-600 mt-1">Share your thoughts and ideas</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-background">
+              Blog
+            </h1>
+            <p className="text-paragraph mt-1">Share your thoughts and ideas</p>
           </div>
 
           {isLoggedIn && (
@@ -150,7 +152,7 @@ export default function BlogPage() {
                       <input
                         {...field}
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full dark:placeholder-background/30 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                         placeholder="Title"
                       />
                     </InputField>
@@ -169,7 +171,7 @@ export default function BlogPage() {
                       <textarea
                         {...field}
                         rows={5}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                        className="w-full dark:placeholder-background/30 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
                         placeholder="Content"
                       />
                     </InputField>
@@ -183,7 +185,7 @@ export default function BlogPage() {
         {/* Posts List */}
         <div className="space-y-4">
           {posts.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center">
+            <div className="bg-white dark:bg-background-dark rounded-2xl p-12 text-center">
               <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
                 No posts yet
@@ -199,7 +201,7 @@ export default function BlogPage() {
               <Link
                 key={post._id}
                 href={`/blog/${post._id}`}
-                className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:scale-[1.01] transition-all duration-200 block"
+                className="bg-white dark:bg-background/10 rounded-2xl p-6 border border-gray-100 dark:border-0 hover:shadow-lg hover:scale-[1.01] transition-all duration-200 block"
               >
                 {/* Author Info */}
                 <div className="flex items-center gap-3 mb-4">
@@ -210,16 +212,16 @@ export default function BlogPage() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold">
                       {post.author?.firstName?.charAt(0)}
                       {post.author?.lastName?.charAt(0)}
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-gray-900 dark:text-background">
                       {post.author?.firstName} {post.author?.lastName}
                     </p>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <div className="flex items-center gap-1 text-xs text-paragraph">
                       <Clock className="w-3 h-3" />
                       <span>{formatTime(post.createdAt)}</span>
                     </div>
@@ -227,16 +229,16 @@ export default function BlogPage() {
                 </div>
 
                 {/* Post Content */}
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-background mb-2">
                   {post.title}
                 </h2>
-                <p className="text-gray-700 mb-4 line-clamp-3">
+                <p className="text-gray-700 dark:text-paragraph mb-4 line-clamp-3">
                   {post.content}
                 </p>
 
                 {/* Engagement */}
                 <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-1 text-gray-600">
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-paragraph">
                     <MessageSquare className="w-4 h-4" />
                     <span className="text-sm">Comments</span>
                   </div>
