@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import ProjectPaymentForm from "@/app/components/payment/ProjectPaymentForm";
 
 const PROJECT_CATEGORIES = [
   "Technology",
@@ -26,6 +27,8 @@ export default function AddProjectPage() {
   const [error, setError] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [pendingProjectData, setPendingProjectData] = useState(null);
 
   const {
     control,
@@ -77,48 +80,76 @@ export default function AddProjectPage() {
   };
 
   const onSubmit = async (data) => {
+    // Validate form first
+    setError(null);
+
+    // Save project data temporarily and show payment form
+    setPendingProjectData({
+      formData: data,
+      imageFile: imageFile,
+    });
+    setShowPaymentForm(true);
+  };
+
+  const handleBackToForm = () => {
+    setShowPaymentForm(false);
+    setPendingProjectData(null);
+    setError(null);
+  };
+
+  const handlePaymentSuccess = async (paymentData) => {
+    if (!pendingProjectData) {
+      toast.error("Project data not found");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       const formData = new FormData();
+      const { formData: projectFormData, imageFile: projectImageFile } =
+        pendingProjectData;
 
       // Append form fields
-      formData.append("title", data.title);
-      formData.append("shortDesc", data.shortDesc);
-      formData.append("description", data.description);
-      formData.append("category", JSON.stringify({ en: data.category }));
-      formData.append("status", data.status);
-      formData.append("totalPrice", Number(data.totalPrice));
-      formData.append("expectedROI", Number(data.expectedROI));
+      formData.append("title", projectFormData.title);
+      formData.append("shortDesc", projectFormData.shortDesc);
+      formData.append("description", projectFormData.description);
+      formData.append("category", JSON.stringify({ en: projectFormData.category }));
+      formData.append("status", projectFormData.status);
+      formData.append("totalPrice", Number(projectFormData.totalPrice));
+      formData.append("expectedROI", Number(projectFormData.expectedROI));
       formData.append("owner", currentUser._id);
 
       // Add availablePercentage only if provided
-      if (data.availablePercentage) {
+      if (projectFormData.availablePercentage) {
         formData.append(
           "availablePercentage",
-          Number(data.availablePercentage)
+          Number(projectFormData.availablePercentage)
         );
       }
 
       // Append image if selected
-      if (imageFile) {
-        formData.append("image", imageFile);
+      if (projectImageFile) {
+        formData.append("image", projectImageFile);
       }
 
+      // Create project after payment
       const response = await api.post("/projects/add", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      toast.success("Project added successfully!");
+      toast.success("Payment processed and project created successfully!");
       reset();
       removeImage();
+      setShowPaymentForm(false);
+      setPendingProjectData(null);
       router.push(`/projects/${response.data.newProjectId}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add project");
-      toast.error(err.response?.data?.message || "Failed to add project");
+      setError(err.response?.data?.message || "Failed to create project");
+      toast.error(err.response?.data?.message || "Failed to create project");
     } finally {
       setLoading(false);
     }
@@ -133,6 +164,19 @@ export default function AddProjectPage() {
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
+
+  // Show payment form if needed
+  if (showPaymentForm && pendingProjectData) {
+    return (
+      <ProjectPaymentForm
+        onSubmit={handlePaymentSuccess}
+        onBack={handleBackToForm}
+        loading={loading}
+        errors={error ? { general: error } : {}}
+        projectData={pendingProjectData.formData}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
