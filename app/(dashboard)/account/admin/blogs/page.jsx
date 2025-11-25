@@ -4,7 +4,12 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FileText, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import AdminBlogsTable from "@/app/components/admin/AdminBlogsTable";
+import dynamic from "next/dynamic";
+
+const AdminBlogsTableNoSSR = dynamic(
+  () => import("@/app/components/admin/AdminBlogsTable"),
+  { ssr: false }
+);
 import toast from "react-hot-toast";
 
 export default function AdminBlogsPage() {
@@ -38,7 +43,7 @@ export default function AdminBlogsPage() {
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#0f3460]/20 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#16213e]/30 rounded-full blur-3xl" />
-          
+
           <div className="relative z-10 flex items-center gap-4">
             <div className="p-4 bg-gradient-to-br from-[#0f3460] to-[#16213e] rounded-2xl shadow-xl border border-[#0f3460]/50">
               <FileText className="text-red-400" size={40} />
@@ -58,9 +63,8 @@ export default function AdminBlogsPage() {
         </motion.div>
 
         {/* Blogs Table */}
-        <AdminBlogsTable />
+        <AdminBlogsTableNoSSR />
       </div>
     </div>
   );
 }
-
