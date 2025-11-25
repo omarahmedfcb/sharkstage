@@ -3,8 +3,11 @@ import { useState, useEffect } from "react";
 import { Search, Trash2, Eye, RefreshCw, FileText } from "lucide-react";
 import { getAllBlogs } from "@/lib/api/admin.api";
 import api from "@/lib/axios";
-import toast from "react-hot-toast";
-import { motion } from "framer-motion";
+// dynamically import toast and motion
+import dynamic from "next/dynamic";
+
+const toast = dynamic(() => import("react-hot-toast"), { ssr: false });
+const motion = dynamic(() => import("framer-motion"), { ssr: false });
 import Link from "next/link";
 
 export default function AdminBlogsTable() {
@@ -12,7 +15,12 @@ export default function AdminBlogsTable() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    pages: 0,
+  });
 
   const fetchBlogs = async () => {
     try {
@@ -41,7 +49,12 @@ export default function AdminBlogsTable() {
   }, [page, searchQuery]);
 
   const handleDelete = async (postId) => {
-    if (!confirm("Are you sure you want to delete this blog post? This action cannot be undone.")) return;
+    if (
+      !confirm(
+        "Are you sure you want to delete this blog post? This action cannot be undone."
+      )
+    )
+      return;
     try {
       await api.post(`/blog/post/delete/${postId}`);
       toast.success("Blog post deleted successfully");
@@ -54,8 +67,10 @@ export default function AdminBlogsTable() {
   return (
     <div className="bg-gradient-to-br from-[#1a1a2e]/80 to-[#16213e]/80 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-[#0f3460]/30">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-200 mb-4">Blogs Management</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-200 mb-4">
+          Blogs Management
+        </h2>
+
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="relative">
@@ -92,11 +107,21 @@ export default function AdminBlogsTable() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#0f3460]/30">
-                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">Title</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">Author</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">Comments</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">Created</th>
-                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">Actions</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">
+                    Title
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">
+                    Author
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">
+                    Comments
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">
+                    Created
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-300">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -113,8 +138,12 @@ export default function AdminBlogsTable() {
                           <FileText className="text-gray-400" size={18} />
                         </div>
                         <div>
-                          <p className="text-gray-200 font-semibold line-clamp-1">{post.title}</p>
-                          <p className="text-gray-400 text-xs line-clamp-1">{post.content?.substring(0, 50)}...</p>
+                          <p className="text-gray-200 font-semibold line-clamp-1">
+                            {post.title}
+                          </p>
+                          <p className="text-gray-400 text-xs line-clamp-1">
+                            {post.content?.substring(0, 50)}...
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -130,13 +159,18 @@ export default function AdminBlogsTable() {
                           ) : (
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0f3460] to-[#16213e] flex items-center justify-center border border-[#0f3460]/30">
                               <span className="text-gray-300 text-xs font-bold">
-                                {post.author.firstName?.[0]}{post.author.lastName?.[0]}
+                                {post.author.firstName?.[0]}
+                                {post.author.lastName?.[0]}
                               </span>
                             </div>
                           )}
                           <div>
-                            <p className="text-gray-200 text-sm font-medium">{post.author.firstName} {post.author.lastName}</p>
-                            <p className="text-gray-400 text-xs">{post.author.email}</p>
+                            <p className="text-gray-200 text-sm font-medium">
+                              {post.author.firstName} {post.author.lastName}
+                            </p>
+                            <p className="text-gray-400 text-xs">
+                              {post.author.email}
+                            </p>
                           </div>
                         </div>
                       ) : (
@@ -181,18 +215,22 @@ export default function AdminBlogsTable() {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between mt-6">
               <p className="text-gray-400 text-sm">
-                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} posts
+                Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
+                of {pagination.total} posts
               </p>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
                   className="px-4 py-2 bg-[#0f172a]/50 border border-[#0f3460]/30 rounded-lg text-gray-300 hover:bg-[#0f3460]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.pages, p + 1))
+                  }
                   disabled={page === pagination.pages}
                   className="px-4 py-2 bg-[#0f172a]/50 border border-[#0f3460]/30 rounded-lg text-gray-300 hover:bg-[#0f3460]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
@@ -206,4 +244,3 @@ export default function AdminBlogsTable() {
     </div>
   );
 }
-
