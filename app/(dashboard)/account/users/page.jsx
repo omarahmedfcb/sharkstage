@@ -21,7 +21,7 @@ function Users() {
 
   return (
     <>
-      {users.map((user) => (
+      {users?.map((user) => (
         <div className="p-2">{user.email}</div>
       ))}
     </>

@@ -205,8 +205,8 @@ export default function PostDetailPage() {
         </div>
 
         {/* Comments Section */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="bg-white dark:bg-background/10 rounded-2xl p-6 border border-gray-100 dark:border-0 shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-background mb-6">
             Comments ({comments.length})
           </h2>
 
@@ -236,7 +236,7 @@ export default function PostDetailPage() {
                         {...field}
                         placeholder="Write a comment..."
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        className="w-full dark:placeholder-background/30 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                       />
                     )}
                   />
@@ -287,13 +287,13 @@ export default function PostDetailPage() {
                       className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold flex-shrink-0">
                       {comment.author?.firstName?.charAt(0)}
                       {comment.author?.lastName?.charAt(0)}
                     </div>
                   )}
                   <div className="flex-1">
-                    <div className="bg-gray-50 relative rounded-lg p-4">
+                    <div className="bg-gray-50 dark:bg-background/10 relative rounded-lg p-4">
                       {currentUser?.accountType == "admin" ||
                       currentUser?._id == comment.author?._id ? (
                         <div className="absolute right-4 bottom-2">
@@ -308,14 +308,16 @@ export default function PostDetailPage() {
                       ) : null}
 
                       <div className="flex items-baseline justify-between mb-1">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-gray-900 dark:text-background">
                           {comment.author?.firstName} {comment.author?.lastName}
                         </p>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-paragraph">
                           {formatTime(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-gray-700">{comment.content}</p>
+                      <p className="text-gray-700 dark:text-paragraph">
+                        {comment.content}
+                      </p>
                     </div>
                   </div>
                 </div>
