@@ -152,7 +152,7 @@ function DashboardHero({ currentUser, accountType }) {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3a5a92] via-[#6fa8dc] to-[#8b5cf6] p-8 mb-8 shadow-2xl"
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3a5a92] to-secondary dark:to-heading p-8 mb-8 shadow-2xl"
     >
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
@@ -723,7 +723,7 @@ export default function OverviewPage() {
   const pieData = categoryDistribution || [];
 
   return (
-    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)]  ">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <DashboardHero
@@ -741,7 +741,7 @@ export default function OverviewPage() {
             <>
               <Link
                 href="/account/projects/add"
-                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] p-6 shadow-xl hover:shadow-2xl transition-all"
+                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading p-6 shadow-xl hover:shadow-2xl transition-all"
               >
                 <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
@@ -760,7 +760,7 @@ export default function OverviewPage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#3a5a92]/5 to-[#6fa8dc]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <FolderKanban className="text-white" size={24} />
                   </div>
                   <h3 className="text-gray-800 font-bold text-lg mb-1">
@@ -774,7 +774,7 @@ export default function OverviewPage() {
             <>
               <Link
                 href="/projects"
-                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] p-6 shadow-xl hover:shadow-2xl transition-all"
+                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading p-6 shadow-xl hover:shadow-2xl transition-all"
               >
                 <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
@@ -793,7 +793,7 @@ export default function OverviewPage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#3a5a92]/5 to-[#6fa8dc]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <FolderKanban className="text-white" size={24} />
                   </div>
                   <h3 className="text-gray-800 font-bold text-lg mb-1">
@@ -810,7 +810,7 @@ export default function OverviewPage() {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#3a5a92]/5 to-[#6fa8dc]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <BarChart3 className="text-white" size={24} />
               </div>
               <h3 className="text-gray-800 font-bold text-lg mb-1">
@@ -825,7 +825,7 @@ export default function OverviewPage() {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#3a5a92]/5 to-[#6fa8dc]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Settings className="text-white" size={24} />
               </div>
               <h3 className="text-gray-800 font-bold text-lg mb-1">Settings</h3>

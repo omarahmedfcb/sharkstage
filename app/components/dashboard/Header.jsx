@@ -1,18 +1,13 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import {
-  ChevronDown,
-  User,
-  LogOut,
-  LayoutGrid,
-  Settings,
-} from "lucide-react";
+import { ChevronDown, User, LogOut, LayoutGrid, Settings } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { logoutUser } from "@/lib/features/auth/auththunks";
 import Notifications from "./Notifications";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeButton from "../ThemeButton";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -48,17 +43,18 @@ export default function Header() {
   };
 
   return (
-    <header className="relative bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 p-3 sm:p-4 flex justify-between items-center sticky top-0 z-40">
+    <header className=" bg-white/80 dark:bg-background-dark dark:text-background backdrop-blur-xl shadow-lg border-b border-gray-200/50 p-3 sm:p-4 flex justify-between items-center sticky top-0 z-40">
       {/* Gradient Background Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#3a5a92]/5 via-[#6fa8dc]/5 to-[#8b5cf6]/5" />
-      
+
       <div className="relative z-10 flex-1 flex items-center">
-        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] bg-clip-text text-transparent">
+        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary  bg-clip-text text-transparent">
           Dashboard
         </h1>
       </div>
 
       <div className="relative z-10 flex items-center space-x-3 sm:space-x-4">
+        <ThemeButton />
         {/* Notifications */}
         <Notifications />
 
@@ -78,17 +74,17 @@ export default function Header() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] flex items-center justify-center text-white text-sm font-semibold">
+                <div className="w-full h-full bg-gradient-to-br from-[#3a5a92] to-[#6fa8dc] dark:to-heading flex items-center justify-center text-white text-sm font-semibold">
                   {currentUser?.firstName?.charAt(0) || "U"}
                   {currentUser?.lastName?.charAt(0) || ""}
                 </div>
               )}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-sm font-semibold text-gray-800">
+              <p className="text-sm font-semibold text-gray-800 dark:text-background">
                 {currentUser?.firstName} {currentUser?.lastName}
               </p>
-              <p className="text-xs text-gray-500 capitalize">
+              <p className="text-xs text-gray-500 dark:text-paragraph capitalize">
                 {currentUser?.accountType}
               </p>
             </div>
@@ -108,14 +104,16 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 top-12 mt-2 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl w-64 py-2 z-50 border border-gray-200/50 overflow-hidden"
+                className="absolute right-0 top-12 mt-2 bg-white/95 dark:bg-background-dark backdrop-blur-xl shadow-2xl rounded-2xl w-64 py-2 z-50 border border-gray-200/50 overflow-hidden"
               >
                 {/* Gradient Header */}
-                <div className="px-4 py-4 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white">
+                <div className="px-4 py-4 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] dark:to-heading text-white">
                   <p className="text-sm font-semibold">
                     {currentUser?.firstName} {currentUser?.lastName}
                   </p>
-                  <p className="text-xs text-white/80 truncate">{currentUser?.email}</p>
+                  <p className="text-xs text-white/80 truncate">
+                    {currentUser?.email}
+                  </p>
                 </div>
 
                 {/* Menu Items */}
@@ -123,7 +121,7 @@ export default function Header() {
                   <Link
                     href="/account"
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
+                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-background hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
                   >
                     <LayoutGrid className="w-4 h-4 text-[#3a5a92] group-hover:scale-110 transition-transform" />
                     <span className="font-medium">Dashboard</span>
@@ -132,7 +130,7 @@ export default function Header() {
                   <Link
                     href="/account/profile"
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
+                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-background hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
                   >
                     <User className="w-4 h-4 text-[#3a5a92] group-hover:scale-110 transition-transform" />
                     <span className="font-medium">Profile</span>
@@ -141,7 +139,7 @@ export default function Header() {
                   <Link
                     href="/account/projects"
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
+                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-background hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
                   >
                     <LayoutGrid className="w-4 h-4 text-[#3a5a92] group-hover:scale-110 transition-transform" />
                     <span className="font-medium">
@@ -154,7 +152,7 @@ export default function Header() {
                   <Link
                     href="/account/offers"
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
+                    className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 dark:text-background hover:bg-gradient-to-r hover:from-[#3a5a92]/10 hover:to-[#6fa8dc]/10 transition-all group"
                   >
                     <LayoutGrid className="w-4 h-4 text-[#3a5a92] group-hover:scale-110 transition-transform" />
                     <span className="font-medium">Offers</span>

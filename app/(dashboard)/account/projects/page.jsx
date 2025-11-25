@@ -1,6 +1,15 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Eye, FileDown, Trash, Pen, FolderKanban, Sparkles, TrendingUp } from "lucide-react";
+import {
+  Plus,
+  Eye,
+  FileDown,
+  Trash,
+  Pen,
+  FolderKanban,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import InvestorFilter from "./InvestorFilter";
 import { useDispatch, useSelector } from "react-redux";
@@ -132,43 +141,58 @@ export default function ProjectsPage() {
 
   const exportCSV = () => {
     const csv = [
-      ["Title", "Category", currentUser?.accountType === "investor" ? "Percentage" : "Progress", "Created At"].join(","),
+      [
+        "Title",
+        "Category",
+        currentUser?.accountType === "investor" ? "Percentage" : "Progress",
+        "Created At",
+      ].join(","),
       ...userProjects.map((p) => {
         const project = currentUser?.accountType === "investor" ? p.project : p;
-        const progress = currentUser?.accountType === "investor" ? p.percentage : project.progress;
+        const progress =
+          currentUser?.accountType === "investor"
+            ? p.percentage
+            : project.progress;
         return [
           project?.title || "N/A",
           project?.category?.[lang] || "N/A",
           `${progress}%`,
-          project?.createdAt ? new Date(project.createdAt).toISOString().split("T")[0] : "N/A"
+          project?.createdAt
+            ? new Date(project.createdAt).toISOString().split("T")[0]
+            : "N/A",
         ].join(",");
       }),
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = currentUser?.accountType === "investor" ? "my_investments.csv" : "my_projects.csv";
+    link.download =
+      currentUser?.accountType === "investor"
+        ? "my_investments.csv"
+        : "my_projects.csv";
     link.click();
   };
 
   return (
-    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3a5a92] via-[#6fa8dc] to-[#8b5cf6] p-6 sm:p-8 mb-8 shadow-2xl"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3a5a92] to-secondary dark:to-heading p-6 sm:p-8 mb-8 shadow-2xl"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
-          
+
           <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <FolderKanban className="text-yellow-300" size={32} />
                 <h1 className="text-3xl sm:text-4xl font-bold text-white">
-                  {currentUser?.accountType === "investor" ? "My Investments" : "My Projects"}
+                  {currentUser?.accountType === "investor"
+                    ? "My Investments"
+                    : "My Projects"}
                 </h1>
               </div>
               <p className="text-white/90 text-lg">
@@ -241,7 +265,10 @@ export default function ProjectsPage() {
         {loading && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 animate-shimmer">
+              <div
+                key={i}
+                className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 animate-shimmer"
+              >
                 <div className="h-6 bg-gray-200 rounded mb-3"></div>
                 <div className="h-4 bg-gray-200 rounded mb-4"></div>
                 <div className="h-2 bg-gray-200 rounded mb-4"></div>
@@ -284,24 +311,26 @@ export default function ProjectsPage() {
                   : "Create your first project to get started"
                 : "Try adjusting your filters to see more results"}
             </p>
-            {userProjects.length === 0 && currentUser?.accountType === "owner" && (
-              <Link
-                href="/account/projects/add"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-xl hover:shadow-xl transition-all font-semibold"
-              >
-                <Plus size={20} />
-                Create Your First Project
-              </Link>
-            )}
-            {userProjects.length === 0 && currentUser?.accountType === "investor" && (
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-xl hover:shadow-xl transition-all font-semibold"
-              >
-                <TrendingUp size={20} />
-                Browse Projects
-              </Link>
-            )}
+            {userProjects.length === 0 &&
+              currentUser?.accountType === "owner" && (
+                <Link
+                  href="/account/projects/add"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] dark:to-heading text-white rounded-xl hover:shadow-xl transition-all font-semibold"
+                >
+                  <Plus size={20} />
+                  Create Your First Project
+                </Link>
+              )}
+            {userProjects.length === 0 &&
+              currentUser?.accountType === "investor" && (
+                <Link
+                  href="/projects"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] dark:to-heading text-white rounded-xl hover:shadow-xl transition-all font-semibold"
+                >
+                  <TrendingUp size={20} />
+                  Browse Projects
+                </Link>
+              )}
           </div>
         )}
 
@@ -323,7 +352,7 @@ export default function ProjectsPage() {
                   : "Sold";
               const text2 =
                 currentUser?.accountType === "investor" ? "Invested" : "Funded";
-              
+
               return (
                 <motion.div
                   key={project._id}
@@ -331,7 +360,7 @@ export default function ProjectsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.02, y: -5 }}
-                  className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 flex flex-col justify-between hover:shadow-2xl transition-all"
+                  className="bg-white/80 dark:bg-background/10 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 flex flex-col justify-between hover:shadow-2xl transition-all"
                 >
                   {/* Project Image/Icon */}
                   <div className="mb-4">
@@ -352,7 +381,7 @@ export default function ProjectsPage() {
 
                   {/* Project Title */}
                   <div className="mb-4">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-background mb-2 line-clamp-2">
                       {project.title}
                     </h3>
 
@@ -369,17 +398,23 @@ export default function ProjectsPage() {
                     {/* Enhanced Progress Bar */}
                     <div className="mb-3">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-semibold text-gray-700">
-                          {percentage === 100 ? text1 : `${percentage}% ${text2}`}
+                        <span className="text-sm font-semibold text-gray-700 dark:text-paragraph">
+                          {percentage === 100
+                            ? text1
+                            : `${percentage}% ${text2}`}
                         </span>
-                        <span className="text-xs text-gray-500">{percentage}%</span>
+                        <span className="text-xs text-gray-500">
+                          {percentage}%
+                        </span>
                       </div>
                       <div className="w-full bg-gray-200/50 h-3 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percentage}%` }}
                           transition={{ duration: 1, ease: "easeOut" }}
-                          className={`h-full rounded-full ${progressColor(percentage)} shadow-lg`}
+                          className={`h-full rounded-full ${progressColor(
+                            percentage
+                          )} shadow-lg`}
                         />
                       </div>
                     </div>
@@ -389,22 +424,23 @@ export default function ProjectsPage() {
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
                     <Link
                       href={`/projects/${project._id}`}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-xl hover:shadow-lg transition-all font-semibold text-sm"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] dark:to-heading text-white rounded-xl hover:shadow-lg transition-all font-semibold text-sm"
                     >
                       <Eye size={16} />
                       View
                     </Link>
-                    {currentUser?.accountType != "investor" && percentage == 0 && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleDelete(project._id)}
-                        className="p-2.5 text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-all"
-                        title="Delete"
-                      >
-                        <Trash size={18} />
-                      </motion.button>
-                    )}
+                    {currentUser?.accountType != "investor" &&
+                      percentage == 0 && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleDelete(project._id)}
+                          className="p-2.5 text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-all"
+                          title="Delete"
+                        >
+                          <Trash size={18} />
+                        </motion.button>
+                      )}
                     {currentUser?.accountType != "investor" && (
                       <Link
                         href={`/account/projects/edit/${project._id}`}
