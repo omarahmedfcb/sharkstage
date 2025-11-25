@@ -2,11 +2,13 @@
 
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function ThemeButton({ children }) {
-  let [dark, setDark] = useState(
-    document.documentElement.classList.contains("dark")
-  );
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
   const toggleTheme = () => {
     // const dark = document.documentElement.classList.contains("dark");
     // setDark(dark);
