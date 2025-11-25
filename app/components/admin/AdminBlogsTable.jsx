@@ -3,11 +3,8 @@ import { useState, useEffect } from "react";
 import { Search, Trash2, Eye, RefreshCw, FileText } from "lucide-react";
 import { getAllBlogs } from "@/lib/api/admin.api";
 import api from "@/lib/axios";
-// dynamically import toast and motion
-import dynamic from "next/dynamic";
-
-const toast = dynamic(() => import("react-hot-toast"), { ssr: false });
-const motion = dynamic(() => import("framer-motion"), { ssr: false });
+import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function AdminBlogsTable() {

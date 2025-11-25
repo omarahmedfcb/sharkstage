@@ -4,12 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FileText, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-
-const AdminBlogsTableNoSSR = dynamic(
-  () => import("@/app/components/admin/AdminBlogsTable"),
-  { ssr: false }
-);
+import AdminBlogsTable from "@/app/components/admin/AdminBlogsTable";
 import toast from "react-hot-toast";
 
 export default function AdminBlogsPage() {
@@ -63,7 +58,7 @@ export default function AdminBlogsPage() {
         </motion.div>
 
         {/* Blogs Table */}
-        <AdminBlogsTableNoSSR />
+        <AdminBlogsTable />
       </div>
     </div>
   );
