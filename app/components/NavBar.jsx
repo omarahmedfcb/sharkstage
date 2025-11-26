@@ -101,7 +101,7 @@ function Navbar() {
                   </Link>
                 </>
               ) : null}
-              <LanguageIcon className="cursor-pointer " />
+              {/* <LanguageIcon className="cursor-pointer " /> */}
               <ThemeButton />
             </div>
             <div
