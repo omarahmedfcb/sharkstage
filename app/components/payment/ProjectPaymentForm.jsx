@@ -62,33 +62,33 @@ export default function ProjectPaymentForm({
         <div className="mb-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-primary transition mb-4"
+            className="flex items-center gap-2 text-gray-600 dark:text-paragraph hover:text-primary dark:hover:text-primary-dark transition mb-4"
           >
             <ArrowLeft size={20} />
             <span>Back to Project Form</span>
           </button>
-          <h1 className="text-3xl sm:text-4xl font-bold text-heading mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-heading dark:text-background mb-2">
             Complete Payment
           </h1>
-          <p className="text-paragraph">
+          <p className="text-paragraph dark:text-paragraph">
             Enter your payment details to publish your project
           </p>
         </div>
 
         {/* Payment Summary */}
         {projectData && (
-          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg p-6 mb-6 border border-primary/20">
-            <h3 className="font-semibold text-heading mb-4">Project Summary</h3>
+          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 rounded-lg p-6 mb-6 border border-primary/20 dark:border-primary/30">
+            <h3 className="font-semibold text-heading dark:text-background mb-4">Project Summary</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-paragraph">Project Title:</span>
-                <span className="font-medium text-heading">
+                <span className="text-paragraph dark:text-paragraph">Project Title:</span>
+                <span className="font-medium text-heading dark:text-background">
                   {projectData.title}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-paragraph">Listing Fee:</span>
-                <span className="font-bold text-primary text-lg">
+                <span className="text-paragraph dark:text-paragraph">Listing Fee:</span>
+                <span className="font-bold text-primary dark:text-primary-dark text-lg">
                   ${listingFee.toFixed(2)}
                 </span>
               </div>
@@ -97,12 +97,12 @@ export default function ProjectPaymentForm({
         )}
 
         {/* Payment Form */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white dark:bg-background/10 rounded-lg shadow-md dark:shadow-none p-6 border border-gray-200 dark:border-0">
           {/* Mock Payment Notice */}
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/30 rounded-lg">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-yellow-800">
+              <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-yellow-800 dark:text-yellow-300">
                 <p className="font-semibold mb-1">Mock Payment (Demo Only)</p>
                 <p>
                   This is a demonstration payment form. You can enter any dummy
@@ -115,8 +115,8 @@ export default function ProjectPaymentForm({
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Card Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Card Number <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
+                Card Number <span className="text-red-500 dark:text-red-400">*</span>
               </label>
               <div className="relative">
                 <input
@@ -126,23 +126,23 @@ export default function ProjectPaymentForm({
                   onChange={handleChange}
                   placeholder="1234 5678 9012 3456"
                   maxLength={19}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 placeholder:text-gray-400 ${
-                    errors?.cardNumber ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 dark:text-background dark:bg-background/10 dark:border-0 dark:placeholder-background/30 placeholder:text-gray-400 ${
+                    errors?.cardNumber ? "border-red-500 dark:border-red-500" : "border-gray-300"
                   }`}
                   required
                   disabled={loading}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <CreditCard className="w-5 h-5 text-gray-400" />
+                  <CreditCard className="w-5 h-5 text-gray-400 dark:text-background/50" />
                 </div>
               </div>
               {formData.cardNumber && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-paragraph mt-1">
                   {getCardBrand(formData.cardNumber)}
                 </p>
               )}
               {errors?.cardNumber && (
-                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                <p className="text-sm text-red-500 dark:text-red-400 mt-1 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {errors.cardNumber}
                 </p>
@@ -151,8 +151,8 @@ export default function ProjectPaymentForm({
 
             {/* Cardholder Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cardholder Name <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
+                Cardholder Name <span className="text-red-500 dark:text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -160,14 +160,14 @@ export default function ProjectPaymentForm({
                 value={formData.cardholderName}
                 onChange={handleChange}
                 placeholder="John Doe"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 placeholder:text-gray-400 ${
-                  errors?.cardholderName ? "border-red-500" : "border-gray-300"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 dark:text-background dark:bg-background/10 dark:border-0 dark:placeholder-background/30 placeholder:text-gray-400 ${
+                  errors?.cardholderName ? "border-red-500 dark:border-red-500" : "border-gray-300"
                 }`}
                 required
                 disabled={loading}
               />
               {errors?.cardholderName && (
-                <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                <p className="text-sm text-red-500 dark:text-red-400 mt-1 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {errors.cardholderName}
                 </p>
@@ -177,8 +177,8 @@ export default function ProjectPaymentForm({
             {/* Expiry and CVV */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expiry Date <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
+                  Expiry Date <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -189,8 +189,8 @@ export default function ProjectPaymentForm({
                     placeholder="MM"
                     min="1"
                     max="12"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 placeholder:text-gray-400 ${
-                      errors?.expiryMonth ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 dark:text-background dark:bg-background/10 dark:border-0 dark:placeholder-background/30 placeholder:text-gray-400 ${
+                      errors?.expiryMonth ? "border-red-500 dark:border-red-500" : "border-gray-300"
                     }`}
                     required
                     disabled={loading}
@@ -203,15 +203,15 @@ export default function ProjectPaymentForm({
                     placeholder="YY"
                     min={new Date().getFullYear() % 100}
                     max={99}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 placeholder:text-gray-400 ${
-                      errors?.expiryYear ? "border-red-500" : "border-gray-300"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 dark:text-background dark:bg-background/10 dark:border-0 dark:placeholder-background/30 placeholder:text-gray-400 ${
+                      errors?.expiryYear ? "border-red-500 dark:border-red-500" : "border-gray-300"
                     }`}
                     required
                     disabled={loading}
                   />
                 </div>
                 {(errors?.expiryMonth || errors?.expiryYear) && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <p className="text-sm text-red-500 dark:text-red-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.expiryMonth || errors.expiryYear}
                   </p>
@@ -219,8 +219,8 @@ export default function ProjectPaymentForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  CVV <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
+                  CVV <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -229,14 +229,14 @@ export default function ProjectPaymentForm({
                   onChange={handleChange}
                   placeholder="123"
                   maxLength={4}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 placeholder:text-gray-400 ${
-                    errors?.cvv ? "border-red-500" : "border-gray-300"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-gray-900 dark:text-background dark:bg-background/10 dark:border-0 dark:placeholder-background/30 placeholder:text-gray-400 ${
+                    errors?.cvv ? "border-red-500 dark:border-red-500" : "border-gray-300"
                   }`}
                   required
                   disabled={loading}
                 />
                 {errors?.cvv && (
-                  <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                  <p className="text-sm text-red-500 dark:text-red-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.cvv}
                   </p>
@@ -245,9 +245,9 @@ export default function ProjectPaymentForm({
             </div>
 
             {/* Security Notice */}
-            <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-              <Lock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-700">
+            <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/30">
+              <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-blue-700 dark:text-blue-300">
                 This is a mock payment form for demonstration purposes only. No
                 actual payment will be processed.
               </p>

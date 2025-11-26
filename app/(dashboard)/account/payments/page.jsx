@@ -77,29 +77,29 @@ export default function PaymentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background dark:bg-background-dark p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-heading mb-2">
+              <h1 className="text-3xl font-bold text-heading dark:text-background mb-2">
                 Payment History
               </h1>
-              <p className="text-paragraph">
+              <p className="text-paragraph dark:text-paragraph">
                 View and manage all your payment transactions
               </p>
             </div>
             <button
               onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-background/10 border border-gray-300 dark:border-0 rounded-lg hover:bg-gray-50 dark:hover:bg-background/20 dark:text-background transition-colors"
             >
               <Download className="w-5 h-5" />
               Export CSV
@@ -107,14 +107,14 @@ export default function PaymentsPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-4 bg-white p-4 rounded-lg border border-gray-200">
-            <Filter className="w-5 h-5 text-gray-500" />
+          <div className="flex items-center gap-4 bg-white dark:bg-background/10 p-4 rounded-lg border border-gray-200 dark:border-0">
+            <Filter className="w-5 h-5 text-gray-500 dark:text-paragraph" />
             <select
               value={filters.status}
               onChange={(e) =>
                 setFilters({ ...filters, status: e.target.value })
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              className="px-4 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
             >
               <option value="all">All Status</option>
               <option value="completed">Completed</option>
@@ -128,12 +128,12 @@ export default function PaymentsPage() {
 
         {/* Transactions List */}
         {filteredTransactions.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-gray-200">
-            <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-background/10 rounded-xl p-12 text-center border border-gray-200 dark:border-0">
+            <CreditCard className="w-16 h-16 text-gray-400 dark:text-paragraph mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-background mb-2">
               No Transactions Found
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-paragraph">
               You haven't made any payments yet. Start investing in projects to
               see your transaction history here.
             </p>

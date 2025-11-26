@@ -92,34 +92,34 @@ export default function PaymentSettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background dark:bg-background-dark p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-heading mb-2">
+          <h1 className="text-3xl font-bold text-heading dark:text-background mb-2">
             Payment Methods
           </h1>
-          <p className="text-paragraph">
+          <p className="text-paragraph dark:text-paragraph">
             Manage your saved payment methods for faster checkout
           </p>
         </div>
 
         {/* Add New Form */}
         {addingNew && (
-          <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
-            <h2 className="text-xl font-bold text-heading mb-4">
+          <div className="bg-white dark:bg-background/10 rounded-xl p-6 mb-6 border border-gray-200 dark:border-0">
+            <h2 className="text-xl font-bold text-heading dark:text-background mb-4">
               Add New Payment Method
             </h2>
             <form onSubmit={handleAdd} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
                   Card Number
                 </label>
                 <input
@@ -133,13 +133,13 @@ export default function PaymentSettingsPage() {
                   }
                   placeholder="1234 5678 9012 3456"
                   maxLength={19}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
                   Cardholder Name
                 </label>
                 <input
@@ -149,14 +149,14 @@ export default function PaymentSettingsPage() {
                     setFormData({ ...formData, cardholderName: e.target.value })
                   }
                   placeholder="John Doe"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
                     Month
                   </label>
                   <input
@@ -168,12 +168,12 @@ export default function PaymentSettingsPage() {
                     placeholder="MM"
                     min="1"
                     max="12"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
                     Year
                   </label>
                   <input
@@ -185,12 +185,12 @@ export default function PaymentSettingsPage() {
                     placeholder="YY"
                     min={new Date().getFullYear() % 100}
                     max="99"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-background mb-2">
                     CVV
                   </label>
                   <input
@@ -201,7 +201,7 @@ export default function PaymentSettingsPage() {
                     }
                     placeholder="123"
                     maxLength={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                     required
                   />
                 </div>
@@ -210,7 +210,7 @@ export default function PaymentSettingsPage() {
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-semibold"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary dark:to-heading text-white rounded-lg hover:opacity-90 transition-opacity font-semibold"
                 >
                   Save Payment Method
                 </button>
@@ -226,7 +226,7 @@ export default function PaymentSettingsPage() {
                       cardholderName: "",
                     });
                   }}
-                  className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background rounded-lg hover:bg-gray-50 dark:hover:bg-background/20 transition-colors"
                 >
                   Cancel
                 </button>
@@ -239,7 +239,7 @@ export default function PaymentSettingsPage() {
         {!addingNew && (
           <button
             onClick={() => setAddingNew(true)}
-            className="w-full mb-6 p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-primary hover:bg-primary/5 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-primary"
+            className="w-full mb-6 p-4 border-2 border-dashed border-gray-300 dark:border-background/30 rounded-xl hover:border-primary dark:hover:border-primary-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors flex items-center justify-center gap-2 text-gray-600 dark:text-paragraph hover:text-primary dark:hover:text-primary-dark"
           >
             <Plus className="w-5 h-5" />
             Add New Payment Method
@@ -247,17 +247,17 @@ export default function PaymentSettingsPage() {
         )}
 
         {paymentMethods.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center border border-gray-200">
-            <CreditCard className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-background/10 rounded-xl p-12 text-center border border-gray-200 dark:border-0">
+            <CreditCard className="w-16 h-16 text-gray-400 dark:text-paragraph mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-background mb-2">
               No Payment Methods
             </h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-500 dark:text-paragraph mb-4">
               You haven't saved any payment methods yet.
             </p>
             <button
               onClick={() => setAddingNew(true)}
-              className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:opacity-90 transition-opacity font-semibold"
+              className="px-6 py-3 bg-gradient-to-r from-primary to-secondary dark:to-heading text-white rounded-lg hover:opacity-90 transition-opacity font-semibold"
             >
               Add Payment Method
             </button>
@@ -267,23 +267,23 @@ export default function PaymentSettingsPage() {
             {paymentMethods.map((method) => (
               <div
                 key={method._id}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-background/10 rounded-xl p-6 border border-gray-200 dark:border-0 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-xl">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary dark:to-heading rounded-lg flex items-center justify-center text-white text-xl">
                       {getCardBrandIcon(method.brand)}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-gray-900 dark:text-background">
                         {method.brand} •••• {method.last4}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-paragraph">
                         Expires {String(method.expiryMonth).padStart(2, "0")}/
                         {String(method.expiryYear).slice(-2)}
                       </p>
                       {method.isDefault && (
-                        <span className="inline-block mt-1 text-xs text-primary font-medium">
+                        <span className="inline-block mt-1 text-xs text-primary dark:text-primary-dark font-medium">
                           Default
                         </span>
                       )}
@@ -291,7 +291,7 @@ export default function PaymentSettingsPage() {
                   </div>
                   <button
                     onClick={() => handleDelete(method._id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -302,9 +302,9 @@ export default function PaymentSettingsPage() {
         )}
 
         {/* Security Notice */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800">
+        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-800 dark:text-blue-300">
             <p className="font-semibold mb-1">Secure Payment Storage</p>
             <p>
               Your payment information is encrypted and stored securely. We

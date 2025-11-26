@@ -15,7 +15,7 @@ export default function PageTransition({ children }) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
-        className="flex flex-col items-center justify-between text-background max-lg:gap-4"
+        className="flex flex-col items-center justify-between text-background dark:text-background max-lg:gap-4"
         style={{ position: "relative" }}
       >
         {children}

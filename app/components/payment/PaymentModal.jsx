@@ -143,18 +143,18 @@ export default function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-background-dark rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-white dark:bg-background-dark border-b border-gray-200 dark:border-0 px-6 py-4 flex items-center justify-between z-10">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Complete Payment</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-background">Complete Payment</h2>
+            <p className="text-sm text-gray-500 dark:text-paragraph mt-1">
               {project.title} - ${amount.toLocaleString()} ({percentage}%)
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 dark:text-background/60 hover:text-gray-600 dark:hover:text-background transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -163,27 +163,27 @@ export default function PaymentModal({
         {/* Content */}
         <div className="p-6">
           {/* Investment Summary */}
-          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg p-4 mb-6">
+          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 dark:from-primary/20 dark:to-secondary/20 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Info className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-gray-900">Investment Summary</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-background">Investment Summary</h3>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Amount</p>
-                <p className="font-bold text-gray-900">${amount.toLocaleString()}</p>
+                <p className="text-gray-500 dark:text-paragraph">Amount</p>
+                <p className="font-bold text-gray-900 dark:text-background">${amount.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-gray-500">Percentage</p>
-                <p className="font-bold text-gray-900">{percentage}%</p>
+                <p className="text-gray-500 dark:text-paragraph">Percentage</p>
+                <p className="font-bold text-gray-900 dark:text-background">{percentage}%</p>
               </div>
               <div>
-                <p className="text-gray-500">Expected ROI</p>
-                <p className="font-bold text-gray-900">{project.expectedROI}%</p>
+                <p className="text-gray-500 dark:text-paragraph">Expected ROI</p>
+                <p className="font-bold text-gray-900 dark:text-background">{project.expectedROI}%</p>
               </div>
               <div>
-                <p className="text-gray-500">Project Value</p>
-                <p className="font-bold text-gray-900">
+                <p className="text-gray-500 dark:text-paragraph">Project Value</p>
+                <p className="font-bold text-gray-900 dark:text-background">
                   ${project.totalPrice.toLocaleString()}
                 </p>
               </div>
@@ -205,7 +205,7 @@ export default function PaymentModal({
               {paymentMethods.length > 0 && (
                 <button
                   onClick={() => setStep("method")}
-                  className="text-sm text-primary hover:underline mb-4"
+                  className="text-sm text-primary hover:underline mb-4 dark:text-primary-dark"
                 >
                   ← Back to payment methods
                 </button>
@@ -232,8 +232,8 @@ export default function PaymentModal({
                 status="completed"
                 transactionId={transactionId}
               />
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-green-800">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 rounded-lg p-4">
+                <p className="text-sm text-green-800 dark:text-green-300">
                   Your investment has been confirmed! You will receive a confirmation email shortly.
                 </p>
               </div>
@@ -249,13 +249,13 @@ export default function PaymentModal({
                     setStep("method");
                     setError(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-background/30 rounded-lg hover:bg-gray-50 dark:hover:bg-background/10 dark:text-background transition-colors"
                 >
                   Try Again
                 </button>
                 <button
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  className="flex-1 px-4 py-2 bg-gray-900 dark:bg-primary text-white rounded-lg hover:bg-gray-800 dark:hover:bg-primary/80 transition-colors"
                 >
                   Close
                 </button>
@@ -265,10 +265,10 @@ export default function PaymentModal({
 
           {/* Test Cards Info */}
           {step === "form" && (
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-800">
+                <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800 dark:text-blue-300">
                   <p className="font-semibold mb-1">Test Cards (Mock Payment):</p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>Success: 4242 4242 4242 4242</li>

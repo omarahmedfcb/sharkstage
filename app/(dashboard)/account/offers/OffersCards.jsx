@@ -132,7 +132,7 @@ export default function OffersCards({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             whileHover={{ scale: 1.02, y: -5 }}
-            className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 flex flex-col justify-between hover:shadow-2xl transition-all"
+            className="bg-white/80 dark:bg-background/10 backdrop-blur-lg rounded-2xl shadow-xl dark:shadow-none border border-white/20 dark:border-0 p-6 flex flex-col justify-between hover:shadow-2xl transition-all"
           >
             {/* Header Section */}
             <div>
@@ -144,13 +144,13 @@ export default function OffersCards({
                   <StatusIcon size={14} />
                   {statusText(offer.status)}
                 </span>
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs text-gray-500 dark:text-paragraph font-medium">
                   {new Date(offer.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
               {/* Project Title */}
-              <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-background mb-3 line-clamp-2">
                 {offer.project?.title}
               </h3>
 
@@ -162,14 +162,14 @@ export default function OffersCards({
               </div>
 
               {/* Offered To/By */}
-              <div className="mb-4 pb-4 border-b border-gray-200">
-                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-background/30">
+                <p className="text-xs text-gray-500 dark:text-paragraph mb-2 flex items-center gap-1">
                   <User size={12} />
                   {currentUser?.accountType == "investor"
                     ? "Offered To"
                     : "Offered By"}
                 </p>
-                <p className="text-sm font-bold text-gray-800">
+                <p className="text-sm font-bold text-gray-800 dark:text-background">
                   {currentUser?.accountType == "investor"
                     ? `${offer.offeredTo?.firstName || ""} ${offer.offeredTo?.lastName || ""}`
                     : `${offer.offeredBy?.firstName || ""} ${offer.offeredBy?.lastName || ""}`}
@@ -178,21 +178,21 @@ export default function OffersCards({
 
               {/* Offer Details */}
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl">
-                  <span className="text-sm text-gray-600 flex items-center gap-2">
-                    <Percent size={16} className="text-[#3a5a92]" />
+                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 dark:from-primary/20 dark:to-secondary/20 rounded-xl">
+                  <span className="text-sm text-gray-600 dark:text-paragraph flex items-center gap-2">
+                    <Percent size={16} className="text-[#3a5a92] dark:text-primary-dark" />
                     Percentage:
                   </span>
-                  <span className="text-lg font-bold text-[#3a5a92]">
+                  <span className="text-lg font-bold text-[#3a5a92] dark:text-primary-dark">
                     {offer.percentage}%
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl">
-                  <span className="text-sm text-gray-600 flex items-center gap-2">
-                    <DollarSign size={16} className="text-[#3a5a92]" />
+                <div className="flex justify-between items-center p-3 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 dark:from-primary/20 dark:to-secondary/20 rounded-xl">
+                  <span className="text-sm text-gray-600 dark:text-paragraph flex items-center gap-2">
+                    <DollarSign size={16} className="text-[#3a5a92] dark:text-primary-dark" />
                     Amount:
                   </span>
-                  <span className="text-lg font-bold text-gray-800">
+                  <span className="text-lg font-bold text-gray-800 dark:text-background">
                     ${offer.amount.toLocaleString()}
                   </span>
                 </div>
@@ -200,12 +200,12 @@ export default function OffersCards({
 
               {/* Proposal Letter Preview */}
               {offer.proposalLetter && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
-                  <p className="text-xs text-gray-700 font-bold mb-2 flex items-center gap-1">
+                <div className="mb-4 p-3 bg-gray-50 dark:bg-background/10 rounded-xl border border-gray-200 dark:border-0">
+                  <p className="text-xs text-gray-700 dark:text-background font-bold mb-2 flex items-center gap-1">
                     <FileText size={12} />
                     Proposal
                   </p>
-                  <p className="text-xs text-gray-600 line-clamp-2">
+                  <p className="text-xs text-gray-600 dark:text-paragraph line-clamp-2">
                     {offer.proposalLetter.slice(0, 100)}
                     {offer.proposalLetter.length > 100 ? "..." : null}
                   </p>
@@ -214,10 +214,10 @@ export default function OffersCards({
             </div>
 
             {/* Actions */}
-            <div className="space-y-3 pt-4 border-t border-gray-200">
+            <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-background/30">
               <Link
                 href={`/account/offers/${offer._id}`}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-xl hover:shadow-lg transition-all font-semibold text-sm"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] dark:to-heading text-white rounded-xl hover:shadow-lg transition-all font-semibold text-sm"
               >
                 <Eye size={18} />
                 View Details
@@ -230,7 +230,7 @@ export default function OffersCards({
                     whileTap={{ scale: 0.98 }}
                     disabled={offerCancelLoading}
                     onClick={() => cancelOffer(offer._id)}
-                    className="w-full px-4 py-3 border-2 border-red-300 text-red-600 rounded-xl hover:bg-red-50 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full px-4 py-3 border-2 border-red-300 dark:border-red-800/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {offerCancelLoading ? (
                       <Loader2 size={18} className="animate-spin" />

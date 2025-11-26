@@ -8,17 +8,17 @@ function Hero() {
     >
       <div className="max-sm:w-9/10 max-sm:mx-auto max-sm:flex-col flex justify-between items-center sm:items-end ">
         <div className="content sm:w-10/19 lg:w-7/12 flex flex-col  gap-6 items-center">
-          <h1 className=" text-center text-5xl lg:pt-28 lg:text-7xl font-bold lg:font-extrabold text-background">
+          <h1 className=" text-center text-5xl lg:pt-28 lg:text-7xl font-bold lg:font-extrabold text-background dark:text-background">
             Invest in the Future of Innovation
           </h1>
-          <p className="text-xl lg:text-2xl text-center font-light text-background">
+          <p className="text-xl lg:text-2xl text-center font-light text-background dark:text-background">
             A marketplace where visionary projects meet strategic investors
           </p>
-          <div className="btn_grop flex gap-8 text-primary font-semibold">
-            <button className="cursor-pointer  bg-buttons transition-shadow duration-300 shadow-lg hover:shadow-black/20  px-3 py-2  rounded-lg">
+          <div className="btn_grop flex gap-8 text-primary dark:text-primary-dark font-semibold">
+            <button className="cursor-pointer  bg-buttons dark:bg-buttons-dark transition-shadow duration-300 shadow-lg hover:shadow-black/20 dark:hover:shadow-white/10  px-3 py-2  rounded-lg">
               Start Investing <EastIcon />
             </button>
-            <button className="bg-background/80 cursor-pointer backdrop-blur-sm px-6 py-3 rounded-lg shadow-lg hover:shadow-black/20  transition">
+            <button className="bg-background/80 dark:bg-background/20 cursor-pointer backdrop-blur-sm px-6 py-3 rounded-lg shadow-lg hover:shadow-black/20 dark:hover:shadow-white/10  transition">
               List your project
             </button>
           </div>

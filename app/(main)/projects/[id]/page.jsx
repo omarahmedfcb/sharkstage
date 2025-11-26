@@ -136,15 +136,15 @@ export default function ProjectDetailsPage() {
     return (
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-heading mb-4">
+          <h2 className="text-3xl font-bold text-heading dark:text-background mb-4">
             Project Not Found
           </h2>
-          <p className="text-paragraph mb-6">
+          <p className="text-paragraph dark:text-paragraph mb-6">
             The project you're looking for doesn't exist.
           </p>
           <Link
             href="/projects"
-            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+            className="bg-primary dark:bg-primary-dark text-white px-6 py-3 rounded-lg hover:bg-primary/90 dark:hover:bg-primary-dark/80 transition-colors inline-flex items-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Projects
@@ -189,7 +189,7 @@ export default function ProjectDetailsPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-paragraph hover:text-primary transition-colors"
+            className="inline-flex items-center gap-2 text-paragraph dark:text-paragraph hover:text-primary dark:hover:text-primary-dark transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Projects
@@ -198,13 +198,13 @@ export default function ProjectDetailsPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="bg-background dark:bg-background-dark border-b border-gray-100">
+      <section className="bg-background dark:bg-background-dark border-b border-gray-100 dark:border-0">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left: Image and Info */}
             <div className="lg:col-span-2">
               {/* Image Slider */}
-              <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-gray-100">
+              <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-gray-100 dark:bg-background/10">
                 <img
                   src={project.image}
                   alt={project.title}
@@ -261,10 +261,10 @@ export default function ProjectDetailsPage() {
                 <h1 className="text-3xl md:text-4xl font-bold text-heading dark:text-background mb-2">
                   {project.title}
                 </h1>
-                <p className="text-lg text-paragraph">{project.shortDesc}</p>
+                <p className="text-lg text-paragraph dark:text-paragraph">{project.shortDesc}</p>
               </div>
               {/* Owner Info */}
-              <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 dark:bg-gray-400 rounded-2xl shadow-sm border border-gray-100">
+              <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 dark:bg-background/10 rounded-2xl shadow-sm border border-gray-100 dark:border-0">
                 {project.owner?.profilePicUrl ? (
                   <img
                     src={project.owner.profilePicUrl}
@@ -279,18 +279,18 @@ export default function ProjectDetailsPage() {
                 )}
 
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-heading font-medium mb-1">
+                  <p className="text-sm text-gray-500 dark:text-paragraph font-medium mb-1">
                     Project Owner
                   </p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-gray-900 dark:text-background">
                     {project.owner?.firstName} {project.owner?.lastName}
                   </p>
                 </div>
               </div>
               {/* Key Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
+                <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
                     <TrendingUp className="w-4 h-4" />
                     ROI
                   </div>
@@ -298,15 +298,15 @@ export default function ProjectDetailsPage() {
                     {project.expectedROI}
                   </p>
                 </div>
-                {/* <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
+                {/* <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
                     <Clock className="w-4 h-4" />
                     Days Left
                   </div>
                   <p className="text-2xl font-bold text-heading dark:text-background">{daysLeft}</p>
                 </div> */}
-                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
+                <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
                     <Users className="w-4 h-4" />
                     Status
                   </div>
@@ -314,8 +314,8 @@ export default function ProjectDetailsPage() {
                     {project.status}
                   </p>
                 </div>
-                <div className="bg-soft dark:bg-soft/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-paragraph text-sm mb-1">
+                <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
                     <Calendar className="w-4 h-4" />
                     Start Date
                   </div>
@@ -420,7 +420,7 @@ export default function ProjectDetailsPage() {
                                 {...field}
                                 type="number"
                                 step="0.01"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
                                 placeholder="0.00"
                               />
                             </InputField>
@@ -448,15 +448,15 @@ export default function ProjectDetailsPage() {
                                 {...field}
                                 type="number"
                                 step="0.1"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
                                 placeholder="0-100"
                               />
                             </InputField>
                           )}
                         />
                       </div>
-                      <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm text-blue-800">
+                      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/30">
+                        <p className="text-sm text-blue-800 dark:text-blue-300">
                           After entering the amount and percentage, you'll be
                           redirected to the secure payment page.
                         </p>
@@ -523,8 +523,8 @@ export default function ProjectDetailsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-all ${
                 activeTab === tab.id
-                  ? "bg-primary text-white"
-                  : "bg-white dark:bg-gray-300 text-paragraph dark:text-background-dark hover:bg-gray-50 border border-gray-200"
+                  ? "bg-primary dark:bg-primary-dark text-white"
+                  : "bg-white dark:bg-background/10 text-paragraph dark:text-background hover:bg-gray-50 dark:hover:bg-background/20 border border-gray-200 dark:border-0"
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -541,23 +541,23 @@ export default function ProjectDetailsPage() {
               <h2 className="text-2xl font-bold text-heading dark:text-background mb-4">
                 Project Overview
               </h2>
-              <p className="text-paragraph text-lg leading-relaxed mb-6 whitespace-pre-line">
+              <p className="text-paragraph dark:text-paragraph text-lg leading-relaxed mb-6 whitespace-pre-line">
                 {project.description}
               </p>
 
               {project.keyBenefits && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold text-heading dark:text-background mb-3 flex items-center gap-2">
-                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+                    <CheckCircle2 className="w-6 h-6 text-green-500 dark:text-green-400" />
                     Key Benefits
                   </h3>
                   <ul className="space-y-2">
                     {project.keyBenefits.map((benefit, index) => (
                       <li
                         key={index}
-                        className="flex items-start gap-3 text-paragraph"
+                        className="flex items-start gap-3 text-paragraph dark:text-paragraph"
                       >
-                        <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400 mt-0.5 flex-shrink-0" />
                         <span>{benefit}</span>
                       </li>
                     ))}
@@ -589,7 +589,7 @@ export default function ProjectDetailsPage() {
                         <CheckCircle2 className="w-6 h-6 text-white" />
                       </div>
                       {index < project.timeline.length - 1 && (
-                        <div className="w-0.5 h-16 bg-gray-200 my-2"></div>
+                        <div className="w-0.5 h-16 bg-gray-200 dark:bg-background/30 my-2"></div>
                       )}
                     </div>
                     <div className="flex-grow pb-8">
@@ -600,19 +600,19 @@ export default function ProjectDetailsPage() {
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             phase.status === "completed"
-                              ? "bg-green-100 text-green-700"
+                              ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
                               : phase.status === "in-progress"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-gray-100 text-gray-700"
+                              ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300"
+                              : "bg-gray-100 dark:bg-background/20 text-gray-700 dark:text-paragraph"
                           }`}
                         >
                           {phase.status.replace("-", " ")}
                         </span>
                       </div>
-                      <p className="text-paragraph font-semibold mb-1">
+                      <p className="text-paragraph dark:text-paragraph font-semibold mb-1">
                         {phase.title}
                       </p>
-                      <p className="text-sm text-paragraph">{phase.date}</p>
+                      <p className="text-sm text-paragraph dark:text-paragraph">{phase.date}</p>
                     </div>
                   </div>
                 ))}
@@ -630,22 +630,22 @@ export default function ProjectDetailsPage() {
                 {project.milestones.map((milestone, index) => (
                   <div
                     key={index}
-                    className="border-b border-gray-100 pb-6 last:border-0"
+                    className="border-b border-gray-100 dark:border-background/30 pb-6 last:border-0"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-lg font-bold text-heading dark:text-background">
                         {milestone.title}
                       </h3>
-                      <span className="text-2xl font-bold text-primary">
+                      <span className="text-2xl font-bold text-primary dark:text-primary-dark">
                         {milestone.completion}%
                       </span>
                     </div>
-                    <p className="text-paragraph mb-3">
+                    <p className="text-paragraph dark:text-paragraph mb-3">
                       {milestone.description}
                     </p>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-gray-200 dark:bg-background/20 rounded-full h-3">
                       <div
-                        className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-primary to-secondary dark:to-heading h-3 rounded-full transition-all duration-300"
                         style={{ width: `${milestone.completion}%` }}
                       ></div>
                     </div>
@@ -665,9 +665,9 @@ export default function ProjectDetailsPage() {
                 {project.investors.map((member, index) => (
                   <div
                     key={index}
-                    className="bg-soft dark:bg-soft/10 rounded-xl p-6 text-center"
+                    className="bg-soft dark:bg-background/10 rounded-xl p-6 text-center"
                   >
-                    <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200">
+                    <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200 dark:bg-background/20">
                       <img
                         src={member.user.profilePicUrl}
                         alt={member.user.firstName}
@@ -677,7 +677,7 @@ export default function ProjectDetailsPage() {
                     <h3 className="text-lg font-bold text-heading dark:text-background mb-1">
                       {member.user.firstName} {member.user.lastName}
                     </h3>
-                    <p className="text-paragraph text-sm">
+                    <p className="text-paragraph dark:text-paragraph text-sm">
                       {member.percentage}%
                     </p>
                   </div>
@@ -696,20 +696,20 @@ export default function ProjectDetailsPage() {
                 {project.documents.map((doc, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 bg-soft dark:bg-soft/10 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-4 bg-soft dark:bg-background/10 rounded-lg hover:bg-gray-100 dark:hover:bg-background/20 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <FileText className="w-8 h-8 text-primary" />
+                      <FileText className="w-8 h-8 text-primary dark:text-primary-dark" />
                       <div>
                         <h3 className="font-semibold text-heading dark:text-background">
                           {doc.title}
                         </h3>
-                        <p className="text-sm text-paragraph">
+                        <p className="text-sm text-paragraph dark:text-paragraph">
                           {doc.type} • {doc.size}
                         </p>
                       </div>
                     </div>
-                    <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    <button className="px-4 py-2 bg-primary dark:bg-primary-dark text-white rounded-lg hover:bg-primary/90 dark:hover:bg-primary-dark/80 transition-colors">
                       Download
                     </button>
                   </div>
@@ -729,17 +729,17 @@ export default function ProjectDetailsPage() {
                 {/* Risks */}
                 <div>
                   <h3 className="text-xl font-bold text-heading dark:text-background mb-4 flex items-center gap-2">
-                    <AlertTriangle className="w-6 h-6 text-orange-500" />
+                    <AlertTriangle className="w-6 h-6 text-orange-500 dark:text-orange-400" />
                     Potential Risks
                   </h3>
                   <ul className="space-y-3">
                     {project.potentialRisks.map((risk, index) => (
                       <li
                         key={index}
-                        className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg"
+                        className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/30"
                       >
-                        <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-paragraph">{risk}</span>
+                        <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-paragraph dark:text-paragraph">{risk}</span>
                       </li>
                     ))}
                   </ul>
@@ -748,18 +748,18 @@ export default function ProjectDetailsPage() {
                 {/* Returns */}
                 <div>
                   <h3 className="text-xl font-bold text-heading dark:text-background mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-green-500" />
+                    <TrendingUp className="w-6 h-6 text-green-500 dark:text-green-400" />
                     Expected Returns
                   </h3>
                   <div className="space-y-4">
-                    <div className="p-4 bg-green-50 rounded-lg">
-                      <p className="text-sm text-paragraph mb-1">ROI Target</p>
-                      <p className="text-3xl font-bold text-green-600">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800/30">
+                      <p className="text-sm text-paragraph dark:text-paragraph mb-1">ROI Target</p>
+                      <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                         {project.expectedROI}
                       </p>
                     </div>
-                    <div className="p-4 bg-soft dark:bg-soft/10 rounded-lg">
-                      <p className="text-sm text-paragraph mb-1">
+                    <div className="p-4 bg-soft dark:bg-background/10 rounded-lg">
+                      <p className="text-sm text-paragraph dark:text-paragraph mb-1">
                         Investment Period
                       </p>
                       <p className="text-xl font-bold text-heading dark:text-background">
@@ -771,8 +771,8 @@ export default function ProjectDetailsPage() {
                         years
                       </p>
                     </div>
-                    <div className="p-4 bg-soft dark:bg-soft/10 rounded-lg">
-                      <p className="text-sm text-paragraph mb-1">
+                    <div className="p-4 bg-soft dark:bg-background/10 rounded-lg">
+                      <p className="text-sm text-paragraph dark:text-paragraph mb-1">
                         Funding Goal
                       </p>
                       <p className="text-xl font-bold text-heading dark:text-background">

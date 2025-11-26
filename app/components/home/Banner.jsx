@@ -11,8 +11,8 @@ function Banner() {
     "Security",
   ];
   return (
-    <section className="w-full overflow-hidden bg-linear-to-r from-primary to-buttons dark:to-buttons/50">
-      <div className=" py-8 text-background w-[1600px] overflow-hidden relative">
+    <section className="w-full overflow-hidden bg-linear-to-r from-primary to-buttons dark:from-primary-dark dark:to-buttons-dark">
+      <div className=" py-8 text-background dark:text-background w-[1600px] overflow-hidden relative">
         <div className={`${styles.first} flex justify-around`}>
           {words.map((ele, index) => (
             <span key={index} className="mx-8 text-2xl font-semibold">

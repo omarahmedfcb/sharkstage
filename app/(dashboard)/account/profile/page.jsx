@@ -129,7 +129,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div className="p-4 sm:p-6 min-h-[calc(100vh-4rem)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-background-dark dark:via-background-dark dark:to-background-dark">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <motion.div
@@ -184,9 +184,9 @@ export default function ProfilePage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1"
           >
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <Camera className="text-[#3a5a92]" size={20} />
+            <div className="bg-white/80 dark:bg-background/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 dark:border-0">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-background mb-4 flex items-center gap-2">
+                <Camera className="text-[#3a5a92] dark:text-primary-dark" size={20} />
                 Profile Picture
               </h2>
               
@@ -254,17 +254,17 @@ export default function ProfilePage() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
-              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <User className="text-[#3a5a92]" size={20} />
+            <div className="bg-white/80 dark:bg-background/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20 dark:border-0">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-background mb-6 flex items-center gap-2">
+                <User className="text-[#3a5a92] dark:text-primary-dark" size={20} />
                 Profile Information
               </h2>
 
               <div className="space-y-6">
                 {/* Name Field */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <User className="text-[#3a5a92]" size={16} />
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-background mb-3 flex items-center gap-2">
+                    <User className="text-[#3a5a92] dark:text-primary-dark" size={16} />
                     Full Name
                   </label>
                   {isEditing ? (
@@ -276,7 +276,7 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             setFormData({ ...formData, firstName: e.target.value })
                           }
-                          className="flex-1 px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3a5a92] focus:border-transparent transition-all"
+                          className="flex-1 px-4 py-3 bg-white/80 dark:bg-background/10 dark:text-background border-2 border-gray-200 dark:border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3a5a92] dark:focus:ring-primary-dark focus:border-transparent transition-all"
                           placeholder="First Name"
                           disabled={editLoading}
                         />
@@ -286,7 +286,7 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             setFormData({ ...formData, lastName: e.target.value })
                           }
-                          className="flex-1 px-4 py-3 bg-white/80 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3a5a92] focus:border-transparent transition-all"
+                          className="flex-1 px-4 py-3 bg-white/80 dark:bg-background/10 dark:text-background border-2 border-gray-200 dark:border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3a5a92] dark:focus:ring-primary-dark focus:border-transparent transition-all"
                           placeholder="Last Name"
                           disabled={editLoading}
                         />
@@ -309,7 +309,7 @@ export default function ProfilePage() {
                           type="button"
                           onClick={handleCancel}
                           disabled={editLoading}
-                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 dark:bg-background/20 dark:text-background text-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-background/30 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <X size={18} />
                           Cancel
@@ -317,8 +317,8 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl border border-[#3a5a92]/10">
-                      <h3 className="text-xl font-bold text-gray-800">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 dark:from-primary/20 dark:to-secondary/20 rounded-xl border border-[#3a5a92]/10 dark:border-primary/30">
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-background">
                         {`${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`}
                       </h3>
                       <motion.button
@@ -337,23 +337,23 @@ export default function ProfilePage() {
 
                 {/* Email Field */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Mail className="text-[#3a5a92]" size={16} />
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-background mb-3 flex items-center gap-2">
+                    <Mail className="text-[#3a5a92] dark:text-primary-dark" size={16} />
                     Email Address
                   </label>
-                  <div className="p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl border border-[#3a5a92]/10">
-                    <h3 className="text-lg font-bold text-gray-800 mb-1">{currentUser?.email}</h3>
-                    <p className="text-xs text-gray-500">Email cannot be changed</p>
+                  <div className="p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 dark:from-primary/20 dark:to-secondary/20 rounded-xl border border-[#3a5a92]/10 dark:border-primary/30">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-background mb-1">{currentUser?.email}</h3>
+                    <p className="text-xs text-gray-500 dark:text-paragraph">Email cannot be changed</p>
                   </div>
                 </div>
 
                 {/* Account Type Field */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Shield className="text-[#3a5a92]" size={16} />
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-background mb-3 flex items-center gap-2">
+                    <Shield className="text-[#3a5a92] dark:text-primary-dark" size={16} />
                     Account Type
                   </label>
-                  <div className="p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 rounded-xl border border-[#3a5a92]/10">
+                  <div className="p-4 bg-gradient-to-r from-[#3a5a92]/5 to-[#6fa8dc]/5 dark:from-primary/20 dark:to-secondary/20 rounded-xl border border-[#3a5a92]/10 dark:border-primary/30">
                     <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#3a5a92] to-[#6fa8dc] text-white rounded-full text-sm font-bold capitalize shadow-lg">
                       {currentUser?.accountType}
                     </span>
@@ -362,8 +362,8 @@ export default function ProfilePage() {
 
                 {/* Reset Password */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Key className="text-[#3a5a92]" size={16} />
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-background mb-3 flex items-center gap-2">
+                    <Key className="text-[#3a5a92] dark:text-primary-dark" size={16} />
                     Password
                   </label>
                   <motion.button
@@ -379,12 +379,12 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Deactivate Account */}
-                <div className="pt-6 border-t border-gray-200">
+                <div className="pt-6 border-t border-gray-200 dark:border-background/30">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="button"
-                    className="w-full px-4 py-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all font-semibold border-2 border-red-200"
+                    className="w-full px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-all font-semibold border-2 border-red-200 dark:border-red-800/30"
                     onClick={() => toast.error("This feature is not available yet")}
                   >
                     Deactivate Account

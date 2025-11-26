@@ -167,13 +167,13 @@ export default function Chatbot() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className={`fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col ${
+          className={`fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-white dark:bg-background-dark rounded-2xl shadow-2xl flex flex-col ${
             language === "ar" ? "dir-rtl" : "dir-ltr"
           }`}
           style={{ direction: language === "ar" ? "rtl" : "ltr" }}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-secondary text-white p-4 rounded-t-2xl flex items-center justify-between">
+          <div className="bg-gradient-to-r from-primary to-secondary dark:to-heading text-white p-4 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                 <Bot className="w-5 h-5" />
@@ -203,7 +203,7 @@ export default function Chatbot() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-background/10">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -214,10 +214,10 @@ export default function Chatbot() {
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                     message.role === "user"
-                      ? "bg-gradient-to-r from-primary to-secondary text-white"
+                      ? "bg-gradient-to-r from-primary to-secondary dark:to-heading text-white"
                       : message.isError
-                      ? "bg-red-100 text-red-800 border border-red-300"
-                      : "bg-white text-gray-800 shadow-sm border border-gray-200"
+                      ? "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-800/30"
+                      : "bg-white dark:bg-background/10 text-gray-800 dark:text-background shadow-sm border border-gray-200 dark:border-0"
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap">
@@ -228,8 +228,8 @@ export default function Chatbot() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-white rounded-2xl px-4 py-2 shadow-sm border border-gray-200">
-                  <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                <div className="bg-white dark:bg-background/10 rounded-2xl px-4 py-2 shadow-sm border border-gray-200 dark:border-0">
+                  <Loader2 className="w-5 h-5 text-primary dark:text-primary-dark animate-spin" />
                 </div>
               </div>
             )}
@@ -237,11 +237,11 @@ export default function Chatbot() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 bg-white rounded-b-2xl">
+          <div className="p-4 border-t border-gray-200 dark:border-background/30 bg-white dark:bg-background-dark rounded-b-2xl">
             <div className="flex items-center gap-2">
               <button
                 onClick={clearChat}
-                className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1"
+                className="text-xs text-gray-500 dark:text-paragraph hover:text-gray-700 dark:hover:text-background px-2 py-1"
                 title={language === "ar" ? "مسح المحادثة" : "Clear chat"}
               >
                 {language === "ar" ? "مسح" : "Clear"}
@@ -257,13 +257,13 @@ export default function Chatbot() {
                     ? "اكتب سؤالك هنا..."
                     : "Type your question here..."
                 }
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent"
                 disabled={loading}
               />
               <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
-                className="bg-gradient-to-r from-primary to-secondary text-white p-2 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="bg-gradient-to-r from-primary to-secondary dark:to-heading text-white p-2 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
                 aria-label="Send message"
               >
                 {loading ? (

@@ -59,22 +59,22 @@ export default function SignupPage() {
     <PageTransition>
       <Link
         href="/"
-        className="flex items-center gap-2 border border-background hover:bg-background/5 transition-colors rounded-2xl px-2 py-1 self-start"
+        className="flex items-center gap-2 border border-background dark:border-background/30 hover:bg-background/5 dark:hover:bg-background/10 transition-colors rounded-2xl px-2 py-1 self-start"
       >
         <span className="w-8">
           <img className="w-full" src="../logo-white.png" alt="" />
         </span>
-        <span>SharkStage</span>
+        <span className="dark:text-background">SharkStage</span>
       </Link>
       <form
         className="flex flex-col gap-6 w-8/10"
         onSubmit={handleSubmit(myHandleSubmit)}
       >
         <div>
-          <h2 className="text-3xl font-bold text-center">Create an account</h2>
+          <h2 className="text-3xl font-bold text-center dark:text-background">Create an account</h2>
         </div>
         <div className="flex items-center max-lg:gap-2">
-          <span className="w-2/5">Register as</span>
+          <span className="w-2/5 dark:text-background">Register as</span>
 
           <Controller
             name="accountType"
@@ -243,7 +243,7 @@ export default function SignupPage() {
           )}
         </button>
         {error && (
-          <p className="text-center text-red-700 font-bold">
+          <p className="text-center text-red-700 dark:text-red-400 font-bold">
             {typeof error === "string"
               ? error
               : error?.message || "Registration failed. Please try again."}
@@ -261,7 +261,7 @@ export default function SignupPage() {
           </Divider>
           <div className="flex justify-between gap-4">
             <GoogleAuthButton intent="signup" accountType={accountType} />
-            <div className="cursor-pointer hover:bg-background/5 transition-colors grow border rounded-2xl border-background flex justify-center items-center gap-4 py-2">
+            <div className="cursor-pointer hover:bg-background/5 dark:hover:bg-background/10 transition-colors grow border rounded-2xl border-background dark:border-background/30 flex justify-center items-center gap-4 py-2 dark:text-background">
               <FaLinkedin size={24} />
               <span>LinkedIn</span>
             </div>
@@ -269,7 +269,7 @@ export default function SignupPage() {
         </div>
       </form>
       <div className="flex justify-between w-full">
-        <h4>
+        <h4 className="dark:text-background">
           Have an account?{" "}
           <Link
             href="/sign/in"
