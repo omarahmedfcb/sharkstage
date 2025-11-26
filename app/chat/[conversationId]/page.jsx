@@ -146,20 +146,20 @@ const ChatPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary dark:text-primary-dark" size={48} />
       </div>
     );
   }
 
   if (!conversation || !otherUser) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-background-dark">
         <div className="text-center">
-          <p className="text-xl text-gray-600">Conversation not found</p>
+          <p className="text-xl text-gray-600 dark:text-background">Conversation not found</p>
           <Link
             href="/chat"
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-blue-600 dark:bg-primary-dark text-white dark:text-background rounded-lg hover:bg-blue-700 dark:hover:bg-primary-dark/90"
           >
             Back to Conversations
           </Link>
@@ -169,16 +169,16 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-background-dark">
       {/* Chat Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white dark:bg-background/10 border-b border-gray-200 dark:border-background/20 p-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-3">
             <Link
               href="/chat"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-background/20 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 dark:text-background" />
             </Link>
             {otherUser?.profilePicUrl ? (
               <div className="w-10 h-10 rounded-full overflow-hidden">
@@ -189,31 +189,31 @@ const ChatPage = () => {
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:from-primary-dark dark:to-secondary-dark flex items-center justify-center text-white font-semibold">
                 {otherUser?.firstName?.charAt(0)}
                 {otherUser?.lastName?.charAt(0)}
               </div>
             )}
             <div>
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-gray-900 dark:text-background">
                 {otherUser?.firstName} {otherUser?.lastName}
               </h2>
-              <p className="text-xs text-gray-500">{otherUser?.email}</p>
+              <p className="text-xs text-gray-500 dark:text-paragraph">{otherUser?.email}</p>
             </div>
           </div>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <MoreVertical className="w-5 h-5 text-gray-600" />
+          <button className="p-2 hover:bg-gray-100 dark:hover:bg-background/20 rounded-lg transition-colors">
+            <MoreVertical className="w-5 h-5 text-gray-600 dark:text-background" />
           </button>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-background-dark">
         <div className="max-w-4xl mx-auto space-y-4">
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500">
-                <Send className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <div className="text-center text-gray-500 dark:text-paragraph">
+                <Send className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-paragraph" />
                 <p className="text-lg">No messages yet</p>
                 <p className="text-sm mt-2">
                   Send a message to start the conversation
@@ -233,19 +233,19 @@ const ChatPage = () => {
                   <div
                     className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-2xl shadow-sm ${
                       isOwnMessage
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-900 border border-gray-200"
+                        ? "bg-blue-600 dark:from-primary-dark dark:to-secondary-dark dark:bg-gradient-to-r text-white"
+                        : "bg-white dark:bg-background/10 text-gray-900 dark:text-background border border-gray-200 dark:border-background/20"
                     }`}
                   >
                     {!isOwnMessage && (
-                      <p className="text-xs font-semibold mb-1 text-gray-600">
+                      <p className="text-xs font-semibold mb-1 text-gray-600 dark:text-paragraph">
                         {message.sender.firstName} {message.sender.lastName}
                       </p>
                     )}
                     <p className="break-words">{message.content}</p>
                     <p
                       className={`text-xs mt-1 ${
-                        isOwnMessage ? "text-blue-100" : "text-gray-500"
+                        isOwnMessage ? "text-blue-100 dark:text-background/80" : "text-gray-500 dark:text-paragraph"
                       }`}
                     >
                       {formatTime(message.createdAt)}
@@ -262,7 +262,7 @@ const ChatPage = () => {
       {/* Message Input */}
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-white border-t border-gray-200 p-4"
+        className="bg-white dark:bg-background/10 border-t border-gray-200 dark:border-background/20 p-4"
       >
         <div className="max-w-4xl mx-auto flex items-center space-x-3">
           <Controller
@@ -274,13 +274,13 @@ const ChatPage = () => {
                 {...field}
                 type="text"
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-primary-dark focus:border-transparent"
               />
             )}
           />
           <button
             type="submit"
-            className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl"
+            className="p-3 bg-blue-600 dark:bg-primary-dark text-white dark:text-background rounded-full hover:bg-blue-700 dark:hover:bg-primary-dark/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl"
           >
             <Send className="w-5 h-5" />
           </button>
