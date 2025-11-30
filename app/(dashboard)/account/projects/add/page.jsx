@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AlertCircle, Loader2, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import ProjectPaymentForm from "@/app/components/payment/ProjectPaymentForm";
+import { getAllProjects } from "@/lib/api/admin.api";
+import { getProjects } from "@/lib/features/projects/projectsThunks";
 
 const PROJECT_CATEGORIES = [
   "Technology",
@@ -22,6 +24,7 @@ const PROJECT_CATEGORIES = [
 
 export default function AddProjectPage() {
   const { currentUser } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -115,7 +118,10 @@ export default function AddProjectPage() {
       formData.append("title", projectFormData.title);
       formData.append("shortDesc", projectFormData.shortDesc);
       formData.append("description", projectFormData.description);
-      formData.append("category", JSON.stringify({ en: projectFormData.category }));
+      formData.append(
+        "category",
+        JSON.stringify({ en: projectFormData.category })
+      );
       formData.append("status", projectFormData.status);
       formData.append("totalPrice", Number(projectFormData.totalPrice));
       formData.append("expectedROI", Number(projectFormData.expectedROI));
@@ -140,7 +146,7 @@ export default function AddProjectPage() {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      dispatch(getProjects());
       toast.success("Payment processed and project created successfully!");
       reset();
       removeImage();
@@ -158,10 +164,13 @@ export default function AddProjectPage() {
   const InputField = ({ label, error, required, children }) => (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-heading dark:text-background">
-        {label} {required && <span className="text-red-500 dark:text-red-400">*</span>}
+        {label}{" "}
+        {required && <span className="text-red-500 dark:text-red-400">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 
@@ -199,7 +208,9 @@ export default function AddProjectPage() {
               size={20}
             />
             <div className="flex-1">
-              <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
+              <p className="text-red-800 dark:text-red-300 font-medium">
+                Error
+              </p>
               <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
             </div>
             <button
