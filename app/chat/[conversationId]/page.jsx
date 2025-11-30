@@ -47,22 +47,40 @@ const ChatPage = () => {
 
     loadConversation();
 
-    // Join socket room
-    socket.emit("join_conversation", conversationId);
+    // Join socket room - ensure socket is connected
+    const joinRoom = () => {
+      socket.emit("join_conversation", conversationId);
+    };
+
+    if (socket.connected) {
+      joinRoom();
+    } else {
+      socket.once("connect", joinRoom);
+    }
 
     return () => {
-      socket.emit("leave_conversation", conversationId);
+      if (socket.connected) {
+        socket.emit("leave_conversation", conversationId);
+      }
     };
   }, [conversationId, currentUser]);
 
   // Socket.io listeners
   useEffect(() => {
+    if (!conversationId) return;
+
     const handleReceiveMessage = (data) => {
       const { message, conversationId: msgConvId } = data;
 
       // Update messages if in current conversation
       if (conversationId === msgConvId) {
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => {
+          // Prevent duplicates
+          if (prev.some((m) => m._id === message._id)) {
+            return prev;
+          }
+          return [...prev, message];
+        });
       }
     };
 
@@ -72,7 +90,6 @@ const ChatPage = () => {
       socket.off("receive_message", handleReceiveMessage);
     };
   }, [conversationId]);
-
   const loadConversation = async () => {
     try {
       setLoading(true);
@@ -147,7 +164,10 @@ const ChatPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary dark:text-primary-dark" size={48} />
+        <Loader2
+          className="animate-spin text-primary dark:text-primary-dark"
+          size={48}
+        />
       </div>
     );
   }
@@ -156,7 +176,9 @@ const ChatPage = () => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-background-dark">
         <div className="text-center">
-          <p className="text-xl text-gray-600 dark:text-background">Conversation not found</p>
+          <p className="text-xl text-gray-600 dark:text-background">
+            Conversation not found
+          </p>
           <Link
             href="/chat"
             className="mt-4 px-4 py-2 bg-blue-600 dark:bg-primary-dark text-white dark:text-background rounded-lg hover:bg-blue-700 dark:hover:bg-primary-dark/90"
@@ -198,7 +220,9 @@ const ChatPage = () => {
               <h2 className="font-semibold text-gray-900 dark:text-background">
                 {otherUser?.firstName} {otherUser?.lastName}
               </h2>
-              <p className="text-xs text-gray-500 dark:text-paragraph">{otherUser?.email}</p>
+              <p className="text-xs text-gray-500 dark:text-paragraph">
+                {otherUser?.email}
+              </p>
             </div>
           </div>
           <button className="p-2 hover:bg-gray-100 dark:hover:bg-background/20 rounded-lg transition-colors">
@@ -245,7 +269,9 @@ const ChatPage = () => {
                     <p className="break-words">{message.content}</p>
                     <p
                       className={`text-xs mt-1 ${
-                        isOwnMessage ? "text-blue-100 dark:text-background/80" : "text-gray-500 dark:text-paragraph"
+                        isOwnMessage
+                          ? "text-blue-100 dark:text-background/80"
+                          : "text-gray-500 dark:text-paragraph"
                       }`}
                     >
                       {formatTime(message.createdAt)}
