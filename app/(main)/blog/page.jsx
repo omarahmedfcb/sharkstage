@@ -4,7 +4,15 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import api from "@/lib/axios";
-import { MessageSquare, Clock, Plus, X, Loader2, Trash2 } from "lucide-react";
+import {
+  MessageSquare,
+  Clock,
+  Plus,
+  X,
+  Loader2,
+  Trash2,
+  Heart,
+} from "lucide-react";
 import AddComment from "./AddComment";
 import toast from "react-hot-toast";
 import InputField from "@/app/components/InputField";
@@ -12,10 +20,13 @@ import Link from "next/link";
 
 export default function BlogPage() {
   const router = useRouter();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, currentUser } = useSelector((state) => state.auth);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [postLoading, setPostLoading] = useState(false);
+  const [likingPosts, setLikingPosts] = useState({}); // Track which posts are being liked/unliked
+  const [open, setOpen] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -24,6 +35,7 @@ export default function BlogPage() {
     setOpen(false);
     reset();
   };
+
   const {
     control,
     handleSubmit,
@@ -39,6 +51,7 @@ export default function BlogPage() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
   useEffect(() => {
     if (window.location.hash) {
       const el = document.getElementById(window.location.hash.slice(1));
@@ -58,7 +71,6 @@ export default function BlogPage() {
     }
   };
 
-  const [open, setOpen] = useState(false);
   const onSubmitLogic = async (data) => {
     setPostLoading(true);
     try {
@@ -67,12 +79,62 @@ export default function BlogPage() {
       reset();
       handleClose();
       fetchPosts();
-
       toast.success("Post added successfully");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add post");
     } finally {
       setPostLoading(false);
+    }
+  };
+
+  const handleLikeToggle = async (e, postId, isLiked) => {
+    e.preventDefault(); // Prevent navigation to post detail
+    e.stopPropagation();
+
+    if (!isLoggedIn) {
+      toast.error("Please login to like posts");
+      return;
+    }
+
+    // Optimistic update
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              isLiked: !isLiked,
+              likesCount: isLiked ? post.likesCount - 1 : post.likesCount + 1,
+            }
+          : post
+      )
+    );
+
+    setLikingPosts((prev) => ({ ...prev, [postId]: true }));
+
+    try {
+      if (isLiked) {
+        // Unlike
+        await api.delete(`/blog/like/post/${postId}`);
+      } else {
+        // Like
+        await api.post(`/blog/like/post/${postId}`);
+      }
+    } catch (err) {
+      // Revert optimistic update on error
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                isLiked: isLiked,
+                likesCount: isLiked ? post.likesCount + 1 : post.likesCount - 1,
+              }
+            : post
+        )
+      );
+      toast.error(err.response?.data?.message || "Failed to update like");
+    } finally {
+      setLikingPosts((prev) => ({ ...prev, [postId]: false }));
     }
   };
 
@@ -237,9 +299,31 @@ export default function BlogPage() {
                 </p>
 
                 {/* Engagement */}
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-background/20">
+                  {/* Like Button */}
+                  <button
+                    onClick={(e) => handleLikeToggle(e, post._id, post.isLiked)}
+                    disabled={likingPosts[post._id]}
+                    className={`flex items-center gap-1 transition-all ${
+                      post.isLiked
+                        ? "text-red-500"
+                        : "text-gray-600 dark:text-paragraph hover:text-red-500"
+                    } ${likingPosts[post._id] ? "opacity-50" : ""}`}
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${
+                        post.isLiked ? "fill-current" : ""
+                      } ${likingPosts[post._id] ? "animate-pulse" : ""}`}
+                    />
+                    <span className="text-sm font-medium">
+                      {post.likesCount || 0}
+                    </span>
+                  </button>
+
+                  {/* Comments */}
                   <div className="flex items-center gap-1 text-gray-600 dark:text-paragraph">
                     <MessageSquare className="w-4 h-4" />
+                    <span className="text-sm">{post.commentsCount || 0}</span>
                     <span className="text-sm">Comments</span>
                   </div>
                 </div>

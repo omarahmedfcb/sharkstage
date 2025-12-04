@@ -11,8 +11,10 @@ import {
   Send,
   Loader2,
   Trash2,
+  Heart,
 } from "lucide-react";
 import DeleteAlert from "@/app/components/DeleteAlert";
+import toast from "react-hot-toast";
 
 export default function PostDetailPage() {
   const router = useRouter();
@@ -25,6 +27,8 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [commentLoading, setCommentLoading] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
+  const [likingPost, setLikingPost] = useState(false);
+  const [likingComments, setLikingComments] = useState({}); // Track which comments are being liked
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -41,12 +45,15 @@ export default function PostDetailPage() {
   const fetchPostAndComments = async () => {
     try {
       setLoading(true);
-      const foundPost = await api.get(`/blog/${postId}`);
-      setPost(foundPost.data.post);
-      const commentsRes = await api.get(`/blog/post/${postId}`);
+      const [postRes, commentsRes] = await Promise.all([
+        api.get(`/blog/${postId}`),
+        api.get(`/blog/post/${postId}`),
+      ]);
+      setPost(postRes.data.post);
       setComments(commentsRes.data.postComments || []);
     } catch (err) {
       console.error("Error fetching post:", err);
+      toast.error("Failed to load post");
     } finally {
       setLoading(false);
     }
@@ -56,28 +63,119 @@ export default function PostDetailPage() {
     try {
       setPostLoading(true);
       await api.post(`/blog/post/delete/${postId}`);
+      toast.success("Post deleted successfully");
       router.push("/blog");
     } catch (error) {
-      console.error("Error fetching post:", err);
+      console.error("Error deleting post:", error);
+      toast.error("Failed to delete post");
     } finally {
       setPostLoading(false);
     }
   };
+
   const handleDeleteComment = async (commentId) => {
     try {
       setCommentLoading(true);
       await api.post(`/blog/comment/delete/${commentId}`);
+      toast.success("Comment deleted successfully");
       fetchPostAndComments();
     } catch (error) {
-      console.error("Error fetching post:", err);
+      console.error("Error deleting comment:", error);
+      toast.error("Failed to delete comment");
     } finally {
       setCommentLoading(false);
     }
   };
 
+  const handleLikePost = async () => {
+    if (!isLoggedIn) {
+      toast.error("Please login to like posts");
+      return;
+    }
+
+    const isLiked = post.isLiked;
+
+    // Optimistic update
+    setPost((prev) => ({
+      ...prev,
+      isLiked: !isLiked,
+      likesCount: isLiked ? prev.likesCount - 1 : prev.likesCount + 1,
+    }));
+
+    setLikingPost(true);
+
+    try {
+      if (isLiked) {
+        await api.delete(`/blog/like/post/${postId}`);
+      } else {
+        await api.post(`/blog/like/post/${postId}`);
+      }
+    } catch (err) {
+      // Revert on error
+      setPost((prev) => ({
+        ...prev,
+        isLiked: isLiked,
+        likesCount: isLiked ? prev.likesCount + 1 : prev.likesCount - 1,
+      }));
+      toast.error(err.response?.data?.message || "Failed to update like");
+    } finally {
+      setLikingPost(false);
+    }
+  };
+
+  const handleLikeComment = async (commentId, isLiked) => {
+    if (!isLoggedIn) {
+      toast.error("Please login to like comments");
+      return;
+    }
+
+    // Optimistic update
+    setComments((prev) =>
+      prev.map((comment) =>
+        comment._id === commentId
+          ? {
+              ...comment,
+              isLiked: !isLiked,
+              likesCount: isLiked
+                ? comment.likesCount - 1
+                : comment.likesCount + 1,
+            }
+          : comment
+      )
+    );
+
+    setLikingComments((prev) => ({ ...prev, [commentId]: true }));
+
+    try {
+      if (isLiked) {
+        await api.delete(`/blog/like/comment/${commentId}`);
+      } else {
+        await api.post(`/blog/like/comment/${commentId}`);
+      }
+    } catch (err) {
+      // Revert on error
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment._id === commentId
+            ? {
+                ...comment,
+                isLiked: isLiked,
+                likesCount: isLiked
+                  ? comment.likesCount + 1
+                  : comment.likesCount - 1,
+              }
+            : comment
+        )
+      );
+      toast.error(err.response?.data?.message || "Failed to update like");
+    } finally {
+      setLikingComments((prev) => ({ ...prev, [commentId]: false }));
+    }
+  };
+
   const onSubmitComment = async (data) => {
     if (!isLoggedIn) {
-      alert("Please login to comment");
+      toast.error("Please login to comment");
       return;
     }
 
@@ -87,9 +185,11 @@ export default function PostDetailPage() {
         post: postId,
       });
       reset();
+      toast.success("Comment added successfully");
       fetchPostAndComments();
     } catch (err) {
       console.error("Error adding comment:", err);
+      toast.error("Failed to add comment");
     }
   };
 
@@ -129,12 +229,14 @@ export default function PostDetailPage() {
 
   if (!post) {
     return (
-      <div className="flex items-center justify-center min-h-screen  bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-background-dark">
         <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">Post not found</p>
+          <p className="text-xl text-gray-600 dark:text-paragraph mb-4">
+            Post not found
+          </p>
           <button
             onClick={() => router.push("/blog")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/70"
           >
             Back to Blog
           </button>
@@ -149,7 +251,7 @@ export default function PostDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.push("/blog")}
-          className="flex items-center gap-2 text-gray-600 dark:text-paragraph hover:text-gray-900 mb-6 transition-colors"
+          className="flex items-center gap-2 text-gray-600 dark:text-paragraph hover:text-gray-900 dark:hover:text-background mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span>Back to Blog</span>
@@ -157,12 +259,12 @@ export default function PostDetailPage() {
 
         {/* Post Card */}
         <div className="bg-white dark:bg-background/10 dark:border-0 relative rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-6">
-          {currentUser?.accountType == "admin" ||
-          currentUser?._id == post.author?._id ? (
+          {currentUser?.accountType === "admin" ||
+          currentUser?._id === post.author?._id ? (
             <div className="absolute right-4 top-4">
               <DeleteAlert
                 handleDelete={handleDeletePost}
-                title={"Delete this post ?"}
+                title={"Delete this post?"}
                 deleteLoading={postLoading}
               />
             </div>
@@ -186,7 +288,7 @@ export default function PostDetailPage() {
               <p className="font-semibold text-gray-900 dark:text-background text-lg">
                 {post.author?.firstName} {post.author?.lastName}
               </p>
-              <div className="flex items-center gap-1 text-sm text-gray-500">
+              <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-paragraph">
                 <Clock className="w-4 h-4" />
                 <span>{formatTime(post.createdAt)}</span>
               </div>
@@ -197,11 +299,35 @@ export default function PostDetailPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-background mb-4">
             {post.title}
           </h1>
-          <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap">
+          <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap mb-6">
             {post.content}
           </p>
 
-          {/* Stats */}
+          {/* Post Stats - Like Button */}
+          <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-background/20">
+            <button
+              onClick={handleLikePost}
+              disabled={likingPost}
+              className={`flex items-center gap-2 transition-all ${
+                post.isLiked
+                  ? "text-red-500"
+                  : "text-gray-600 dark:text-paragraph hover:text-red-500"
+              } ${likingPost ? "opacity-50" : ""}`}
+            >
+              <Heart
+                className={`w-6 h-6 ${post.isLiked ? "fill-current" : ""} ${
+                  likingPost ? "animate-pulse" : ""
+                }`}
+              />
+              <span className="text-base font-medium">
+                {post.likesCount || 0}
+              </span>
+            </button>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-paragraph">
+              <MessageSquare className="w-5 h-5" />
+              <span>{comments.length} Comments</span>
+            </div>
+          </div>
         </div>
 
         {/* Comments Section */}
@@ -212,7 +338,7 @@ export default function PostDetailPage() {
 
           {/* Add Comment */}
           {isLoggedIn ? (
-            <div className="mb-8 pb-8 border-b border-gray-100">
+            <div className="mb-8 pb-8 border-b border-gray-100 dark:border-background/20">
               <div className="flex gap-3">
                 {currentUser?.profilePicUrl ? (
                   <img
@@ -236,7 +362,7 @@ export default function PostDetailPage() {
                         {...field}
                         placeholder="Write a comment..."
                         rows={3}
-                        className="w-full dark:placeholder-background/30 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        className="w-full dark:placeholder-background/30 dark:bg-background/10 dark:text-background dark:border-0 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                       />
                     )}
                   />
@@ -253,8 +379,10 @@ export default function PostDetailPage() {
               </div>
             </div>
           ) : (
-            <div className="mb-8 pb-8 border-b border-gray-100 text-center">
-              <p className="text-gray-600 mb-3">Please login to comment</p>
+            <div className="mb-8 pb-8 border-b border-gray-100 dark:border-background/20 text-center">
+              <p className="text-gray-600 dark:text-paragraph mb-3">
+                Please login to comment
+              </p>
               <button
                 onClick={() => router.push("/signin")}
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/70 transition-colors"
@@ -268,8 +396,8 @@ export default function PostDetailPage() {
           <div className="space-y-6">
             {comments.length === 0 ? (
               <div className="text-center py-8">
-                <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-gray-500">
+                <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-paragraph" />
+                <p className="text-gray-500 dark:text-paragraph">
                   No comments yet. Be the first to comment!
                 </p>
               </div>
@@ -294,14 +422,14 @@ export default function PostDetailPage() {
                   )}
                   <div className="flex-1">
                     <div className="bg-gray-50 dark:bg-background/10 relative rounded-lg p-4">
-                      {currentUser?.accountType == "admin" ||
-                      currentUser?._id == comment.author?._id ? (
+                      {currentUser?.accountType === "admin" ||
+                      currentUser?._id === comment.author?._id ? (
                         <div className="absolute right-4 bottom-2">
                           <DeleteAlert
                             handleDelete={() =>
                               handleDeleteComment(comment._id)
                             }
-                            title={"Delete this comment ?"}
+                            title={"Delete this comment?"}
                             deleteLoading={commentLoading}
                           />
                         </div>
@@ -315,9 +443,33 @@ export default function PostDetailPage() {
                           {formatTime(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-gray-700 dark:text-paragraph">
+                      <p className="text-gray-700 dark:text-paragraph mb-3">
                         {comment.content}
                       </p>
+
+                      {/* Comment Like Button */}
+                      <button
+                        onClick={() =>
+                          handleLikeComment(comment._id, comment.isLiked)
+                        }
+                        disabled={likingComments[comment._id]}
+                        className={`flex items-center gap-1 text-sm transition-all ${
+                          comment.isLiked
+                            ? "text-red-500"
+                            : "text-gray-600 dark:text-paragraph hover:text-red-500"
+                        } ${likingComments[comment._id] ? "opacity-50" : ""}`}
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            comment.isLiked ? "fill-current" : ""
+                          } ${
+                            likingComments[comment._id] ? "animate-pulse" : ""
+                          }`}
+                        />
+                        <span className="font-medium">
+                          {comment.likesCount || 0}
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
