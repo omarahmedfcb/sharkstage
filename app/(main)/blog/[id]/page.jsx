@@ -302,6 +302,14 @@ export default function PostDetailPage() {
           <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap mb-6">
             {post.content}
           </p>
+          {/* Post Image */}
+          {post.imageUrl && (
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              className="w-full h-64 object-cover rounded-lg mb-4"
+            />
+          )}
 
           {/* Post Stats - Like Button */}
           <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-background/20">
