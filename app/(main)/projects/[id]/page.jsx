@@ -28,7 +28,6 @@ import toast from "react-hot-toast";
 import MessageForm from "./MessageForm";
 import DeleteAlert from "@/app/components/DeleteAlert";
 import { getProjects } from "@/lib/features/projects/projectsThunks";
-import PaymentModal from "@/app/components/payment/PaymentModal";
 const lang = "en";
 export default function ProjectDetailsPage() {
   const params = useParams();
@@ -39,9 +38,6 @@ export default function ProjectDetailsPage() {
   const [offerLoading, setOfferLoading] = useState(false);
   const [error, setError] = useState(null);
   const [projectDeleteLoading, setProjectDeleteLoading] = useState(false);
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [investmentAmount, setInvestmentAmount] = useState(0);
-  const [investmentPercentage, setInvestmentPercentage] = useState(0);
   const router = useRouter();
   // sending offer (legacy - for non-payment offers)
   const {
@@ -64,7 +60,7 @@ export default function ProjectDetailsPage() {
       const cleanedData = {
         amount: Number(data.amount),
         percentage: Number(data.percentage),
-        proposalLetter: data.proposal,
+        proposalLetter: data.proposal || "",
         offeredTo: project.owner,
         offeredBy: currentUser._id,
         project: project._id,
@@ -74,7 +70,7 @@ export default function ProjectDetailsPage() {
       handleClose();
       toast.success("Offer sent successfully");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to add project");
+      setError(err.response?.data?.message || "Failed to send offer");
     } finally {
       setOfferLoading(false);
     }
@@ -89,18 +85,8 @@ export default function ProjectDetailsPage() {
   };
 
   const handleInvestClick = () => {
-    // Open investment calculator first, then payment modal
+    // Open investment calculator
     setOpen(true);
-  };
-
-  const handlePaymentSuccess = () => {
-    // Refresh project data
-    api
-      .get(`/projects/${params.id}`)
-      .then((res) => setProject(res.data.project))
-      .catch((err) => console.error(err));
-    setOpen(false);
-    reset();
   };
   const handleDelete = async () => {
     try {
@@ -388,16 +374,7 @@ export default function ProjectDetailsPage() {
                     <DialogWindow
                       handleClickOpen={handleClickOpen}
                       handleClose={handleClose}
-                      onSubmitLogic={(data) => {
-                        const amount = Number(data.amount);
-                        const percentage = Number(data.percentage);
-                        if (amount > 0 && percentage > 0) {
-                          setInvestmentAmount(amount);
-                          setInvestmentPercentage(percentage);
-                          setOpen(false);
-                          setPaymentModalOpen(true);
-                        }
-                      }}
+                      onSubmitLogic={onSubmitLogic}
                       handleSubmit={handleSubmit}
                       offerLoading={offerLoading}
                       open={open}
@@ -455,24 +432,7 @@ export default function ProjectDetailsPage() {
                           )}
                         />
                       </div>
-                      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/30">
-                        <p className="text-sm text-blue-800 dark:text-blue-300">
-                          After entering the amount and percentage, you'll be
-                          redirected to the secure payment page.
-                        </p>
-                      </div>
                     </DialogWindow>
-                    <PaymentModal
-                      isOpen={paymentModalOpen}
-                      onClose={() => {
-                        setPaymentModalOpen(false);
-                        reset();
-                      }}
-                      project={project}
-                      amount={investmentAmount}
-                      percentage={investmentPercentage}
-                      onSuccess={handlePaymentSuccess}
-                    />
                   </>
                 )}
                 {currentUser && currentUser?._id != project.owner ? (
