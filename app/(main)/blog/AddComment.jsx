@@ -12,6 +12,7 @@ export default function AddComment({
   children,
   postLoading,
   title,
+  buttonText = "Add",
 }) {
   return (
     <>
@@ -43,7 +44,7 @@ export default function AddComment({
             className="w-full justify-center py-2 bg-primary text-background font-bold rounded-lg hover:bg-secondary hover:dark:bg-heading transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {postLoading && <Loader2 size={16} className="animate-spin" />}
-            {postLoading ? "Adding..." : "Add"}
+            {postLoading ? `${buttonText}ing...` : buttonText}
           </button>
         </DialogActions>
       </Dialog>

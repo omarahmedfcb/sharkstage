@@ -10,10 +10,13 @@ import {
   Clock,
   Send,
   Loader2,
-  Trash2,
   Heart,
+  Edit2,
+  MoreVertical,
 } from "lucide-react";
 import DeleteAlert from "@/app/components/DeleteAlert";
+import EditPostModal from "@/app/components/blog/EditPostModal";
+import EditComment from "@/app/components/blog/EditComment";
 import toast from "react-hot-toast";
 
 export default function PostDetailPage() {
@@ -28,7 +31,11 @@ export default function PostDetailPage() {
   const [commentLoading, setCommentLoading] = useState(false);
   const [postLoading, setPostLoading] = useState(false);
   const [likingPost, setLikingPost] = useState(false);
-  const [likingComments, setLikingComments] = useState({}); // Track which comments are being liked
+  const [likingComments, setLikingComments] = useState({});
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [showEditPostModal, setShowEditPostModal] = useState(false);
+  const [showPostMenu, setShowPostMenu] = useState(false);
+  const [showCommentMenus, setShowCommentMenus] = useState({});
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -73,6 +80,22 @@ export default function PostDetailPage() {
     }
   };
 
+  const handleEditPost = async (formData) => {
+    try {
+      const res = await api.put(`/blog/post/edit/${postId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setPost(res.data.post);
+      setShowEditPostModal(false);
+      toast.success("Post updated successfully");
+    } catch (error) {
+      console.error("Error editing post:", error);
+      toast.error("Failed to update post");
+    }
+  };
+
   const handleDeleteComment = async (commentId) => {
     try {
       setCommentLoading(true);
@@ -87,6 +110,22 @@ export default function PostDetailPage() {
     }
   };
 
+  const handleEditComment = async (commentId, newContent) => {
+    try {
+      const res = await api.put(`/blog/comment/edit/${commentId}`, {
+        content: newContent,
+      });
+      setComments((prev) =>
+        prev.map((c) => (c._id === commentId ? res.data.comment : c))
+      );
+      setEditingCommentId(null);
+      toast.success("Comment updated successfully");
+    } catch (error) {
+      console.error("Error editing comment:", error);
+      toast.error("Failed to update comment");
+    }
+  };
+
   const handleLikePost = async () => {
     if (!isLoggedIn) {
       toast.error("Please login to like posts");
@@ -94,8 +133,6 @@ export default function PostDetailPage() {
     }
 
     const isLiked = post.isLiked;
-
-    // Optimistic update
     setPost((prev) => ({
       ...prev,
       isLiked: !isLiked,
@@ -111,7 +148,6 @@ export default function PostDetailPage() {
         await api.post(`/blog/like/post/${postId}`);
       }
     } catch (err) {
-      // Revert on error
       setPost((prev) => ({
         ...prev,
         isLiked: isLiked,
@@ -129,7 +165,6 @@ export default function PostDetailPage() {
       return;
     }
 
-    // Optimistic update
     setComments((prev) =>
       prev.map((comment) =>
         comment._id === commentId
@@ -153,7 +188,6 @@ export default function PostDetailPage() {
         await api.post(`/blog/like/comment/${commentId}`);
       }
     } catch (err) {
-      // Revert on error
       setComments((prev) =>
         prev.map((comment) =>
           comment._id === commentId
@@ -219,6 +253,13 @@ export default function PostDetailPage() {
     }
   };
 
+  const toggleCommentMenu = (commentId) => {
+    setShowCommentMenus((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
@@ -245,10 +286,12 @@ export default function PostDetailPage() {
     );
   }
 
+  const isPostAuthor = currentUser?._id === post.author?._id;
+  const isAdmin = currentUser?.accountType === "admin";
+
   return (
     <div className="min-h-screen pt-16 bg-gray-50 dark:bg-background-dark">
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
-        {/* Back Button */}
         <button
           onClick={() => router.push("/blog")}
           className="flex items-center gap-2 text-gray-600 dark:text-paragraph hover:text-gray-900 dark:hover:text-background mb-6 transition-colors"
@@ -259,18 +302,44 @@ export default function PostDetailPage() {
 
         {/* Post Card */}
         <div className="bg-white dark:bg-background/10 dark:border-0 relative rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-6">
-          {currentUser?.accountType === "admin" ||
-          currentUser?._id === post.author?._id ? (
+          {(isAdmin || isPostAuthor) && (
             <div className="absolute right-4 top-4">
-              <DeleteAlert
-                handleDelete={handleDeletePost}
-                title={"Delete this post?"}
-                deleteLoading={postLoading}
-              />
+              <div className="relative">
+                <button
+                  onClick={() => setShowPostMenu(!showPostMenu)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-background/20 rounded-lg transition-colors"
+                >
+                  <MoreVertical className="w-5 h-5 text-gray-600 dark:text-paragraph" />
+                </button>
+                {showPostMenu && (
+                  <div className="absolute right-0 mt-2 flex bg-white dark:bg-background/10 rounded-lg shadow-lg border border-gray-200 dark:border-background/20 z-10">
+                    {isPostAuthor && (
+                      <button
+                        onClick={() => {
+                          setShowEditPostModal(true);
+                          setShowPostMenu(false);
+                        }}
+                        className="text-blue-700 rounded-lg hover:bg-black/10 p-2 transition-colors"
+                      >
+                        <Edit2 />
+                      </button>
+                    )}
+                    <DeleteAlert
+                      handleDelete={handleDeletePost}
+                      title="Delete this post?"
+                      deleteLoading={postLoading}
+                      triggerButton={
+                        <button className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 rounded-b-lg">
+                          Delete
+                        </button>
+                      }
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          ) : null}
+          )}
 
-          {/* Author Info */}
           <div className="flex items-center gap-3 mb-6">
             {post.author?.profilePicUrl ? (
               <img
@@ -295,23 +364,22 @@ export default function PostDetailPage() {
             </div>
           </div>
 
-          {/* Post Content */}
           <h1 className="text-3xl font-bold text-gray-900 dark:text-background mb-4">
             {post.title}
           </h1>
-          <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap mb-6">
-            {post.content}
-          </p>
-          {/* Post Image */}
+
           {post.imageUrl && (
             <img
               src={post.imageUrl}
               alt={post.title}
-              className="w-full h-64 object-cover rounded-lg mb-4"
+              className="w-full h-auto max-h-96 object-cover rounded-lg mb-4"
             />
           )}
 
-          {/* Post Stats - Like Button */}
+          <p className="text-gray-700 dark:text-paragraph text-lg leading-relaxed whitespace-pre-wrap mb-6">
+            {post.content}
+          </p>
+
           <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-background/20">
             <button
               onClick={handleLikePost}
@@ -344,7 +412,6 @@ export default function PostDetailPage() {
             Comments ({comments.length})
           </h2>
 
-          {/* Add Comment */}
           {isLoggedIn ? (
             <div className="mb-8 pb-8 border-b border-gray-100 dark:border-background/20">
               <div className="flex gap-3">
@@ -400,7 +467,6 @@ export default function PostDetailPage() {
             </div>
           )}
 
-          {/* Comments List */}
           <div className="space-y-6">
             {comments.length === 0 ? (
               <div className="text-center py-8">
@@ -410,82 +476,134 @@ export default function PostDetailPage() {
                 </p>
               </div>
             ) : (
-              comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  id={`${comment._id}`}
-                  className="flex gap-3"
-                >
-                  {comment.author?.profilePicUrl ? (
-                    <img
-                      src={comment.author.profilePicUrl}
-                      alt={`${comment.author.firstName} ${comment.author.lastName}`}
-                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold flex-shrink-0">
-                      {comment.author?.firstName?.charAt(0)}
-                      {comment.author?.lastName?.charAt(0)}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="bg-gray-50 dark:bg-background/10 relative rounded-lg p-4">
-                      {currentUser?.accountType === "admin" ||
-                      currentUser?._id === comment.author?._id ? (
-                        <div className="absolute right-4 bottom-2">
-                          <DeleteAlert
-                            handleDelete={() =>
-                              handleDeleteComment(comment._id)
-                            }
-                            title={"Delete this comment?"}
-                            deleteLoading={commentLoading}
-                          />
-                        </div>
-                      ) : null}
+              comments.map((comment) => {
+                const isCommentAuthor =
+                  currentUser?._id === comment.author?._id;
+                const isEditing = editingCommentId === comment._id;
 
-                      <div className="flex items-baseline justify-between mb-1">
-                        <p className="font-semibold text-gray-900 dark:text-background">
-                          {comment.author?.firstName} {comment.author?.lastName}
-                        </p>
-                        <span className="text-xs text-gray-500 dark:text-paragraph">
-                          {formatTime(comment.createdAt)}
-                        </span>
+                return (
+                  <div
+                    key={comment._id}
+                    id={`${comment._id}`}
+                    className="flex gap-3"
+                  >
+                    {comment.author?.profilePicUrl ? (
+                      <img
+                        src={comment.author.profilePicUrl}
+                        alt={`${comment.author.firstName} ${comment.author.lastName}`}
+                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold flex-shrink-0">
+                        {comment.author?.firstName?.charAt(0)}
+                        {comment.author?.lastName?.charAt(0)}
                       </div>
-                      <p className="text-gray-700 dark:text-paragraph mb-3">
-                        {comment.content}
-                      </p>
-
-                      {/* Comment Like Button */}
-                      <button
-                        onClick={() =>
-                          handleLikeComment(comment._id, comment.isLiked)
-                        }
-                        disabled={likingComments[comment._id]}
-                        className={`flex items-center gap-1 text-sm transition-all ${
-                          comment.isLiked
-                            ? "text-red-500"
-                            : "text-gray-600 dark:text-paragraph hover:text-red-500"
-                        } ${likingComments[comment._id] ? "opacity-50" : ""}`}
-                      >
-                        <Heart
-                          className={`w-4 h-4 ${
-                            comment.isLiked ? "fill-current" : ""
-                          } ${
-                            likingComments[comment._id] ? "animate-pulse" : ""
-                          }`}
+                    )}
+                    <div className="flex-1">
+                      {isEditing ? (
+                        <EditComment
+                          comment={comment}
+                          onSave={handleEditComment}
+                          onCancel={() => setEditingCommentId(null)}
                         />
-                        <span className="font-medium">
-                          {comment.likesCount || 0}
-                        </span>
-                      </button>
+                      ) : (
+                        <div className="bg-gray-50 dark:bg-background/10 relative rounded-lg p-4">
+                          {(isAdmin || isCommentAuthor) && (
+                            <div className="absolute right-2 top-2">
+                              <button
+                                onClick={() => toggleCommentMenu(comment._id)}
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-background/20 rounded transition-colors"
+                              >
+                                <MoreVertical className="w-4 h-4 text-gray-600 dark:text-paragraph" />
+                              </button>
+                              {showCommentMenus[comment._id] && (
+                                <div className="absolute right-0 mt-1 flex bg-white dark:bg-background/10 rounded-lg shadow-lg border border-gray-200 dark:border-background/20 z-10">
+                                  {isCommentAuthor && (
+                                    <button
+                                      onClick={() => {
+                                        setEditingCommentId(comment._id);
+                                        toggleCommentMenu(comment._id);
+                                      }}
+                                      className="text-blue-700 rounded-lg hover:bg-black/10 p-2 transition-colors"
+                                    >
+                                      <Edit2 />
+                                    </button>
+                                  )}
+                                  <DeleteAlert
+                                    handleDelete={() =>
+                                      handleDeleteComment(comment._id)
+                                    }
+                                    title="Delete this comment?"
+                                    deleteLoading={commentLoading}
+                                    triggerButton={
+                                      <button className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
+                                        Delete
+                                      </button>
+                                    }
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="flex items-baseline justify-between mb-1 pr-8">
+                            <p className="font-semibold text-gray-900 dark:text-background">
+                              {comment.author?.firstName}{" "}
+                              {comment.author?.lastName}
+                            </p>
+                            <span className="text-xs text-gray-500 dark:text-paragraph">
+                              {formatTime(comment.createdAt)}
+                              {comment.edited && " (edited)"}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 dark:text-paragraph mb-3">
+                            {comment.content}
+                          </p>
+
+                          <button
+                            onClick={() =>
+                              handleLikeComment(comment._id, comment.isLiked)
+                            }
+                            disabled={likingComments[comment._id]}
+                            className={`flex items-center gap-1 text-sm transition-all ${
+                              comment.isLiked
+                                ? "text-red-500"
+                                : "text-gray-600 dark:text-paragraph hover:text-red-500"
+                            } ${
+                              likingComments[comment._id] ? "opacity-50" : ""
+                            }`}
+                          >
+                            <Heart
+                              className={`w-4 h-4 ${
+                                comment.isLiked ? "fill-current" : ""
+                              } ${
+                                likingComments[comment._id]
+                                  ? "animate-pulse"
+                                  : ""
+                              }`}
+                            />
+                            <span className="font-medium">
+                              {comment.likesCount || 0}
+                            </span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
       </div>
+
+      {/* Edit Post Modal */}
+      <EditPostModal
+        isOpen={showEditPostModal}
+        onClose={() => setShowEditPostModal(false)}
+        post={post}
+        onUpdate={handleEditPost}
+      />
     </div>
   );
 }
