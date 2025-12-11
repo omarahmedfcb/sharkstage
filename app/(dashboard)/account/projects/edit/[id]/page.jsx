@@ -63,7 +63,7 @@ export default function EditProjectPage() {
 
         // Check if user is the owner
         if (
-          project.owner !== currentUser._id &&
+          project.owner._id !== currentUser._id &&
           currentUser.accountType !== "admin"
         ) {
           toast.error("You don't have permission to edit this project");
@@ -194,10 +194,13 @@ export default function EditProjectPage() {
   const InputField = ({ label, error, required, children }) => (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-heading dark:text-background">
-        {label} {required && <span className="text-red-500 dark:text-red-400">*</span>}
+        {label}{" "}
+        {required && <span className="text-red-500 dark:text-red-400">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
+      {error && (
+        <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 
@@ -206,7 +209,9 @@ export default function EditProjectPage() {
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-paragraph dark:text-paragraph">Loading project...</p>
+          <p className="text-paragraph dark:text-paragraph">
+            Loading project...
+          </p>
         </div>
       </div>
     );
@@ -220,7 +225,9 @@ export default function EditProjectPage() {
           <h1 className="text-3xl sm:text-4xl font-bold text-heading dark:text-background mb-2">
             Edit Project
           </h1>
-          <p className="text-paragraph dark:text-paragraph">Update your project details</p>
+          <p className="text-paragraph dark:text-paragraph">
+            Update your project details
+          </p>
         </div>
 
         {/* Error Alert */}
@@ -231,7 +238,9 @@ export default function EditProjectPage() {
               size={20}
             />
             <div className="flex-1">
-              <p className="text-red-800 dark:text-red-300 font-medium">Error</p>
+              <p className="text-red-800 dark:text-red-300 font-medium">
+                Error
+              </p>
               <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
             </div>
             <button

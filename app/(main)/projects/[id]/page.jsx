@@ -150,7 +150,7 @@ export default function ProjectDetailsPage() {
   const tabs = [
     { id: "overview", label: "Overview", icon: FileText },
     { id: "timeline", label: "Timeline", icon: Calendar },
-    { id: "milestones", label: "Milestones", icon: Target },
+    // { id: "milestones", label: "Milestones", icon: Target },
     { id: "investors", label: "Investors", icon: Users },
     { id: "documents", label: "Documents", icon: FileText },
     { id: "risks", label: "Risks & Returns", icon: AlertTriangle },
@@ -247,7 +247,9 @@ export default function ProjectDetailsPage() {
                 <h1 className="text-3xl md:text-4xl font-bold text-heading dark:text-background mb-2">
                   {project.title}
                 </h1>
-                <p className="text-lg text-paragraph dark:text-paragraph">{project.shortDesc}</p>
+                <p className="text-lg text-paragraph dark:text-paragraph">
+                  {project.shortDesc}
+                </p>
               </div>
               {/* Owner Info */}
               <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 dark:bg-background/10 rounded-2xl shadow-sm border border-gray-100 dark:border-0">
@@ -572,7 +574,9 @@ export default function ProjectDetailsPage() {
                       <p className="text-paragraph dark:text-paragraph font-semibold mb-1">
                         {phase.title}
                       </p>
-                      <p className="text-sm text-paragraph dark:text-paragraph">{phase.date}</p>
+                      <p className="text-sm text-paragraph dark:text-paragraph">
+                        {phase.date}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -580,7 +584,7 @@ export default function ProjectDetailsPage() {
             </div>
           )}
 
-          {/* Milestones Tab */}
+          {/* Milestones Tab
           {activeTab === "milestones" && (
             <div>
               <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
@@ -613,7 +617,7 @@ export default function ProjectDetailsPage() {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Team Tab */}
           {activeTab === "investors" && (
@@ -699,7 +703,9 @@ export default function ProjectDetailsPage() {
                         className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/30"
                       >
                         <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-paragraph dark:text-paragraph">{risk}</span>
+                        <span className="text-paragraph dark:text-paragraph">
+                          {risk}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -713,7 +719,9 @@ export default function ProjectDetailsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800/30">
-                      <p className="text-sm text-paragraph dark:text-paragraph mb-1">ROI Target</p>
+                      <p className="text-sm text-paragraph dark:text-paragraph mb-1">
+                        ROI Target
+                      </p>
                       <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                         {project.expectedROI}
                       </p>
