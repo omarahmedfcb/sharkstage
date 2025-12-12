@@ -13,7 +13,11 @@ const PROJECT_CATEGORIES = [
   "Other",
 ];
 
-export default function BasicInfoStep({ formData, updateFormData }) {
+export default function BasicInfoStep({
+  formData,
+  updateFormData,
+  isEdit = false,
+}) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -31,6 +35,7 @@ export default function BasicInfoStep({ formData, updateFormData }) {
         updateFormData({
           imageFile: file,
           imagePreview: reader.result,
+          existingImage: null, // Clear existing image when new one is selected
         });
       };
       reader.readAsDataURL(file);
@@ -41,6 +46,12 @@ export default function BasicInfoStep({ formData, updateFormData }) {
     updateFormData({
       imageFile: null,
       imagePreview: null,
+    });
+  };
+
+  const removeExistingImage = () => {
+    updateFormData({
+      existingImage: null,
     });
   };
 
@@ -56,7 +67,48 @@ export default function BasicInfoStep({ formData, updateFormData }) {
           Project Image
         </label>
 
-        {!formData.imagePreview ? (
+        {/* Show existing image (edit mode) */}
+        {isEdit && formData.existingImage && !formData.imagePreview && (
+          <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-0">
+            <Image
+              src={formData.existingImage}
+              alt="Current project image"
+              width={800}
+              height={400}
+              className="w-full h-64 object-cover"
+            />
+            <button
+              type="button"
+              onClick={removeExistingImage}
+              className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-2 rounded-full hover:bg-red-600 dark:hover:bg-red-700 transition"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        )}
+
+        {/* Show new image preview */}
+        {formData.imagePreview && (
+          <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-0">
+            <Image
+              src={formData.imagePreview}
+              alt="Project preview"
+              width={800}
+              height={400}
+              className="w-full h-64 object-cover"
+            />
+            <button
+              type="button"
+              onClick={removeImage}
+              className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-2 rounded-full hover:bg-red-600 dark:hover:bg-red-700 transition"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        )}
+
+        {/* Upload area - only show if no image exists */}
+        {!formData.imagePreview && !formData.existingImage && (
           <div className="border-2 border-dashed border-gray-300 dark:border-background/30 rounded-lg p-8 text-center hover:border-primary dark:hover:border-primary-dark transition cursor-pointer">
             <input
               type="file"
@@ -75,22 +127,25 @@ export default function BasicInfoStep({ formData, updateFormData }) {
               </p>
             </label>
           </div>
-        ) : (
-          <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-0">
-            <Image
-              src={formData.imagePreview}
-              alt="Project preview"
-              width={800}
-              height={400}
-              className="w-full h-64 object-cover"
+        )}
+
+        {/* Change image button when image exists */}
+        {(formData.existingImage || formData.imagePreview) && (
+          <div className="mt-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="change-image-upload"
             />
-            <button
-              type="button"
-              onClick={removeImage}
-              className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-2 rounded-full hover:bg-red-600 dark:hover:bg-red-700 transition"
+            <label
+              htmlFor="change-image-upload"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-background/20 dark:text-background text-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-background/30 transition cursor-pointer text-sm"
             >
-              <X size={20} />
-            </button>
+              <Upload size={16} />
+              Change Image
+            </label>
           </div>
         )}
       </div>

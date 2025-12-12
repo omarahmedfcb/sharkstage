@@ -1,67 +1,77 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { useSelector } from "react-redux";
-import { AlertCircle, Loader2, Upload, X } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { AlertCircle, Loader2 } from "lucide-react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
-import Image from "next/image";
+import { getProjects } from "@/lib/features/projects/projectsThunks";
 
-const PROJECT_CATEGORIES = [
-  "Technology",
-  "E-Commerce",
-  "Food",
-  "Health",
-  "Education",
-  "Real Estate",
-  "Industrial",
-  "Other",
+// Import step components
+import StepIndicator from "@/app/components/projects/wizard/StepIndicator";
+import BasicInfoStep from "@/app/components/projects/wizard/BasicInfoStep";
+import FinancialStep from "@/app/components/projects/wizard/FinancialStep";
+import DetailsStep from "@/app/components/projects/wizard/DetailsStep";
+import DocumentsEditStep from "@/app/components/projects/wizard/DocumentsEditStep";
+import ReviewStep from "@/app/components/projects/wizard/ReviewStep";
+
+const STEPS = [
+  { id: 1, name: "Basic Info", component: BasicInfoStep },
+  { id: 2, name: "Financial", component: FinancialStep },
+  { id: 3, name: "Details", component: DetailsStep },
+  { id: 4, name: "Documents", component: DocumentsEditStep },
+  { id: 5, name: "Review", component: ReviewStep },
 ];
 
-export default function EditProjectPage() {
-  const { currentUser } = useSelector((state) => state.auth);
+export default function EditProjectWizard() {
   const router = useRouter();
   const params = useParams();
+  const dispatch = useDispatch();
   const projectId = params.id;
+  const { currentUser } = useSelector((state) => state.auth);
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [fetchingProject, setFetchingProject] = useState(true);
   const [error, setError] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [existingImage, setExistingImage] = useState(null);
-  const [investedPercentage, setInvestedPercentage] = useState(0);
   const [maxAvailablePercentage, setMaxAvailablePercentage] = useState(100);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm({
-    defaultValues: {
-      title: "",
-      shortDesc: "",
-      description: "",
-      category: "",
-      status: "active",
-      totalPrice: "",
-      availablePercentage: "",
-      expectedROI: "",
-    },
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    // Step 1: Basic Info
+    title: "",
+    shortDesc: "",
+    description: "",
+    category: "",
+    status: "active",
+    imageFile: null,
+    imagePreview: null,
+    existingImage: null,
+
+    // Step 2: Financial
+    totalPrice: "",
+    availablePercentage: "",
+    expectedROI: "",
+
+    // Step 3: Details
+    keyBenefits: [""],
+    potentialRisks: [""],
+    timeline: [],
+
+    // Step 4: Documents
+    documents: [], // New documents to upload
+    existingDocuments: [], // Current documents from DB
   });
 
-  // In the useEffect after setting form values, add:
+  // Fetch existing project data
   useEffect(() => {
     const fetchProject = async () => {
       try {
         setFetchingProject(true);
         const response = await api.get(`/projects/${projectId}`);
         const project = response.data.project;
-        console.log();
 
-        // Check if user is the owner
+        // Check authorization
         if (
           project.owner._id !== currentUser._id &&
           currentUser.accountType !== "admin"
@@ -71,29 +81,32 @@ export default function EditProjectPage() {
           return;
         }
 
-        // Calculate invested percentage
+        // Calculate max available percentage
         const totalInvested =
           project.investors?.reduce((sum, inv) => sum + inv.percentage, 0) || 0;
-        const maxAvailable = 100 - totalInvested;
+        setMaxAvailablePercentage(100 - totalInvested);
 
-        // Store for validation message
-        setInvestedPercentage(totalInvested);
-        setMaxAvailablePercentage(maxAvailable);
-
-        // Set form values
-        setValue("title", project.title);
-        setValue("shortDesc", project.shortDesc);
-        setValue("description", project.description);
-        setValue("category", project.category.en);
-        setValue("status", project.status);
-        setValue("totalPrice", project.totalPrice);
-        setValue("availablePercentage", project.availablePercentage || "");
-        setValue("expectedROI", project.expectedROI);
-
-        // Set existing image
-        if (project.image) {
-          setExistingImage(project.image);
-        }
+        // Pre-fill form data
+        setFormData({
+          title: project.title,
+          shortDesc: project.shortDesc,
+          description: project.description,
+          category: project.category.en,
+          status: project.status,
+          imageFile: null,
+          imagePreview: null,
+          existingImage: project.image || null,
+          totalPrice: project.totalPrice,
+          availablePercentage: project.availablePercentage || "",
+          expectedROI: project.expectedROI,
+          keyBenefits:
+            project.keyBenefits?.length > 0 ? project.keyBenefits : [""],
+          potentialRisks:
+            project.potentialRisks?.length > 0 ? project.potentialRisks : [""],
+          timeline: project.timeline || [],
+          documents: [],
+          existingDocuments: project.documents || [],
+        });
       } catch (err) {
         console.error("Error fetching project:", err);
         toast.error("Failed to load project");
@@ -106,81 +119,162 @@ export default function EditProjectPage() {
     if (projectId && currentUser) {
       fetchProject();
     }
-  }, [projectId, currentUser, router, setValue]);
+  }, [projectId, currentUser, router]);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please select an image file");
-        return;
-      }
+  const updateFormData = (updates) => {
+    setFormData((prev) => ({ ...prev, ...updates }));
+  };
 
-      // Validate file size (10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("Image size should be less than 10MB");
-        return;
-      }
+  const validateStep = (step) => {
+    setError(null);
 
-      setImageFile(file);
+    switch (step) {
+      case 1:
+        if (
+          !formData.title ||
+          !formData.shortDesc ||
+          !formData.description ||
+          !formData.category
+        ) {
+          setError("Please fill in all required fields");
+          return false;
+        }
+        return true;
 
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      case 2:
+        if (!formData.totalPrice || !formData.expectedROI) {
+          setError("Please fill in all required financial details");
+          return false;
+        }
+        if (
+          formData.availablePercentage &&
+          (Number(formData.availablePercentage) < 0 ||
+            Number(formData.availablePercentage) > maxAvailablePercentage)
+        ) {
+          setError(
+            `Available percentage must be between 0-${maxAvailablePercentage.toFixed(
+              2
+            )}`
+          );
+          return false;
+        }
+        if (
+          Number(formData.expectedROI) < 0 ||
+          Number(formData.expectedROI) > 100
+        ) {
+          setError("Expected ROI must be between 0-100");
+          return false;
+        }
+        return true;
 
-      // Clear existing image when new one is selected
-      setExistingImage(null);
+      case 3:
+        return true;
+
+      case 4:
+        const totalDocs =
+          formData.documents.length + formData.existingDocuments.length;
+        if (totalDocs > 3) {
+          setError("Maximum 3 documents allowed");
+          return false;
+        }
+        for (const doc of formData.documents) {
+          if (!doc.title || !doc.title.trim()) {
+            setError("Each document must have a title");
+            return false;
+          }
+          if (doc.file.size > 2 * 1024 * 1024) {
+            setError("Each document must be less than 2MB");
+            return false;
+          }
+        }
+        return true;
+
+      default:
+        return true;
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      if (currentStep === 5) {
+        handleSubmit();
+      } else {
+        setCurrentStep((prev) => prev + 1);
+        window.scrollTo(0, 0);
+      }
+    }
   };
 
-  const removeExistingImage = () => {
-    setExistingImage(null);
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+      setError(null);
+      window.scrollTo(0, 0);
+    } else {
+      router.push(`/projects/${projectId}`);
+    }
   };
 
-  const onSubmit = async (data) => {
+  const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const formData = new FormData();
+      const data = new FormData();
 
-      // Append form fields
-      formData.append("title", data.title);
-      formData.append("shortDesc", data.shortDesc);
-      formData.append("description", data.description);
-      formData.append("category", JSON.stringify({ en: data.category }));
-      formData.append("status", data.status);
-      formData.append("totalPrice", Number(data.totalPrice));
-      formData.append("expectedROI", Number(data.expectedROI));
+      // Basic info
+      data.append("title", formData.title);
+      data.append("shortDesc", formData.shortDesc);
+      data.append("description", formData.description);
+      data.append("category", JSON.stringify({ en: formData.category }));
+      data.append("status", formData.status);
 
-      // Add availablePercentage only if provided
-      if (data.availablePercentage) {
-        formData.append(
+      // Financial
+      data.append("totalPrice", Number(formData.totalPrice));
+      data.append("expectedROI", Number(formData.expectedROI));
+      if (formData.availablePercentage) {
+        data.append(
           "availablePercentage",
-          Number(data.availablePercentage)
+          Number(formData.availablePercentage)
         );
       }
 
-      // Append new image if selected
-      if (imageFile) {
-        formData.append("image", imageFile);
+      // Details
+      const benefits = formData.keyBenefits.filter((b) => b.trim());
+      const risks = formData.potentialRisks.filter((r) => r.trim());
+
+      if (benefits.length > 0) {
+        data.append("keyBenefits", JSON.stringify(benefits));
+      }
+      if (risks.length > 0) {
+        data.append("potentialRisks", JSON.stringify(risks));
+      }
+      if (formData.timeline.length > 0) {
+        data.append("timeline", JSON.stringify(formData.timeline));
       }
 
-      await api.put(`/projects/edit/${projectId}`, formData, {
+      // Image
+      if (formData.imageFile) {
+        data.append("image", formData.imageFile);
+      }
+
+      // Documents - only send NEW documents
+      if (formData.documents.length > 0) {
+        const docTitles = formData.documents.map((d) => d.title);
+        data.append("documentTitles", JSON.stringify(docTitles));
+
+        formData.documents.forEach((doc) => {
+          data.append("documents", doc.file);
+        });
+      }
+
+      const response = await api.put(`/projects/edit/${projectId}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
+      dispatch(getProjects());
       toast.success("Project updated successfully!");
       router.push(`/projects/${projectId}`);
     } catch (err) {
@@ -190,19 +284,6 @@ export default function EditProjectPage() {
       setLoading(false);
     }
   };
-
-  const InputField = ({ label, error, required, children }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-heading dark:text-background">
-        {label}{" "}
-        {required && <span className="text-red-500 dark:text-red-400">*</span>}
-      </label>
-      {children}
-      {error && (
-        <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
-      )}
-    </div>
-  );
 
   if (fetchingProject) {
     return (
@@ -217,9 +298,11 @@ export default function EditProjectPage() {
     );
   }
 
+  const CurrentStepComponent = STEPS[currentStep - 1].component;
+
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-background dark:bg-background-dark">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-heading dark:text-background mb-2">
@@ -229,6 +312,9 @@ export default function EditProjectPage() {
             Update your project details
           </p>
         </div>
+
+        {/* Step Indicator */}
+        <StepIndicator steps={STEPS} currentStep={currentStep} />
 
         {/* Error Alert */}
         {error && (
@@ -252,327 +338,41 @@ export default function EditProjectPage() {
           </div>
         )}
 
-        {/* Form */}
-        <div className="bg-white dark:bg-background/10 rounded-lg shadow-md dark:shadow-none p-6 border border-gray-200 dark:border-0">
-          <div className="space-y-5">
-            {/* Image Upload/Update Section */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-heading">
-                Project Image
-              </label>
+        {/* Step Content */}
+        <div className="bg-white dark:bg-background/10 rounded-lg shadow-md dark:shadow-none p-6 border border-gray-200 dark:border-0 mb-6">
+          <CurrentStepComponent
+            formData={formData}
+            updateFormData={updateFormData}
+            errors={error}
+            maxAvailablePercentage={maxAvailablePercentage}
+            isEdit={true}
+          />
+        </div>
 
-              {/* Show existing image if no new image selected */}
-              {existingImage && !imagePreview && (
-                <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-0">
-                  <Image
-                    src={existingImage}
-                    alt="Current project image"
-                    width={800}
-                    height={400}
-                    className="w-full h-64 object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeExistingImage}
-                    disabled={loading}
-                    className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-2 rounded-full hover:bg-red-600 dark:hover:bg-red-700 transition disabled:opacity-50"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              )}
+        {/* Navigation Buttons */}
+        <div className="flex justify-between gap-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            disabled={loading}
+            className="px-6 py-2.5 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-background/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {currentStep === 1 ? "Cancel" : "Back"}
+          </button>
 
-              {/* Show new image preview */}
-              {imagePreview && (
-                <div className="relative rounded-lg overflow-hidden border border-gray-300 dark:border-0">
-                  <Image
-                    src={imagePreview}
-                    alt="New project preview"
-                    width={800}
-                    height={400}
-                    className="w-full h-64 object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    disabled={loading}
-                    className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-2 rounded-full hover:bg-red-600 dark:hover:bg-red-700 transition disabled:opacity-50"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              )}
-
-              {/* Upload new image section */}
-              {!existingImage && !imagePreview && (
-                <div className="border-2 border-dashed border-gray-300 dark:border-background/30 rounded-lg p-8 text-center hover:border-primary dark:hover:border-primary-dark transition cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                    disabled={loading}
-                  />
-                  <label htmlFor="image-upload" className="cursor-pointer">
-                    <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-paragraph" />
-                    <p className="text-sm text-gray-600 dark:text-paragraph mb-1">
-                      Click to upload new project image
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-paragraph">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                  </label>
-                </div>
-              )}
-
-              {/* Change image button when image exists */}
-              {(existingImage || imagePreview) && (
-                <div className="mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="change-image-upload"
-                    disabled={loading}
-                  />
-                  <label
-                    htmlFor="change-image-upload"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-background/20 dark:text-background text-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-background/30 transition cursor-pointer text-sm"
-                  >
-                    <Upload size={16} />
-                    Change Image
-                  </label>
-                </div>
-              )}
-            </div>
-
-            <Controller
-              name="title"
-              control={control}
-              rules={{ required: "Title is required" }}
-              render={({ field }) => (
-                <InputField
-                  label="Project Title"
-                  error={errors.title?.message}
-                  required
-                >
-                  <input
-                    {...field}
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
-                    placeholder="Enter project title"
-                    disabled={loading}
-                  />
-                </InputField>
-              )}
-            />
-
-            <Controller
-              name="shortDesc"
-              control={control}
-              rules={{ required: "Short description is required" }}
-              render={({ field }) => (
-                <InputField
-                  label="Short Description"
-                  error={errors.shortDesc?.message}
-                  required
-                >
-                  <textarea
-                    {...field}
-                    rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none resize-none"
-                    placeholder="Brief summary of your project"
-                    disabled={loading}
-                  />
-                </InputField>
-              )}
-            />
-
-            <Controller
-              name="description"
-              control={control}
-              rules={{ required: "Description is required" }}
-              render={({ field }) => (
-                <InputField
-                  label="Full Description"
-                  error={errors.description?.message}
-                  required
-                >
-                  <textarea
-                    {...field}
-                    rows={5}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none resize-none"
-                    placeholder="Detailed description of your project"
-                    disabled={loading}
-                  />
-                </InputField>
-              )}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Controller
-                name="category"
-                control={control}
-                rules={{ required: "Category is required" }}
-                render={({ field }) => (
-                  <InputField
-                    label="Category"
-                    error={errors.category?.message}
-                    required
-                  >
-                    <select
-                      {...field}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none bg-white"
-                      disabled={loading}
-                    >
-                      <option value="">Select category</option>
-                      {PROJECT_CATEGORIES.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
-                  </InputField>
-                )}
-              />
-
-              <Controller
-                name="status"
-                control={control}
-                rules={{ required: "Status is required" }}
-                render={({ field }) => (
-                  <InputField
-                    label="Status"
-                    error={errors.status?.message}
-                    required
-                  >
-                    <select
-                      {...field}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none bg-white"
-                      disabled={loading}
-                    >
-                      <option value="active">Active</option>
-                      <option value="closed">Closed</option>
-                    </select>
-                  </InputField>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Controller
-                name="totalPrice"
-                control={control}
-                rules={{
-                  required: "Total price is required",
-                  min: { value: 0, message: "Must be positive" },
-                }}
-                render={({ field }) => (
-                  <InputField
-                    label="Total Price"
-                    error={errors.totalPrice?.message}
-                    required
-                  >
-                    <input
-                      {...field}
-                      type="number"
-                      step="0.01"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
-                      placeholder="0.00"
-                      disabled={loading}
-                    />
-                  </InputField>
-                )}
-              />
-
-              <Controller
-                name="availablePercentage"
-                control={control}
-                rules={{
-                  min: { value: 0, message: "Must be 0-100" },
-                  max: {
-                    value: maxAvailablePercentage,
-                    message: `Maximum ${maxAvailablePercentage.toFixed(
-                      2
-                    )}% available (${investedPercentage.toFixed(
-                      2
-                    )}% already invested)`,
-                  },
-                }}
-                render={({ field }) => (
-                  <InputField
-                    label="Available %"
-                    error={errors.availablePercentage?.message}
-                  >
-                    <input
-                      {...field}
-                      type="number"
-                      step="0.01"
-                      max={maxAvailablePercentage}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
-                      placeholder={`0-${maxAvailablePercentage.toFixed(2)}`}
-                      disabled={loading}
-                    />
-                    {investedPercentage > 0 && (
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                        {investedPercentage.toFixed(2)}% already invested. Max
-                        available: {maxAvailablePercentage.toFixed(2)}%
-                      </p>
-                    )}
-                  </InputField>
-                )}
-              />
-
-              <Controller
-                name="expectedROI"
-                control={control}
-                rules={{
-                  required: "Expected ROI is required",
-                  min: { value: 0, message: "Must be positive" },
-                  max: { value: 100, message: "Must be 0-100" },
-                }}
-                render={({ field }) => (
-                  <InputField
-                    label="Expected ROI %"
-                    error={errors.expectedROI?.message}
-                    required
-                  >
-                    <input
-                      {...field}
-                      type="number"
-                      step="0.01"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
-                      placeholder="0-100"
-                      disabled={loading}
-                    />
-                  </InputField>
-                )}
-              />
-            </div>
-
-            {/* Submit Buttons */}
-            <div className="flex justify-end gap-4 pt-4">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                disabled={loading}
-                className="px-6 py-2.5 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background text-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-background/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                onClick={handleSubmit(onSubmit)}
-                disabled={loading}
-                className="px-6 py-2.5 bg-primary dark:bg-primary-dark text-white rounded-lg hover:bg-secondary dark:hover:bg-secondary-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {loading && <Loader2 size={18} className="animate-spin" />}
-                {loading ? "Updating..." : "Update Project"}
-              </button>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={loading}
+            className="px-6 py-2.5 bg-primary dark:bg-primary-dark text-white rounded-lg hover:bg-secondary dark:hover:bg-secondary-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {loading && <Loader2 size={18} className="animate-spin" />}
+            {currentStep === 5
+              ? loading
+                ? "Updating..."
+                : "Update Project"
+              : "Next"}
+          </button>
         </div>
       </div>
     </div>

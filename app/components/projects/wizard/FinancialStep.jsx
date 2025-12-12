@@ -1,4 +1,9 @@
-export default function FinancialStep({ formData, updateFormData }) {
+export default function FinancialStep({
+  formData,
+  updateFormData,
+  maxAvailablePercentage = 100,
+  isEdit = false,
+}) {
   return (
     <div className="space-y-5">
       <h2 className="text-2xl font-bold text-heading dark:text-background mb-4">
@@ -29,15 +34,20 @@ export default function FinancialStep({ formData, updateFormData }) {
           <input
             type="number"
             step="0.01"
+            max={maxAvailablePercentage}
             value={formData.availablePercentage}
             onChange={(e) =>
               updateFormData({ availablePercentage: e.target.value })
             }
             className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none"
-            placeholder="0-100"
+            placeholder={`0-${maxAvailablePercentage.toFixed(2)}`}
           />
           <p className="text-xs text-paragraph dark:text-paragraph">
-            Percentage available for investment
+            {isEdit && maxAvailablePercentage < 100
+              ? `Max ${maxAvailablePercentage.toFixed(2)}% (${(
+                  100 - maxAvailablePercentage
+                ).toFixed(2)}% invested)`
+              : "Percentage available for investment"}
           </p>
         </div>
 
