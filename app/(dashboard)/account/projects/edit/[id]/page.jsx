@@ -239,16 +239,18 @@ export default function EditProjectWizard() {
         );
       }
 
-      // Details
+      // Details - Send as multiple values with same key (multer will parse as array)
       const benefits = formData.keyBenefits.filter((b) => b.trim());
       const risks = formData.potentialRisks.filter((r) => r.trim());
 
-      if (benefits.length > 0) {
-        data.append("keyBenefits", JSON.stringify(benefits));
-      }
-      if (risks.length > 0) {
-        data.append("potentialRisks", JSON.stringify(risks));
-      }
+      benefits.forEach((benefit) => {
+        data.append("keyBenefits", benefit);
+      });
+
+      risks.forEach((risk) => {
+        data.append("potentialRisks", risk);
+      });
+
       if (formData.timeline.length > 0) {
         data.append("timeline", JSON.stringify(formData.timeline));
       }

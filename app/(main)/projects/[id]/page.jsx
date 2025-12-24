@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Loader2,
   PenBox,
+  Inbox,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import DialogWindow from "@/app/components/DialogWindow";
@@ -28,7 +29,22 @@ import toast from "react-hot-toast";
 import MessageForm from "./MessageForm";
 import DeleteAlert from "@/app/components/DeleteAlert";
 import { getProjects } from "@/lib/features/projects/projectsThunks";
+
 const lang = "en";
+
+// Empty State Component
+const EmptyState = ({ icon: Icon, title, description }) => (
+  <div className="flex flex-col items-center justify-center py-12 text-center">
+    <div className="w-16 h-16 bg-gray-100 dark:bg-background/20 rounded-full flex items-center justify-center mb-4">
+      <Icon className="w-8 h-8 text-gray-400 dark:text-paragraph" />
+    </div>
+    <h3 className="text-lg font-semibold text-heading dark:text-background mb-2">
+      {title}
+    </h3>
+    <p className="text-paragraph dark:text-paragraph max-w-md">{description}</p>
+  </div>
+);
+
 export default function ProjectDetailsPage() {
   const params = useParams();
   const [project, setProject] = useState(null);
@@ -39,7 +55,7 @@ export default function ProjectDetailsPage() {
   const [error, setError] = useState(null);
   const [projectDeleteLoading, setProjectDeleteLoading] = useState(false);
   const router = useRouter();
-  // sending offer (legacy - for non-payment offers)
+
   const {
     control,
     handleSubmit,
@@ -52,7 +68,9 @@ export default function ProjectDetailsPage() {
       proposal: "",
     },
   });
+
   const [open, setOpen] = useState(false);
+
   const onSubmitLogic = async (data) => {
     setOfferLoading(true);
     setError(null);
@@ -75,6 +93,7 @@ export default function ProjectDetailsPage() {
       setOfferLoading(false);
     }
   };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -85,9 +104,9 @@ export default function ProjectDetailsPage() {
   };
 
   const handleInvestClick = () => {
-    // Open investment calculator
     setOpen(true);
   };
+
   const handleDelete = async () => {
     try {
       setProjectDeleteLoading(true);
@@ -101,6 +120,7 @@ export default function ProjectDetailsPage() {
       setProjectDeleteLoading(false);
     }
   };
+
   useEffect(() => {
     if (!params.id) return;
     api
@@ -112,12 +132,14 @@ export default function ProjectDetailsPage() {
 
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   if (loading)
     return (
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
+
   if (!project) {
     return (
       <div className="min-h-screen bg-background dark:bg-background-dark flex items-center justify-center">
@@ -150,23 +172,10 @@ export default function ProjectDetailsPage() {
   const tabs = [
     { id: "overview", label: "Overview", icon: FileText },
     { id: "timeline", label: "Timeline", icon: Calendar },
-    // { id: "milestones", label: "Milestones", icon: Target },
     { id: "investors", label: "Investors", icon: Users },
     { id: "documents", label: "Documents", icon: FileText },
     { id: "risks", label: "Risks & Returns", icon: AlertTriangle },
   ];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === project.images.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? project.images.length - 1 : prev - 1
-    );
-  };
 
   return (
     <div className="min-h-screen bg-background pt-18 dark:bg-background-dark">
@@ -189,47 +198,13 @@ export default function ProjectDetailsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left: Image and Info */}
             <div className="lg:col-span-2">
-              {/* Image Slider */}
+              {/* Image */}
               <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-gray-100 dark:bg-background/10">
                 <img
                   src={project.image}
                   alt={project.title}
                   className="w-full h-full object-cover"
                 />
-                {/* {project.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
-                    >
-                      <ChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
-                    >
-                      <ChevronRight className="w-6 h-6" />
-                    </button>
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                      {project.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentImageIndex
-                              ? "bg-white"
-                              : "bg-white/50"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )} */}
-                {/* {project.featured && (
-                  <div className="absolute top-4 left-4 bg-buttons text-primary px-4 py-2 rounded-full text-sm font-semibold">
-                    Featured Project
-                  </div>
-                )} */}
               </div>
 
               {/* Title and Category */}
@@ -240,7 +215,6 @@ export default function ProjectDetailsPage() {
                       category
                     )} text-white px-4 py-2 rounded-full text-sm font-semibold mb-3`}
                   >
-                    {/* <category.icon className="w-4 h-4" /> */}
                     {category}
                   </div>
                 )}
@@ -251,6 +225,7 @@ export default function ProjectDetailsPage() {
                   {project.shortDesc}
                 </p>
               </div>
+
               {/* Owner Info */}
               <div className="flex items-center gap-4 mt-4 mb-8 p-4 bg-gray-50 dark:bg-background/10 rounded-2xl shadow-sm border border-gray-100 dark:border-0">
                 {project.owner?.profilePicUrl ? (
@@ -260,7 +235,7 @@ export default function ProjectDetailsPage() {
                     className="w-14 h-14 rounded-full object-cover shadow-sm"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary  dark:to-heading flex items-center justify-center text-white font-semibold text-lg shadow-sm">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary dark:to-heading flex items-center justify-center text-white font-semibold text-lg shadow-sm">
                     {project.owner?.firstName?.charAt(0)}
                     {project.owner?.lastName?.charAt(0)}
                   </div>
@@ -275,6 +250,7 @@ export default function ProjectDetailsPage() {
                   </p>
                 </div>
               </div>
+
               {/* Key Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
@@ -283,16 +259,9 @@ export default function ProjectDetailsPage() {
                     ROI
                   </div>
                   <p className="text-2xl font-bold text-heading dark:text-background">
-                    {project.expectedROI}
+                    {project.expectedROI}%
                   </p>
                 </div>
-                {/* <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
-                    <Clock className="w-4 h-4" />
-                    Days Left
-                  </div>
-                  <p className="text-2xl font-bold text-heading dark:text-background">{daysLeft}</p>
-                </div> */}
                 <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
                     <Users className="w-4 h-4" />
@@ -312,6 +281,15 @@ export default function ProjectDetailsPage() {
                       month: "short",
                       year: "numeric",
                     })}
+                  </p>
+                </div>
+                <div className="bg-soft dark:bg-background/10 rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-paragraph dark:text-paragraph text-sm mb-1">
+                    <Users className="w-4 h-4" />
+                    Investors
+                  </div>
+                  <p className="text-2xl font-bold text-heading dark:text-background">
+                    {project.investors?.length || 0}
                   </p>
                 </div>
               </div>
@@ -346,12 +324,9 @@ export default function ProjectDetailsPage() {
                     <span className="text-3xl font-bold">
                       $
                       {project.totalPrice > 999999
-                        ? `${project.totalPrice / 1000000}M`
-                        : `${project.totalPrice / 1000}K`}
+                        ? `${(project.totalPrice / 1000000).toFixed(1)}M`
+                        : `${(project.totalPrice / 1000).toFixed(0)}K`}
                     </span>
-                    {/* <span className="text-background/80 text-sm">
-                      raised of ${(project.fundingGoal / 1000000).toFixed(1)}M
-                    </span> */}
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-3 mb-2">
                     <div
@@ -434,6 +409,24 @@ export default function ProjectDetailsPage() {
                           )}
                         />
                       </div>
+
+                      <Controller
+                        name="proposal"
+                        control={control}
+                        render={({ field }) => (
+                          <InputField
+                            label="Proposal Letter (Optional)"
+                            error={errors.proposal?.message}
+                          >
+                            <textarea
+                              {...field}
+                              rows={4}
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-0 dark:bg-background/10 dark:text-background dark:placeholder-background/30 rounded-lg focus:ring-2 focus:ring-primary dark:focus:ring-primary-dark focus:border-transparent outline-none resize-none"
+                              placeholder="Explain why you want to invest in this project..."
+                            />
+                          </InputField>
+                        )}
+                      />
                     </DialogWindow>
                   </>
                 )}
@@ -449,23 +442,21 @@ export default function ProjectDetailsPage() {
                       {project.expectedROI}%
                     </span>
                   </div>
-                  {/* <div className="flex justify-between">
-                    <span className="text-background/80">Duration</span>
-                    <span className="font-semibold">
-                      {Math.ceil(
-                        (new Date(project.endDate) -
-                          new Date(project.startDate)) /
-                          (1000 * 60 * 60 * 24 * 30)
-                      )}{" "}
-                      months
-                    </span>
-                  </div> */}
                   <div className="flex justify-between">
                     <span className="text-background/80">
-                      Available Percentage for Investment
+                      Available for Investment
                     </span>
                     <span className="font-semibold">
                       {project.availablePercentage}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-background/80">Total Value</span>
+                    <span className="font-semibold">
+                      $
+                      {project.totalPrice > 999999
+                        ? `${(project.totalPrice / 1000000).toFixed(1)}M`
+                        : `${(project.totalPrice / 1000).toFixed(0)}K`}
                     </span>
                   </div>
                 </div>
@@ -507,7 +498,7 @@ export default function ProjectDetailsPage() {
                 {project.description}
               </p>
 
-              {project.keyBenefits && (
+              {project.keyBenefits && project.keyBenefits.length > 0 ? (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold text-heading dark:text-background mb-3 flex items-center gap-2">
                     <CheckCircle2 className="w-6 h-6 text-green-500 dark:text-green-400" />
@@ -525,160 +516,168 @@ export default function ProjectDetailsPage() {
                     ))}
                   </ul>
                 </div>
+              ) : (
+                <EmptyState
+                  icon={CheckCircle2}
+                  title="No Benefits Listed"
+                  description="The project owner hasn't added key benefits yet."
+                />
               )}
             </div>
           )}
 
           {/* Timeline Tab */}
-          {activeTab === "timeline" && project.timeline && (
+          {activeTab === "timeline" && (
             <div>
               <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Project Timeline
               </h2>
-              <div className="space-y-6">
-                {project.timeline.map((phase, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          phase.status === "completed"
-                            ? "bg-green-500"
-                            : phase.status === "in-progress"
-                            ? "bg-yellow-500"
-                            : "bg-gray-300"
-                        }`}
-                      >
-                        <CheckCircle2 className="w-6 h-6 text-white" />
-                      </div>
-                      {index < project.timeline.length - 1 && (
-                        <div className="w-0.5 h-16 bg-gray-200 dark:bg-background/30 my-2"></div>
-                      )}
-                    </div>
-                    <div className="flex-grow pb-8">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold text-heading dark:text-background">
-                          {phase.phase}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              {project.timeline && project.timeline.length > 0 ? (
+                <div className="space-y-6">
+                  {project.timeline.map((phase, index) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center ${
                             phase.status === "completed"
-                              ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                              ? "bg-green-500"
                               : phase.status === "in-progress"
-                              ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300"
-                              : "bg-gray-100 dark:bg-background/20 text-gray-700 dark:text-paragraph"
+                              ? "bg-yellow-500"
+                              : "bg-gray-300"
                           }`}
                         >
-                          {phase.status.replace("-", " ")}
-                        </span>
+                          <CheckCircle2 className="w-6 h-6 text-white" />
+                        </div>
+                        {index < project.timeline.length - 1 && (
+                          <div className="w-0.5 h-16 bg-gray-200 dark:bg-background/30 my-2"></div>
+                        )}
                       </div>
-                      <p className="text-paragraph dark:text-paragraph font-semibold mb-1">
-                        {phase.title}
-                      </p>
-                      <p className="text-sm text-paragraph dark:text-paragraph">
-                        {phase.date}
-                      </p>
+                      <div className="flex-grow pb-8">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-bold text-heading dark:text-background">
+                            {phase.phase}
+                          </h3>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              phase.status === "completed"
+                                ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                                : phase.status === "in-progress"
+                                ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300"
+                                : "bg-gray-100 dark:bg-background/20 text-gray-700 dark:text-paragraph"
+                            }`}
+                          >
+                            {phase.status.replace("-", " ")}
+                          </span>
+                        </div>
+                        <p className="text-paragraph dark:text-paragraph font-semibold mb-1">
+                          {phase.title}
+                        </p>
+                        <p className="text-sm text-paragraph dark:text-paragraph">
+                          {phase.date}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Calendar}
+                  title="No Timeline Available"
+                  description="The project owner hasn't created a timeline yet."
+                />
+              )}
             </div>
           )}
 
-          {/* Milestones Tab
-          {activeTab === "milestones" && (
-            <div>
-              <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
-                Project Milestones
-              </h2>
-              <div className="space-y-6">
-                {project.milestones.map((milestone, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-gray-100 dark:border-background/30 pb-6 last:border-0"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-bold text-heading dark:text-background">
-                        {milestone.title}
-                      </h3>
-                      <span className="text-2xl font-bold text-primary dark:text-primary-dark">
-                        {milestone.completion}%
-                      </span>
-                    </div>
-                    <p className="text-paragraph dark:text-paragraph mb-3">
-                      {milestone.description}
-                    </p>
-                    <div className="w-full bg-gray-200 dark:bg-background/20 rounded-full h-3">
-                      <div
-                        className="bg-gradient-to-r from-primary to-secondary dark:to-heading h-3 rounded-full transition-all duration-300"
-                        style={{ width: `${milestone.completion}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )} */}
-
-          {/* Team Tab */}
+          {/* Investors Tab */}
           {activeTab === "investors" && (
             <div>
               <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Meet the Investors
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {project.investors.map((member, index) => (
-                  <div
-                    key={index}
-                    className="bg-soft dark:bg-background/10 rounded-xl p-6 text-center"
-                  >
-                    <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200 dark:bg-background/20">
-                      <img
-                        src={member.user.profilePicUrl}
-                        alt={member.user.firstName}
-                        className="w-full h-full object-cover"
-                      />
+              {project.investors && project.investors.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {project.investors.map((member, index) => (
+                    <div
+                      key={index}
+                      className="bg-soft dark:bg-background/10 rounded-xl p-6 text-center"
+                    >
+                      <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 bg-gray-200 dark:bg-background/20">
+                        {member.user.profilePicUrl ? (
+                          <img
+                            src={member.user.profilePicUrl}
+                            alt={member.user.firstName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white font-bold text-2xl">
+                            {member.user.firstName?.charAt(0)}
+                            {member.user.lastName?.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-bold text-heading dark:text-background mb-1">
+                        {member.user.firstName} {member.user.lastName}
+                      </h3>
+                      <p className="text-paragraph dark:text-paragraph text-sm">
+                        {member.percentage}% invested
+                      </p>
                     </div>
-                    <h3 className="text-lg font-bold text-heading dark:text-background mb-1">
-                      {member.user.firstName} {member.user.lastName}
-                    </h3>
-                    <p className="text-paragraph dark:text-paragraph text-sm">
-                      {member.percentage}%
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Users}
+                  title="No Investors Yet"
+                  description="Be the first to invest in this project!"
+                />
+              )}
             </div>
           )}
 
           {/* Documents Tab */}
-          {activeTab === "documents" && project.documents && (
+          {activeTab === "documents" && (
             <div>
               <h2 className="text-2xl font-bold text-heading dark:text-background mb-6">
                 Project Documents
               </h2>
-              <div className="space-y-3">
-                {project.documents.map((doc, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-4 bg-soft dark:bg-background/10 rounded-lg hover:bg-gray-100 dark:hover:bg-background/20 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-8 h-8 text-primary dark:text-primary-dark" />
-                      <div>
-                        <h3 className="font-semibold text-heading dark:text-background">
-                          {doc.title}
-                        </h3>
-                        <p className="text-sm text-paragraph dark:text-paragraph">
-                          {doc.type} • {doc.size}
-                        </p>
+              {project.documents && project.documents.length > 0 ? (
+                <div className="space-y-3">
+                  {project.documents.map((doc, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 bg-soft dark:bg-background/10 rounded-lg hover:bg-gray-100 dark:hover:bg-background/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-8 h-8 text-primary dark:text-primary-dark" />
+                        <div>
+                          <h3 className="font-semibold text-heading dark:text-background">
+                            {doc.title}
+                          </h3>
+                          <p className="text-sm text-paragraph dark:text-paragraph">
+                            PDF Document •{" "}
+                            {new Date(doc.uploadedAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
+                      <a
+                        href={doc.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-primary dark:bg-primary-dark text-white rounded-lg hover:bg-primary/90 dark:hover:bg-primary-dark/80 transition-colors"
+                      >
+                        View
+                      </a>
                     </div>
-                    <button className="px-4 py-2 bg-primary dark:bg-primary-dark text-white rounded-lg hover:bg-primary/90 dark:hover:bg-primary-dark/80 transition-colors">
-                      Download
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={FileText}
+                  title="No Documents Available"
+                  description="The project owner hasn't uploaded any documents yet."
+                />
+              )}
             </div>
           )}
 
@@ -696,19 +695,29 @@ export default function ProjectDetailsPage() {
                     <AlertTriangle className="w-6 h-6 text-orange-500 dark:text-orange-400" />
                     Potential Risks
                   </h3>
-                  <ul className="space-y-3">
-                    {project.potentialRisks.map((risk, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/30"
-                      >
-                        <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-paragraph dark:text-paragraph">
-                          {risk}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  {project.potentialRisks &&
+                  project.potentialRisks.length > 0 ? (
+                    <ul className="space-y-3">
+                      {project.potentialRisks.map((risk, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/30"
+                        >
+                          <AlertTriangle className="w-5 h-5 text-orange-500 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-paragraph dark:text-paragraph">
+                            {risk}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="p-4 bg-gray-50 dark:bg-background/20 rounded-lg text-center">
+                      <Inbox className="w-12 h-12 text-gray-400 dark:text-paragraph mx-auto mb-2" />
+                      <p className="text-paragraph dark:text-paragraph text-sm">
+                        No risks listed yet
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Returns */}
@@ -723,28 +732,26 @@ export default function ProjectDetailsPage() {
                         ROI Target
                       </p>
                       <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                        {project.expectedROI}
+                        {project.expectedROI}%
                       </p>
                     </div>
                     <div className="p-4 bg-soft dark:bg-background/10 rounded-lg">
                       <p className="text-sm text-paragraph dark:text-paragraph mb-1">
-                        Investment Period
+                        Total Project Value
                       </p>
                       <p className="text-xl font-bold text-heading dark:text-background">
-                        {Math.ceil(
-                          (new Date(project.endDate) -
-                            new Date(project.startDate)) /
-                            (1000 * 60 * 60 * 24 * 365)
-                        )}{" "}
-                        years
+                        $
+                        {project.totalPrice > 999999
+                          ? `${(project.totalPrice / 1000000).toFixed(1)}M`
+                          : `${(project.totalPrice / 1000).toFixed(0)}K`}
                       </p>
                     </div>
                     <div className="p-4 bg-soft dark:bg-background/10 rounded-lg">
                       <p className="text-sm text-paragraph dark:text-paragraph mb-1">
-                        Funding Goal
+                        Current Progress
                       </p>
                       <p className="text-xl font-bold text-heading dark:text-background">
-                        ${(project.fundingGoal / 1000000).toFixed(1)}M
+                        {project.progress.toFixed(1)}%
                       </p>
                     </div>
                   </div>
